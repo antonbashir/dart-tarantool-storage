@@ -4,7 +4,7 @@ macro(curl_build)
     set(LIBCURL_BINARY_DIR ${PROJECT_BINARY_DIR}/build/curl/work)
     set(LIBCURL_INSTALL_DIR ${PROJECT_BINARY_DIR}/build/curl/dest)
     set(LIBCURL_CMAKE_FLAGS "")
-
+    
     message(STATUS "Looking for zlib")
     find_path(ZLIB_INCLUDE_DIR zlib.h)
     message(STATUS "Looking for zlib.h - ${ZLIB_INCLUDE_DIR}")
@@ -22,6 +22,7 @@ macro(curl_build)
     get_filename_component(FOUND_ZLIB_ROOT_DIR ${ZLIB_INCLUDE_DIR} DIRECTORY)
     list(APPEND LIBCURL_CMAKE_FLAGS "-DZLIB_ROOT=${FOUND_ZLIB_ROOT_DIR}")
     list(APPEND LIBCURL_CMAKE_FLAGS "-DCURL_ZLIB=ON")
+    list(APPEND LIBCURL_CMAKE_FLAGS "-DCMAKE_C_FLAGS=-fpic")
 
     # Check '-pthread' in openssl compile options.
     execute_process(COMMAND openssl version -f

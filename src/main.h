@@ -34,16 +34,25 @@
 #include "trivia/util.h"
 
 #if defined(__cplusplus)
-extern "C" {
+extern "C"
+{
 #endif /* defined(__cplusplus) */
+    double tarantool_uptime(void);
 
-double tarantool_uptime(void);
+    void
+    tarantool_exit(int);
 
-void
-tarantool_exit(int);
+    void
+    tarantool_free(void);
 
-void
-load_cfg(void);
+    int 
+    tarantool_initialize_library(char* binary_path);
+    
+    void
+    tarantool_shutdown_library(int code);
+    
+    void
+    load_cfg(void);
 
 #if defined(__cplusplus)
 } /* extern "C" */

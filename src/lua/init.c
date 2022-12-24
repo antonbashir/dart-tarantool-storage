@@ -120,7 +120,7 @@ extern char strict_lua[],
 	trigger_lua[],
 	string_lua[],
 	swim_lua[],
-	p_lua[], /* LuaJIT 2.1 profiler */
+	p_lua[],	/* LuaJIT 2.1 profiler */
 	zone_lua[], /* LuaJIT 2.1 profiler */
 	/* tools.* libraries. */
 	bufread_lua[],
@@ -128,8 +128,7 @@ extern char strict_lua[],
 	parse_lua[],
 	process_lua[],
 	humanize_lua[],
-	memprof_lua[]
-;
+	memprof_lua[];
 
 static const char *lua_modules[] = {
 	/* Make it first to affect load of all other modules */
@@ -182,8 +181,7 @@ static const char *lua_modules[] = {
 	"memprof.process", process_lua,
 	"memprof.humanize", humanize_lua,
 	"memprof", memprof_lua,
-	NULL
-};
+	NULL};
 
 /*
  * {{{ box Lua library: common functions
@@ -198,8 +196,9 @@ lbox_tonumber64(struct lua_State *L)
 	luaL_checkany(L, 1);
 	int base = luaL_optint(L, 2, -1);
 	luaL_argcheck(L, (2 <= base && base <= 36) || base == -1, 2,
-		      "base out of range");
-	switch (lua_type(L, 1)) {
+				  "base out of range");
+	switch (lua_type(L, 1))
+	{
 	case LUA_TNUMBER:
 		base = (base == -1 ? 10 : base);
 		if (base != 10)
@@ -211,11 +210,14 @@ lbox_tonumber64(struct lua_State *L)
 		size_t argl = 0;
 		const char *arg = luaL_checklstring(L, 1, &argl);
 		/* Trim whitespaces at begin/end */
-		while (argl > 0 && isspace(arg[argl - 1])) {
+		while (argl > 0 && isspace(arg[argl - 1]))
+		{
 			argl--;
 		}
-		while (isspace(*arg)) {
-			arg++; argl--;
+		while (isspace(*arg))
+		{
+			arg++;
+			argl--;
 		}
 
 		/*
@@ -229,46 +231,65 @@ lbox_tonumber64(struct lua_State *L)
 		 *    base >= 22, in which case 'L' will be a digit.
 		 */
 		char negative = 0;
-		if (arg[0] == '-') {
-			arg++; argl--;
+		if (arg[0] == '-')
+		{
+			arg++;
+			argl--;
 			negative = 1;
 		}
-		if (argl > 2 && arg[0] == '0') {
+		if (argl > 2 && arg[0] == '0')
+		{
 			if ((arg[1] == 'x' || arg[1] == 'X') &&
-			    (base == 16 || base == -1)) {
-				base = 16; arg += 2; argl -= 2;
-			} else if ((arg[1] == 'b' || arg[1] == 'B') &&
-			           (base == 2 || base == -1)) {
-				base = 2;  arg += 2; argl -= 2;
+				(base == 16 || base == -1))
+			{
+				base = 16;
+				arg += 2;
+				argl -= 2;
+			}
+			else if ((arg[1] == 'b' || arg[1] == 'B') &&
+					 (base == 2 || base == -1))
+			{
+				base = 2;
+				arg += 2;
+				argl -= 2;
 			}
 		}
 		bool ull = false;
-		if (argl > 2 && (base == 2 || base == 16 || base == -1)) {
-			if (arg[argl - 1] == 'u' || arg[argl - 1] == 'U') {
+		if (argl > 2 && (base == 2 || base == 16 || base == -1))
+		{
+			if (arg[argl - 1] == 'u' || arg[argl - 1] == 'U')
+			{
 				ull = true;
 				--argl;
 			}
 			if ((arg[argl - 1] == 'l' || arg[argl - 1] == 'L') &&
-			    (arg[argl - 2] == 'l' || arg[argl - 2] == 'L'))
+				(arg[argl - 2] == 'l' || arg[argl - 2] == 'L'))
 				argl -= 2;
-			else {
+			else
+			{
 				ull = false;
 				goto skip;
 			}
 			if (!ull && (arg[argl - 1] == 'u' ||
-				     arg[argl - 1] == 'U')) {
+						 arg[argl - 1] == 'U'))
+			{
 				ull = true;
 				--argl;
 			}
 		}
-skip:		base = (base == -1 ? 10 : base);
+	skip:
+		base = (base == -1 ? 10 : base);
 		errno = 0;
 		char *arge;
 		unsigned long long result = strtoull(arg, &arge, base);
-		if (errno == 0 && arge == arg + argl) {
-			if (argl == 0) {
+		if (errno == 0 && arge == arg + argl)
+		{
+			if (argl == 0)
+			{
 				lua_pushnil(L);
-			} else if (negative) {
+			}
+			else if (negative)
+			{
 				/*
 				 * To test overflow, consider
 				 *  result > -INT64_MIN;
@@ -284,7 +305,9 @@ skip:		base = (base == -1 ? 10 : base);
 					lua_pushnil(L);
 				else
 					luaL_pushint64(L, -result);
-			} else {
+			}
+			else
+			{
 				luaL_pushuint64(L, result);
 			}
 			return 1;
@@ -298,7 +321,8 @@ skip:		base = (base == -1 ? 10 : base);
 			return luaL_argerror(L, 1, "string expected");
 		uint32_t ctypeid = 0;
 		luaL_checkcdata(L, 1, &ctypeid);
-		if (ctypeid >= CTID_INT8 && ctypeid <= CTID_DOUBLE) {
+		if (ctypeid >= CTID_INT8 && ctypeid <= CTID_DOUBLE)
+		{
 			lua_pushvalue(L, 1);
 			return 1;
 		}
@@ -323,7 +347,8 @@ static void
 tarantool_lua_pushpath_env(struct lua_State *L, const char *envname)
 {
 	const char *path = getenv(envname);
-	if (path != NULL) {
+	if (path != NULL)
+	{
 		const char *def = lua_tostring(L, -1);
 		path = luaL_gsub(L, path, ";;", ";\1;");
 		luaL_gsub(L, path, "\1", def);
@@ -343,7 +368,8 @@ tarantool_lua_setpaths(struct lua_State *L)
 	lua_getglobal(L, "package");
 	int top = lua_gettop(L);
 
-	if (home != NULL) {
+	if (home != NULL)
+	{
 		lua_pushstring(L, home);
 		lua_pushliteral(L, "/.luarocks/share/lua/5.1/?.lua;");
 		lua_pushstring(L, home);
@@ -359,7 +385,8 @@ tarantool_lua_setpaths(struct lua_State *L)
 	tarantool_lua_pushpath_env(L, "LUA_PATH");
 	lua_setfield(L, top, "path");
 
-	if (home != NULL) {
+	if (home != NULL)
+	{
 		lua_pushstring(L, home);
 		lua_pushliteral(L, "/.luarocks/lib/lua/5.1/?" MODULE_LIBSUFFIX ";");
 		lua_pushstring(L, home);
@@ -376,7 +403,8 @@ tarantool_lua_setpaths(struct lua_State *L)
 }
 
 static int
-tarantool_panic_handler(lua_State *L) {
+tarantool_panic_handler(lua_State *L)
+{
 	const char *problem = lua_tostring(L, -1);
 #ifdef ENABLE_BACKTRACE
 	print_backtrace();
@@ -384,12 +412,13 @@ tarantool_panic_handler(lua_State *L) {
 	say_crit("%s", problem);
 	int level = 1;
 	lua_Debug ar;
-	while (lua_getstack(L, level++, &ar) == 1) {
+	while (lua_getstack(L, level++, &ar) == 1)
+	{
 		if (lua_getinfo(L, "nSl", &ar) == 0)
 			break;
 		say_crit("#%d %s (%s), %s:%d", level,
-			 ar.name, ar.namewhat,
-			 ar.short_src, ar.currentline);
+				 ar.name, ar.namewhat,
+				 ar.short_src, ar.currentline);
 	}
 	return 1;
 }
@@ -402,8 +431,7 @@ luaopen_tarantool(lua_State *L)
 	lua_setfield(L, LUA_GLOBALSINDEX, "_TARANTOOL");
 
 	static const struct luaL_Reg initlib[] = {
-		{NULL, NULL}
-	};
+		{NULL, NULL}};
 	luaL_register_module(L, "tarantool", initlib);
 
 	/* package */
@@ -443,15 +471,15 @@ luaopen_tarantool(lua_State *L)
 	lua_pushstring(L, TARANTOOL_C_FLAGS);
 	lua_settable(L, -3);
 
-	lua_settable(L, -3);    /* box.info.build */
+	lua_settable(L, -3); /* box.info.build */
 	return 1;
 }
 
-void
-tarantool_lua_init(const char *tarantool_bin, int argc, char **argv)
+void tarantool_lua_init(const char *tarantool_bin, int argc, char **argv)
 {
 	lua_State *L = luaL_newstate();
-	if (L == NULL) {
+	if (L == NULL)
+	{
 		panic("failed to initialize Lua");
 	}
 	luaL_openlibs(L);
@@ -495,19 +523,23 @@ tarantool_lua_init(const char *tarantool_bin, int argc, char **argv)
 #endif
 
 	lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
-	for (const char **s = lua_modules; *s; s += 2) {
+	for (const char **s = lua_modules; *s; s += 2)
+	{
 		const char *modname = *s;
 		const char *modsrc = *(s + 1);
 		const char *modfile = lua_pushfstring(L,
-			"@builtin/%s.lua", modname);
+											  "@builtin/%s.lua", modname);
 		if (luaL_loadbuffer(L, modsrc, strlen(modsrc), modfile))
 			panic("Error loading Lua module %s...: %s",
-			      modname, lua_tostring(L, -1));
+				  modname, lua_tostring(L, -1));
 		lua_pushstring(L, modname);
 		lua_call(L, 1, 1);
-		if (!lua_isnil(L, -1)) {
+		if (!lua_isnil(L, -1))
+		{
 			lua_setfield(L, -3, modname); /* package.loaded.modname = t */
-		} else {
+		}
+		else
+		{
 			lua_pop(L, 1); /* nil */
 		}
 		lua_pop(L, 1); /* chunkname */
@@ -521,7 +553,8 @@ tarantool_lua_init(const char *tarantool_bin, int argc, char **argv)
 	lua_pushinteger(L, -1);
 	lua_pushstring(L, tarantool_bin);
 	lua_settable(L, -3);
-	for (int i = 0; i < argc; i++) {
+	for (int i = 0; i < argc; i++)
+	{
 		lua_pushinteger(L, i);
 		lua_pushstring(L, argv[i]);
 		lua_settable(L, -3);
@@ -591,9 +624,11 @@ run_script_f(va_list ap)
 	 * Load libraries and execute chunks passed by -l and -e
 	 * command line options
 	 */
-	for (int i = 0; i < optc; i += 2) {
+	for (int i = 0; i < optc; i += 2)
+	{
 		assert(optv[i][0] == '-' && optv[i][2] == '\0');
-		switch (optv[i][1]) {
+		switch (optv[i][1])
+		{
 		case 'l':
 			/*
 			 * Load library
@@ -611,7 +646,7 @@ run_script_f(va_list ap)
 			 * Execute chunk
 			 */
 			if (luaL_loadbuffer(L, optv[i + 1], strlen(optv[i + 1]),
-					    "=(command line)") != 0)
+								"=(command line)") != 0)
 				goto luajit_error;
 			if (luaT_call(L, 0, 0) != 0)
 				goto error;
@@ -638,24 +673,29 @@ run_script_f(va_list ap)
 	 * Use iparam in such case, standard return value otherwise.
 	 * Integer param of errinj is used in order to set different
 	 * return values.
-	*/
+	 */
 	ERROR_INJECT_INT(ERRINJ_STDIN_ISATTY, inj->iparam >= 0, {
 		is_a_tty = inj->iparam;
 	});
 
-	if (path && strcmp(path, "-") != 0 && access(path, F_OK) == 0) {
+	if (path && strcmp(path, "-") != 0 && access(path, F_OK) == 0)
+	{
 		/* Execute script. */
 		if (luaL_loadfile(L, path) != 0)
 			goto luajit_error;
 		if (lua_main(L, argc, argv) != 0)
 			goto error;
-	} else if (!is_a_tty || (path && strcmp(path, "-") == 0)) {
+	}
+	else if (!is_a_tty || (path && strcmp(path, "-") == 0))
+	{
 		/* Execute stdin */
 		if (luaL_loadfile(L, NULL) != 0)
 			goto luajit_error;
 		if (lua_main(L, argc, argv) != 0)
 			goto error;
-	} else if (!is_option_e_ran) {
+	}
+	else if (!is_option_e_ran)
+	{
 		interactive = true;
 	}
 
@@ -664,9 +704,10 @@ run_script_f(va_list ap)
 	 * - it was explicitly requested by "-i" option;
 	 * - stdin is TTY and there are no script (-e is considered as a script).
 	 */
-	if (interactive) {
+	if (interactive)
+	{
 		say_crit("%s %s\ntype 'help' for interactive help",
-			 tarantool_package(), tarantool_version());
+				 tarantool_package(), tarantool_version());
 		/* get console.start from package.loaded */
 		lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
 		lua_getfield(L, -1, "console");
@@ -699,9 +740,38 @@ error:
 	goto end;
 }
 
-int
-tarantool_lua_run_script(char *path, bool interactive,
-			 int optc, const char **optv, int argc, char **argv)
+static int
+run_string_f(va_list ap)
+{
+	struct lua_State *L = va_arg(ap, struct lua_State *);
+	const char *string = va_arg(ap, const char *);
+	struct diag *diag = va_arg(ap, struct diag *);
+	
+	fiber_sleep(0.0);
+
+	if (luaL_loadstring(L, string) != 0)
+		goto luajit_error;
+
+	if (luaT_call(L, 0, 0) != 0)
+		goto error;
+
+	lua_settop(L, 0);
+
+end:
+	fiber_sleep(0.0);
+	ev_break(loop(), EVBREAK_ALL);
+	return 0;
+
+luajit_error:
+	diag_set(LuajitError, lua_tostring(L, -1));
+
+error:
+	diag_move(diag_get(), diag);
+	goto end;
+}
+
+int tarantool_lua_run_script(char *path, bool interactive,
+							 int optc, const char **optv, int argc, char **argv)
 {
 	const char *title = path ? basename(path) : "interactive";
 	/*
@@ -725,14 +795,14 @@ tarantool_lua_run_script(char *path, bool interactive,
 	struct diag script_diag;
 	diag_create(&script_diag);
 	fiber_start(script_fiber, tarantool_L, path, interactive,
-		    optc, optv, argc, argv, &script_diag);
+				optc, optv, argc, argv, &script_diag);
 
 	/*
 	 * Run an auxiliary event loop to re-schedule run_script fiber.
 	 * When this fiber finishes, it will call ev_break to stop the loop.
 	 */
 	if (start_loop)
-		ev_run(loop(), 0);
+		ev_run(loop(), 0);	
 	/* The fiber running the startup script has ended. */
 	script_fiber = NULL;
 	diag_move(&script_diag, diag_get());
@@ -745,8 +815,31 @@ tarantool_lua_run_script(char *path, bool interactive,
 	return diag_is_empty(diag_get()) ? 0 : -1;
 }
 
-void
-tarantool_lua_free()
+int tarantool_lua_run_string(char *string)
+{
+	const char *title = "library";
+
+	script_fiber = fiber_new(title, run_string_f);
+	if (script_fiber == NULL)
+		panic("%s", diag_last_error(diag_get())->errmsg);
+	script_fiber->storage.lua.stack = tarantool_L;
+
+	struct diag script_diag;
+	diag_create(&script_diag);
+	fiber_start(script_fiber, tarantool_L, string, &script_diag);
+
+	if (start_loop)
+		ev_run(loop(), 0);
+
+	script_fiber = NULL;
+	diag_move(&script_diag, diag_get());
+	diag_destroy(&script_diag);
+
+	return diag_is_empty(diag_get()) ? 0 : -1;
+}
+
+
+void tarantool_lua_free()
 {
 	tarantool_lua_utf8_free();
 	/*
@@ -762,7 +855,8 @@ tarantool_lua_free()
 	 * Got to be done prior to anything else, since GC
 	 * handlers can refer to other subsystems (e.g. fibers).
 	 */
-	if (tarantool_L) {
+	if (tarantool_L)
+	{
 		/* collects garbage, invoking userdata gc */
 		lua_close(tarantool_L);
 	}

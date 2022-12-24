@@ -274,7 +274,7 @@ cbus_endpoint_destroy(struct cbus_endpoint *endpoint,
 	tt_pthread_mutex_unlock(&endpoint->mutex);
 	tt_pthread_mutex_destroy(&endpoint->mutex);
 	ev_async_stop(endpoint->consumer, &endpoint->async);
-	fiber_cond_destroy(&endpoint->cond);
+	fiber_cond_destroy(&endpoint->cond); 
 	TRASH(endpoint);
 	return 0;
 }

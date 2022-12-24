@@ -1,2 +1,5 @@
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 add_library(mpstream STATIC mpstream.c)
 target_link_libraries(mpstream core uuid ${MSGPUCK_LIBRARIES})

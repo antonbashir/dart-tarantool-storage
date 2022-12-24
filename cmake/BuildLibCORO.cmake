@@ -9,6 +9,7 @@ macro(libcoro_build)
 
     set(LIBCORO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/third_party/coro)
     set(LIBCORO_LIBRARIES coro)
+    set_target_properties(coro PROPERTIES COMPILE_FLAGS "-fPIC")
 
     if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "86" OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64")
         add_definitions("-DCORO_ASM")
@@ -17,7 +18,7 @@ macro(libcoro_build)
     else()
         add_definitions("-DCORO_SJLJ")
     endif()
-
+    
     unset(coro_src)
 endmacro(libcoro_build)
 

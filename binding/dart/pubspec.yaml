@@ -1,0 +1,50 @@
+name: tarantool_storage
+version: 1.0.0
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dev_dependencies:
+  ffigen: ^7.0.0
+
+dependencies:
+  ffi: ^2.0.1
+  msgpack_dart : ^1.0.0
+  test: ^1.22.0
+  path: ^1.8.3
+  tar: ^0.5.6
+
+ffigen:
+  name: "TarantoolBindings"
+  description: "Bindings for Tarantool"
+  output: "lib/storage/bindings.dart"
+  headers:
+    entry-points:
+      - "../native/src/binding_box.h"
+  globals:
+    exclude:
+      - "_(.*)"
+      - "ck(.*)"
+  functions:
+    symbol-address:
+      include:
+        - ".*"
+    exclude:
+      - "_(.*)"
+      - "ck(.*)"
+      - "tarantool_message_queue(.*)"
+  macros:
+    exclude:
+      - "_(.*)"
+      - "true"
+      - "false"
+      - "CK(.*)"
+  typedefs:
+    exclude:
+      - "_(.*)"
+      - "ck(.*)"
+  structs:
+    exclude:
+      - "_(.*)"
+      - "max_align_t"
+      - "ck(.*)"

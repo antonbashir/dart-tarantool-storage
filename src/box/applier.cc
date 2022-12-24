@@ -1350,6 +1350,7 @@ applier_subscribe(struct applier *applier)
 					diag_raise();
 			}
 			applier_signal_ack(applier);
+			fiber_gc();
 		} else if (applier_apply_tx(&rows) != 0) {
 			diag_raise();
 		}

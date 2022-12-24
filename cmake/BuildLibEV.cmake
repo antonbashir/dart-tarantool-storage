@@ -10,7 +10,7 @@ macro(libev_build)
 # while this stand off is going on, the world is not a very happy
 # place:
     set(ev_compile_flags "${ev_compile_flags} -w")
-
+    set(ev_compile_flags "${ev_compile_flags} -fPIC")
     set(ev_compile_flags "${ev_compile_flags} -DENABLE_BUNDLED_LIBEV=1")
 
     if (TARGET_OS_LINUX)

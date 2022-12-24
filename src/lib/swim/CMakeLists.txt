@@ -1,3 +1,6 @@
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 set(lib_swim_sources swim.c swim_io.c swim_proto.c)
 set(lib_swim_udp_sources swim_transport_udp.c)
 set(lib_swim_ev_sources swim_ev.c)

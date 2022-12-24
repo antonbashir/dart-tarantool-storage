@@ -1,3 +1,6 @@
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 set(lib_sources
     raft.c
     raft_ev.c

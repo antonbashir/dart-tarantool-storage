@@ -19,8 +19,7 @@ coverage.info
 *.so
 *~
 *.swp*
-.gitignore
-.gdb_history
+.gitignore.gdb_history
 CMakeFiles
 CMakeCache.txt
 CPackConfig.cmake
@@ -166,3 +165,11 @@ static-build/build
 
 # macOS files
 .DS_Store
+*.log
+runner.lua
+*.snap
+*.xlog
+.cmake/
+*.exe
+*.dart_tool
+_deps

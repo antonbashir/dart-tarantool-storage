@@ -1,3 +1,7 @@
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
+
 set(core_sources
     diag.c
     crash.c

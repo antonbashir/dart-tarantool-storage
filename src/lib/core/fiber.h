@@ -497,7 +497,7 @@ struct fiber_attr {
 	/** Fiber stack size. */
 	size_t stack_size;
 	/** Fiber flags. */
-	uint32_t flags;
+	uint32_t flags;	
 };
 
 /**

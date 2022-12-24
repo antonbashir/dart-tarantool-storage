@@ -2,8 +2,9 @@
 # A macro to build the bundled libeio
 macro(libeio_build)
     set(eio_compile_flags)
-
+    
     # See comments in BuildLibEV.cmake
+    set(eio_compile_flags "${eio_compile_flags} -fPIC")
     set(eio_compile_flags "${eio_compile_flags} -w")
     set(eio_compile_flags "${eio_compile_flags} -DENABLE_BUNDLED_LIBEIO=1")
     set(eio_compile_flags "${eio_compile_flags} -DEIO_STACKSIZE=0")

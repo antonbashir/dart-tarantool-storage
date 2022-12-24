@@ -1,2 +1,5 @@
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 add_library(uuid STATIC tt_uuid.c mp_uuid.c)
 target_link_libraries(uuid core bit)

@@ -281,6 +281,7 @@ find_package_message(TARANTOOL_VERSION
 # Specify where to look for include files.
 #
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/binding/native)
 include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/src/lib)
 include_directories(${PROJECT_SOURCE_DIR}/src/lib/small/include)
@@ -588,7 +589,7 @@ include (cmake/rpm.cmake)
 add_subdirectory(src)
 add_subdirectory(extra)
 add_subdirectory(test)
-add_subdirectory(doc)
+add_subdirectory(binding/native)
 
 option(WITH_NOTIFY_SOCKET "Enable notifications on NOTIFY_SOCKET" ON)
 

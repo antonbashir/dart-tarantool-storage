@@ -5,6 +5,9 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/box/sql)
 # disabled by default. That option allows to remove the feedback
 # daemon from the build completely.
 option(ENABLE_FEEDBACK_DAEMON "Feedback daemon which reports debug data to the Tarantool team" ON)
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 
 set(lua_sources)
 lua_source(lua_sources lua/load_cfg.lua)
@@ -86,6 +89,9 @@ add_library(xrow STATIC xrow.c iproto_constants.c)
 target_link_libraries(xrow server core small vclock misc box_error
                       scramble ${MSGPUCK_LIBRARIES})
 
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
 add_library(tuple STATIC
     tuple.c
     field_map.c

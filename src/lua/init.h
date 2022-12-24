@@ -75,6 +75,8 @@ tarantool_lua_run_script(char *path, bool force_interactive,
 			 int optc, const char **optv,
 			 int argc, char **argv);
 
+int tarantool_lua_run_string(char* string);
+
 extern char *history;
 
 struct slab_cache *

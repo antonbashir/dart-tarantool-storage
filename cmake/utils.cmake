@@ -21,6 +21,8 @@ macro(set_source_files_compile_flags)
             set(_lang OBJCXX)
         endif()
 
+        set(_flags "${_flags} -fpic")
+        
         if (_lang)
             get_source_file_property(_flags ${file} COMPILE_FLAGS)
             if ("${_flags}" STREQUAL "NOTFOUND")

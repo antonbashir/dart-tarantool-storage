@@ -273,6 +273,17 @@ if (ENABLE_LTO)
     set_source_files_properties(exports.c PROPERTIES COMPILE_FLAGS -fno-lto)
 endif()
 
+add_compile_options(-fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
+add_library(tarantool_library STATIC
+    main.cc  exports.c
+    ${LIBUTIL_FREEBSD_SRC}/flopen.c
+    ${LIBUTIL_FREEBSD_SRC}/pidfile.c)
+add_dependencies(tarantool_library build_bundled_libs)
+set(LINK_FLAGS ${LINK_FLAGS} "-Wl,-whole-archive")
+target_link_libraries(tarantool_library box ${common_libraries})
+
 add_executable(
     tarantool main.cc exports.c
     ${LIBUTIL_FREEBSD_SRC}/flopen.c

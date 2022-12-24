@@ -61,13 +61,17 @@ txn_add_redo(struct txn *txn, struct txn_stmt *stmt, struct request *request)
 	int size;
 	struct xrow_header *row;
 	row = region_alloc_object(&txn->region, struct xrow_header, &size);
-	if (row == NULL) {
+	if (row == NULL)
+	{
 		diag_set(OutOfMemory, size, "region_alloc_object", "row");
 		return -1;
 	}
-	if (request->header != NULL) {
+	if (request->header != NULL)
+	{
 		*row = *request->header;
-	} else {
+	}
+	else
+	{
 		/* Initialize members explicitly to save time on memset() */
 		row->type = request->type;
 		row->replica_id = 0;
@@ -99,7 +103,8 @@ txn_stmt_new(struct region *region)
 	int size;
 	struct txn_stmt *stmt;
 	stmt = region_alloc_object(region, struct txn_stmt, &size);
-	if (stmt == NULL) {
+	if (stmt == NULL)
+	{
 		diag_set(OutOfMemory, size, "region_alloc_object", "stmt");
 		return NULL;
 	}
@@ -147,7 +152,8 @@ txn_rollback_one_stmt(struct txn *txn, struct txn_stmt *stmt)
 {
 	if (txn->engine != NULL && stmt->space != NULL)
 		engine_rollback_statement(txn->engine, txn, stmt);
-	if (stmt->has_triggers && trigger_run(&stmt->on_rollback, txn) != 0) {
+	if (stmt->has_triggers && trigger_run(&stmt->on_rollback, txn) != 0)
+	{
 		diag_log();
 		panic("statement rollback trigger failed");
 	}
@@ -160,15 +166,18 @@ txn_rollback_to_svp(struct txn *txn, struct stailq_entry *svp)
 	struct stailq rollback;
 	stailq_cut_tail(&txn->stmts, svp, &rollback);
 	stailq_reverse(&rollback);
-	stailq_foreach_entry(stmt, &rollback, next) {
+	stailq_foreach_entry(stmt, &rollback, next)
+	{
 		txn_rollback_one_stmt(txn, stmt);
-		if (stmt->row != NULL && stmt->row->replica_id == 0) {
+		if (stmt->row != NULL && stmt->row->replica_id == 0)
+		{
 			assert(txn->n_new_rows > 0);
 			txn->n_new_rows--;
 			if (stmt->row->group_id == GROUP_LOCAL)
 				txn->n_local_rows--;
 		}
-		if (stmt->row != NULL && stmt->row->replica_id != 0) {
+		if (stmt->row != NULL && stmt->row->replica_id != 0)
+		{
 			assert(txn->n_applier_rows > 0);
 			txn->n_applier_rows--;
 		}
@@ -194,7 +203,8 @@ txn_new(void)
 	/* Place txn structure on the region. */
 	int size;
 	struct txn *txn = region_alloc_object(&region, struct txn, &size);
-	if (txn == NULL) {
+	if (txn == NULL)
+	{
 		diag_set(OutOfMemory, size, "region_alloc_object", "txn");
 		return NULL;
 	}
@@ -221,7 +231,8 @@ txn_free(struct txn *txn)
 	memtx_tx_clean_txn(txn);
 	struct tx_read_tracker *tracker, *tmp;
 	rlist_foreach_entry_safe(tracker, &txn->read_set,
-				 in_read_set, tmp) {
+							 in_read_set, tmp)
+	{
 		rlist_del(&tracker->in_reader_list);
 		rlist_del(&tracker->in_read_set);
 	}
@@ -229,12 +240,14 @@ txn_free(struct txn *txn)
 
 	struct tx_conflict_tracker *entry, *next;
 	rlist_foreach_entry_safe(entry, &txn->conflict_list,
-				 in_conflict_list, next) {
+							 in_conflict_list, next)
+	{
 		rlist_del(&entry->in_conflict_list);
 		rlist_del(&entry->in_conflicted_by_list);
 	}
 	rlist_foreach_entry_safe(entry, &txn->conflicted_by_list,
-				 in_conflicted_by_list, next) {
+							 in_conflicted_by_list, next)
+	{
 		rlist_del(&entry->in_conflict_list);
 		rlist_del(&entry->in_conflicted_by_list);
 	}
@@ -253,18 +266,18 @@ txn_free(struct txn *txn)
 	stailq_add(&txn_cache, &txn->in_txn_cache);
 }
 
-void
-diag_set_txn_sign_detailed(const char *file, unsigned line, int64_t signature)
+void diag_set_txn_sign_detailed(const char *file, unsigned line, int64_t signature)
 {
 	if (signature >= JOURNAL_ENTRY_ERR_MIN)
 		return diag_set_journal_res_detailed(file, line, signature);
-	switch(signature) {
+	switch (signature)
+	{
 	case TXN_SIGNATURE_ROLLBACK:
 		diag_set_detailed(file, line, ClientError, ER_TXN_ROLLBACK);
 		return;
 	case TXN_SIGNATURE_QUORUM_TIMEOUT:
 		diag_set_detailed(file, line, ClientError,
-				  ER_SYNC_QUORUM_TIMEOUT);
+						  ER_SYNC_QUORUM_TIMEOUT);
 		return;
 	case TXN_SIGNATURE_SYNC_ROLLBACK:
 		diag_set_detailed(file, line, ClientError, ER_SYNC_ROLLBACK);
@@ -275,14 +288,15 @@ diag_set_txn_sign_detailed(const char *file, unsigned line, int64_t signature)
 		return;
 	}
 	panic("Transaction signature %lld can't be converted to an error "
-	      "at %s:%u", (long long)signature, file, line);
+		  "at %s:%u",
+		  (long long)signature, file, line);
 }
 
 struct txn *
 txn_begin(void)
 {
 	static int64_t tsn = 0;
-	assert(! in_txn());
+	assert(!in_txn());
 	struct txn *txn = txn_new();
 	if (txn == NULL)
 		return NULL;
@@ -321,15 +335,17 @@ txn_begin(void)
 	return txn;
 }
 
-int
-txn_begin_in_engine(struct engine *engine, struct txn *txn)
+int txn_begin_in_engine(struct engine *engine, struct txn *txn)
 {
 	if (engine->flags & ENGINE_BYPASS_TX)
 		return 0;
-	if (txn->engine == NULL) {
+	if (txn->engine == NULL)
+	{
 		txn->engine = engine;
 		return engine_begin(engine, txn);
-	} else if (txn->engine != engine) {
+	}
+	else if (txn->engine != engine)
+	{
 		/**
 		 * Only one engine can be used in
 		 * a multi-statement transaction currently.
@@ -340,12 +356,12 @@ txn_begin_in_engine(struct engine *engine, struct txn *txn)
 	return 0;
 }
 
-int
-txn_begin_stmt(struct txn *txn, struct space *space, uint16_t type)
+int txn_begin_stmt(struct txn *txn, struct space *space, uint16_t type)
 {
 	assert(txn == in_txn());
 	assert(txn != NULL);
-	if (txn->in_sub_stmt > TXN_SUB_STMT_MAX) {
+	if (txn->in_sub_stmt > TXN_SUB_STMT_MAX)
+	{
 		diag_set(ClientError, ER_SUB_STMT_MAX);
 		return -1;
 	}
@@ -353,7 +369,8 @@ txn_begin_stmt(struct txn *txn, struct space *space, uint16_t type)
 	/*
 	 * A conflict have happened; there is no reason to continue the TX.
 	 */
-	if (txn->status == TXN_CONFLICTED) {
+	if (txn->status == TXN_CONFLICTED)
+	{
 		diag_set(ClientError, ER_TRANSACTION_CONFLICT);
 		return -1;
 	}
@@ -385,8 +402,7 @@ fail:
 	return -1;
 }
 
-bool
-txn_is_distributed(struct txn *txn)
+bool txn_is_distributed(struct txn *txn)
 {
 	assert(txn == in_txn());
 	/**
@@ -395,14 +411,13 @@ txn_is_distributed(struct txn *txn)
 	 * server of transaction origin.
 	 */
 	return (txn->n_new_rows > 0 && txn->n_applier_rows > 0 &&
-		txn->n_new_rows != txn->n_local_rows);
+			txn->n_new_rows != txn->n_local_rows);
 }
 
 /**
  * End a statement.
  */
-int
-txn_commit_stmt(struct txn *txn, struct request *request)
+int txn_commit_stmt(struct txn *txn, struct request *request)
 {
 	assert(txn->in_sub_stmt > 0);
 	/*
@@ -416,16 +431,19 @@ txn_commit_stmt(struct txn *txn, struct request *request)
 	 * non-temporary spaces. stmt->space can be NULL for
 	 * IRPOTO_NOP or IPROTO_CONFIRM.
 	 */
-	if (stmt->space == NULL || !space_is_temporary(stmt->space)) {
+	if (stmt->space == NULL || !space_is_temporary(stmt->space))
+	{
 		if (txn_add_redo(txn, stmt, request) != 0)
 			goto fail;
 		assert(stmt->row != NULL);
-		if (stmt->row->replica_id == 0) {
+		if (stmt->row->replica_id == 0)
+		{
 			++txn->n_new_rows;
 			if (stmt->row->group_id == GROUP_LOCAL)
 				++txn->n_local_rows;
-
-		} else {
+		}
+		else
+		{
 			++txn->n_applier_rows;
 		}
 	}
@@ -439,15 +457,18 @@ txn_commit_stmt(struct txn *txn, struct request *request)
 	 *   doesn't find any rows
 	 */
 	if (stmt->space != NULL && stmt->space->run_triggers &&
-	    (stmt->old_tuple || stmt->new_tuple)) {
-		if (!rlist_empty(&stmt->space->before_replace)) {
+		(stmt->old_tuple || stmt->new_tuple))
+	{
+		if (!rlist_empty(&stmt->space->before_replace))
+		{
 			/*
 			 * Triggers see old_tuple and that tuple
 			 * must remain the same
 			 */
 			stmt->does_require_old_tuple = true;
 		}
-		if (!rlist_empty(&stmt->space->on_replace)) {
+		if (!rlist_empty(&stmt->space->on_replace))
+		{
 			/*
 			 * Triggers see old_tuple and that tuple
 			 * must remain the same
@@ -474,7 +495,8 @@ txn_run_wal_write_triggers(struct txn *txn)
 {
 	/* Is zero during recovery. */
 	assert(txn->signature >= 0);
-	if (trigger_run(&txn->on_wal_write, txn) != 0) {
+	if (trigger_run(&txn->on_wal_write, txn) != 0)
+	{
 		/*
 		 * As transaction couldn't handle a trigger error so
 		 * there is no option except panic.
@@ -497,14 +519,14 @@ txn_free_or_wakeup(struct txn *txn)
 {
 	if (txn->fiber == NULL)
 		txn_free(txn);
-	else {
+	else
+	{
 		txn_set_flags(txn, TXN_IS_DONE);
 		fiber_wakeup(txn->fiber);
 	}
 }
 
-void
-txn_complete_fail(struct txn *txn)
+void txn_complete_fail(struct txn *txn)
 {
 	assert(!txn_has_flag(txn, TXN_IS_DONE));
 	assert(txn->signature < 0);
@@ -516,8 +538,10 @@ txn_complete_fail(struct txn *txn)
 		txn_rollback_one_stmt(txn, stmt);
 	if (txn->engine != NULL)
 		engine_rollback(txn->engine, txn);
-	if (txn_has_flag(txn, TXN_HAS_TRIGGERS)) {
-		if (trigger_run(&txn->on_rollback, txn) != 0) {
+	if (txn_has_flag(txn, TXN_HAS_TRIGGERS))
+	{
+		if (trigger_run(&txn->on_rollback, txn) != 0)
+		{
 			diag_log();
 			panic("transaction rollback trigger failed");
 		}
@@ -529,8 +553,7 @@ txn_complete_fail(struct txn *txn)
 	txn_free_or_wakeup(txn);
 }
 
-void
-txn_complete_success(struct txn *txn)
+void txn_complete_success(struct txn *txn)
 {
 	assert(!txn_has_flag(txn, TXN_IS_DONE));
 	assert(!txn_has_flag(txn, TXN_WAIT_SYNC));
@@ -538,13 +561,15 @@ txn_complete_success(struct txn *txn)
 	txn->status = TXN_COMMITTED;
 	if (txn->engine != NULL)
 		engine_commit(txn->engine, txn);
-	if (txn_has_flag(txn, TXN_HAS_TRIGGERS)) {
+	if (txn_has_flag(txn, TXN_HAS_TRIGGERS))
+	{
 		/*
 		 * Commit triggers must be run in the same order they were added
 		 * so that a trigger sees the changes done by previous triggers
 		 * (this is vital for DDL).
 		 */
-		if (trigger_run_reverse(&txn->on_commit, txn) != 0) {
+		if (trigger_run_reverse(&txn->on_commit, txn) != 0)
+		{
 			diag_log();
 			panic("transaction commit trigger failed");
 		}
@@ -575,26 +600,27 @@ txn_on_journal_write(struct journal_entry *entry)
 	 * commit/rollback triggers.
 	 */
 	struct session *orig_session = fiber_get_session(fiber());
-	struct session *session = (txn->fiber != NULL ?
-				   fiber_get_session(txn->fiber) : NULL);
+	struct session *session = (txn->fiber != NULL ? fiber_get_session(txn->fiber) : NULL);
 	if (session != NULL)
 		fiber_set_session(fiber(), session);
 	struct credentials *orig_creds = fiber_get_user(fiber());
-	struct credentials *creds = (txn->fiber != NULL ?
-				     fiber_get_user(txn->fiber) : NULL);
+	struct credentials *creds = (txn->fiber != NULL ? fiber_get_user(txn->fiber) : NULL);
 	if (creds != NULL)
 		fiber_set_user(fiber(), creds);
-	if (txn->signature < 0) {
+	if (txn->signature < 0)
+	{
 		txn_complete_fail(txn);
 		goto finish;
 	}
 	double stop_tm = ev_monotonic_now(loop());
 	double delta = stop_tm - txn->start_tm;
-	if (delta > too_long_threshold) {
+	if (delta > too_long_threshold)
+	{
 		int n_rows = txn->n_new_rows + txn->n_applier_rows;
 		say_warn_ratelimited("too long WAL write: %d rows at LSN %lld: "
-				     "%.3f sec", n_rows,
-				     txn->signature - n_rows + 1, delta);
+							 "%.3f sec",
+							 n_rows,
+							 txn->signature - n_rows + 1, delta);
 	}
 	if (txn_has_flag(txn, TXN_HAS_TRIGGERS))
 		txn_run_wal_write_triggers(txn);
@@ -618,7 +644,7 @@ txn_journal_entry_new(struct txn *txn)
 
 	/* Save space for an additional NOP row just in case. */
 	req = journal_entry_new(txn->n_new_rows + txn->n_applier_rows + 1,
-				&txn->region, txn_on_journal_write, txn);
+							&txn->region, txn_on_journal_write, txn);
 	if (req == NULL)
 		return NULL;
 
@@ -634,8 +660,10 @@ txn_journal_entry_new(struct txn *txn)
 	 */
 	bool is_fully_nop = true;
 
-	stailq_foreach_entry(stmt, &txn->stmts, next) {
-		if (stmt->has_triggers) {
+	stailq_foreach_entry(stmt, &txn->stmts, next)
+	{
+		if (stmt->has_triggers)
+		{
 			txn_init_triggers(txn);
 			rlist_splice(&txn->on_commit, &stmt->on_commit);
 		}
@@ -644,10 +672,11 @@ txn_journal_entry_new(struct txn *txn)
 		if (stmt->row == NULL)
 			continue;
 
-		if (stmt->row->type != IPROTO_NOP) {
+		if (stmt->row->type != IPROTO_NOP)
+		{
 			is_fully_nop = false;
 			is_sync = is_sync || (stmt->space != NULL &&
-					      stmt->space->def->opts.is_sync);
+								  stmt->space->def->opts.is_sync);
 		}
 
 		if (stmt->row->replica_id == 0)
@@ -662,10 +691,14 @@ txn_journal_entry_new(struct txn *txn)
 	 * space can't be synchronous. So if there is at least one
 	 * synchronous space, the transaction is not local.
 	 */
-	if (!txn_has_flag(txn, TXN_FORCE_ASYNC) && !is_fully_nop) {
-		if (is_sync) {
+	if (!txn_has_flag(txn, TXN_FORCE_ASYNC) && !is_fully_nop)
+	{
+		if (is_sync)
+		{
 			txn_set_flags(txn, TXN_WAIT_SYNC | TXN_WAIT_ACK);
-		} else if (!txn_limbo_is_empty(&txn_limbo)) {
+		}
+		else if (!txn_limbo_is_empty(&txn_limbo))
+		{
 			/*
 			 * There some sync entries on the
 			 * fly thus wait for their completion
@@ -686,20 +719,24 @@ txn_journal_entry_new(struct txn *txn)
 	 * transaction has at least one global row.
 	 */
 	if (txn->n_local_rows > 0 &&
-	    (txn->n_local_rows != txn->n_new_rows || txn->n_applier_rows > 0) &&
-	    (*(local_row - 1))->group_id == GROUP_LOCAL) {
+		(txn->n_local_rows != txn->n_new_rows || txn->n_applier_rows > 0) &&
+		(*(local_row - 1))->group_id == GROUP_LOCAL)
+	{
 		size_t size;
 		*local_row = region_alloc_object(&txn->region,
-						 typeof(**local_row), &size);
-		if (*local_row == NULL) {
+										 typeof(**local_row), &size);
+		if (*local_row == NULL)
+		{
 			diag_set(OutOfMemory, size, "region_alloc_object",
-				 "row");
+					 "row");
 			return NULL;
 		}
 		memset(*local_row, 0, sizeof(**local_row));
 		(*local_row)->type = IPROTO_NOP;
 		(*local_row)->group_id = GROUP_DEFAULT;
-	} else {
+	}
+	else
+	{
 		--req->n_rows;
 	}
 
@@ -722,7 +759,8 @@ txn_prepare(struct txn *txn)
 {
 	txn->psn = ++txn_last_psn;
 
-	if (txn_has_flag(txn, TXN_IS_ABORTED_BY_YIELD)) {
+	if (txn_has_flag(txn, TXN_IS_ABORTED_BY_YIELD))
+	{
 		assert(!txn_has_flag(txn, TXN_CAN_YIELD));
 		diag_set(ClientError, ER_TRANSACTION_YIELD);
 		diag_log();
@@ -733,7 +771,8 @@ txn_prepare(struct txn *txn)
 	 * foreign key constraints must not be violated.
 	 * If not so, just rollback transaction.
 	 */
-	if (txn->fk_deferred_count != 0) {
+	if (txn->fk_deferred_count != 0)
+	{
 		diag_set(ClientError, ER_FOREIGN_KEY_CONSTRAINT);
 		return -1;
 	}
@@ -743,7 +782,8 @@ txn_prepare(struct txn *txn)
 	 * The RW transaction is not possible.
 	 */
 	if (txn->status == TXN_CONFLICTED ||
-	    (txn->status == TXN_IN_READ_VIEW && !stailq_empty(&txn->stmts))) {
+		(txn->status == TXN_IN_READ_VIEW && !stailq_empty(&txn->stmts)))
+	{
 		diag_set(ClientError, ER_TRANSACTION_CONFLICT);
 		return -1;
 	}
@@ -752,7 +792,8 @@ txn_prepare(struct txn *txn)
 	 * Perform transaction conflict resolution. Engine == NULL when
 	 * we have a bunch of IPROTO_NOP statements.
 	 */
-	if (txn->engine != NULL) {
+	if (txn->engine != NULL)
+	{
 		if (engine_prepare(txn->engine, txn) != 0)
 			return -1;
 	}
@@ -760,7 +801,8 @@ txn_prepare(struct txn *txn)
 	struct tx_conflict_tracker *entry, *next;
 	/* Handle conflicts. */
 	rlist_foreach_entry_safe(entry, &txn->conflict_list,
-				 in_conflict_list, next) {
+							 in_conflict_list, next)
+	{
 		assert(entry->breaker == txn);
 		memtx_tx_handle_conflict(txn, entry->victim);
 		rlist_del(&entry->in_conflict_list);
@@ -768,7 +810,8 @@ txn_prepare(struct txn *txn)
 	}
 	/* Just free conflict list - we don't need it anymore. */
 	rlist_foreach_entry_safe(entry, &txn->conflicted_by_list,
-				 in_conflicted_by_list, next) {
+							 in_conflicted_by_list, next)
+	{
 		assert(entry->victim == txn);
 		rlist_del(&entry->in_conflict_list);
 		rlist_del(&entry->in_conflicted_by_list);
@@ -791,7 +834,8 @@ txn_prepare(struct txn *txn)
 static bool
 txn_commit_nop(struct txn *txn)
 {
-	if (txn->n_new_rows + txn->n_applier_rows == 0) {
+	if (txn->n_new_rows + txn->n_applier_rows == 0)
+	{
 		txn->signature = TXN_SIGNATURE_NOP;
 		txn_complete_success(txn);
 		fiber_set_txn(fiber(), NULL);
@@ -808,24 +852,23 @@ txn_commit_nop(struct txn *txn)
 static int
 txn_limbo_on_rollback(struct trigger *trig, void *event)
 {
-	(void) event;
-	struct txn *txn = (struct txn *) event;
+	(void)event;
+	struct txn *txn = (struct txn *)event;
 	/* Check whether limbo has performed the cleanup. */
 	if (!txn_has_flag(txn, TXN_WAIT_SYNC))
 		return 0;
-	struct txn_limbo_entry *entry = (struct txn_limbo_entry *) trig->data;
+	struct txn_limbo_entry *entry = (struct txn_limbo_entry *)trig->data;
 	txn_limbo_abort(&txn_limbo, entry);
 	return 0;
 }
 
-int
-txn_commit_try_async(struct txn *txn)
+int txn_commit_try_async(struct txn *txn)
 {
 	struct journal_entry *req;
 
 	ERROR_INJECT(ERRINJ_TXN_COMMIT_ASYNC, {
 		diag_set(ClientError, ER_INJECTION,
-			 "txn commit async injection");
+				 "txn commit async injection");
 		goto rollback;
 	});
 
@@ -841,7 +884,8 @@ txn_commit_try_async(struct txn *txn)
 
 	bool is_sync = txn_has_flag(txn, TXN_WAIT_SYNC);
 	struct txn_limbo_entry *limbo_entry;
-	if (is_sync) {
+	if (is_sync)
+	{
 		/*
 		 * We'll need this trigger for sync transactions later,
 		 * but allocation failure is inappropriate after the entry
@@ -850,9 +894,10 @@ txn_commit_try_async(struct txn *txn)
 		size_t size;
 		struct trigger *trig =
 			region_alloc_object(&txn->region, typeof(*trig), &size);
-		if (trig == NULL) {
+		if (trig == NULL)
+		{
 			diag_set(OutOfMemory, size, "region_alloc_object",
-				 "trig");
+					 "trig");
 			goto rollback;
 		}
 
@@ -862,7 +907,8 @@ txn_commit_try_async(struct txn *txn)
 		if (limbo_entry == NULL)
 			goto rollback;
 
-		if (txn_has_flag(txn, TXN_WAIT_ACK)) {
+		if (txn_has_flag(txn, TXN_WAIT_ACK))
+		{
 			int64_t lsn = req->rows[txn->n_applier_rows - 1]->lsn;
 			/*
 			 * Can't tell whether it is local or not -
@@ -879,12 +925,13 @@ txn_commit_try_async(struct txn *txn)
 		 * WAL write failure.
 		 */
 		trigger_create(trig, txn_limbo_on_rollback,
-			       limbo_entry, NULL);
+					   limbo_entry, NULL);
 		txn_on_rollback(txn, trig);
 	}
 
 	fiber_set_txn(fiber(), NULL);
-	if (journal_write_try_async(req) != 0) {
+	if (journal_write_try_async(req) != 0)
+	{
 		fiber_set_txn(fiber(), txn);
 		diag_log();
 		goto rollback;
@@ -898,8 +945,7 @@ rollback:
 	return -1;
 }
 
-int
-txn_commit(struct txn *txn)
+int txn_commit(struct txn *txn)
 {
 	struct journal_entry *req;
 	struct txn_limbo_entry *limbo_entry = NULL;
@@ -909,7 +955,8 @@ txn_commit(struct txn *txn)
 	if (txn_prepare(txn) != 0)
 		goto rollback_abort;
 
-	if (txn_commit_nop(txn)) {
+	if (txn_commit_nop(txn))
+	{
 		txn_free(txn);
 		return 0;
 	}
@@ -924,7 +971,8 @@ txn_commit(struct txn *txn)
 	 * confirmed. Then they turn the async transaction into just a plain
 	 * txn not waiting for anything.
 	 */
-	if (txn_has_flag(txn, TXN_WAIT_SYNC)) {
+	if (txn_has_flag(txn, TXN_WAIT_SYNC))
+	{
 		/*
 		 * Remote rows, if any, come before local rows, so
 		 * check for originating instance id here.
@@ -944,12 +992,15 @@ txn_commit(struct txn *txn)
 	fiber_set_txn(fiber(), NULL);
 	if (journal_write(req) != 0)
 		goto rollback_io;
-	if (req->res < 0) {
+	if (req->res < 0)
+	{
 		diag_set_journal_res(req->res);
 		goto rollback_io;
 	}
-	if (txn_has_flag(txn, TXN_WAIT_SYNC)) {
-		if (txn_has_flag(txn, TXN_WAIT_ACK)) {
+	if (txn_has_flag(txn, TXN_WAIT_SYNC))
+	{
+		if (txn_has_flag(txn, TXN_WAIT_ACK))
+		{
 			int64_t lsn = req->rows[req->n_rows - 1]->lsn;
 			/*
 			 * Use local LSN assignment. Because
@@ -957,7 +1008,7 @@ txn_commit(struct txn *txn)
 			 * transactions only.
 			 */
 			txn_limbo_assign_local_lsn(&txn_limbo, limbo_entry,
-						   lsn);
+									   lsn);
 			/* Local WAL write is a first 'ACK'. */
 			txn_limbo_ack(&txn_limbo, txn_limbo.owner_id, lsn);
 		}
@@ -980,18 +1031,20 @@ rollback_abort:
 rollback:
 	assert(txn->signature != TXN_SIGNATURE_UNKNOWN);
 	assert(txn->fiber != NULL);
-	if (!txn_has_flag(txn, TXN_IS_DONE)) {
+	if (!txn_has_flag(txn, TXN_IS_DONE))
+	{
 		fiber_set_txn(fiber(), txn);
 		txn_rollback(txn);
-	} else {
+	}
+	else
+	{
 		assert(in_txn() == NULL);
 	}
 	txn_free(txn);
 	return -1;
 }
 
-void
-txn_rollback_stmt(struct txn *txn)
+void txn_rollback_stmt(struct txn *txn)
 {
 	if (txn == NULL || txn->in_sub_stmt == 0)
 		return;
@@ -999,8 +1052,7 @@ txn_rollback_stmt(struct txn *txn)
 	txn_rollback_to_svp(txn, txn->sub_stmt_begin[txn->in_sub_stmt]);
 }
 
-void
-txn_rollback(struct txn *txn)
+void txn_rollback(struct txn *txn)
 {
 	assert(txn == in_txn());
 	assert(txn->signature != TXN_SIGNATURE_UNKNOWN);
@@ -1012,8 +1064,7 @@ txn_rollback(struct txn *txn)
 	fiber_set_txn(fiber(), NULL);
 }
 
-void
-txn_abort(struct txn *txn)
+void txn_abort(struct txn *txn)
 {
 	assert(!diag_is_empty(diag_get()));
 	assert(txn->signature == TXN_SIGNATURE_UNKNOWN);
@@ -1021,25 +1072,27 @@ txn_abort(struct txn *txn)
 	txn_rollback(txn);
 }
 
-int
-txn_check_singlestatement(struct txn *txn, const char *where)
+int txn_check_singlestatement(struct txn *txn, const char *where)
 {
-	if (!txn_is_first_statement(txn)) {
+	if (!txn_is_first_statement(txn))
+	{
 		diag_set(ClientError, ER_MULTISTATEMENT_TRANSACTION, where);
 		return -1;
 	}
 	return 0;
 }
 
-bool
-txn_can_yield(struct txn *txn, bool set)
+bool txn_can_yield(struct txn *txn, bool set)
 {
 	assert(txn == in_txn());
 	bool could = txn_has_flag(txn, TXN_CAN_YIELD);
-	if (set && !could) {
+	if (set && !could)
+	{
 		txn_set_flags(txn, TXN_CAN_YIELD);
 		trigger_clear(&txn->fiber_on_yield);
-	} else if (!set && could) {
+	}
+	else if (!set && could)
+	{
 		txn_clear_flags(txn, TXN_CAN_YIELD);
 		trigger_create(&txn->fiber_on_yield, txn_on_yield, NULL, NULL);
 		trigger_add(&fiber()->on_yield, &txn->fiber_on_yield);
@@ -1057,16 +1110,15 @@ box_txn_id(void)
 		return -1;
 }
 
-bool
-box_txn(void)
+bool box_txn(void)
 {
 	return in_txn() != NULL;
 }
 
-int
-box_txn_begin(void)
+int box_txn_begin(void)
 {
-	if (in_txn()) {
+	if (in_txn())
+	{
 		diag_set(ClientError, ER_ACTIVE_TRANSACTION);
 		return -1;
 	}
@@ -1075,8 +1127,7 @@ box_txn_begin(void)
 	return 0;
 }
 
-int
-box_txn_commit(void)
+int box_txn_commit(void)
 {
 	struct txn *txn = in_txn();
 	/**
@@ -1084,10 +1135,11 @@ box_txn_commit(void)
 	 * a "transaction-initiating statement".
 	 * Do nothing if transaction is not started,
 	 * it's the same as BEGIN + COMMIT.
-	*/
-	if (! txn)
+	 */
+	if (!txn)
 		return 0;
-	if (txn->in_sub_stmt) {
+	if (txn->in_sub_stmt)
+	{
 		diag_set(ClientError, ER_COMMIT_IN_SUB_STMT);
 		return -1;
 	}
@@ -1096,13 +1148,13 @@ box_txn_commit(void)
 	return rc;
 }
 
-int
-box_txn_rollback(void)
+int box_txn_rollback(void)
 {
 	struct txn *txn = in_txn();
 	if (txn == NULL)
 		return 0;
-	if (txn && txn->in_sub_stmt) {
+	if (txn && txn->in_sub_stmt)
+	{
 		diag_set(ClientError, ER_ROLLBACK_IN_SUB_STMT);
 		return -1;
 	}
@@ -1117,18 +1169,20 @@ void *
 box_txn_alloc(size_t size)
 {
 	struct txn *txn = in_txn();
-	if (txn == NULL) {
+	if (txn == NULL)
+	{
 		/* There are no transaction yet - return an error. */
 		diag_set(ClientError, ER_NO_TRANSACTION);
 		return NULL;
 	}
-	union natural_align {
+	union natural_align
+	{
 		void *p;
 		double lf;
 		long l;
 	};
 	return region_aligned_alloc(&txn->region, size,
-	                            alignof(union natural_align));
+								alignof(union natural_align));
 }
 
 struct txn_savepoint *
@@ -1138,18 +1192,20 @@ txn_savepoint_new(struct txn *txn, const char *name)
 	int name_len = name != NULL ? strlen(name) : 0;
 	struct txn_savepoint *svp;
 	static_assert(sizeof(svp->name) == 1,
-		      "name member already has 1 byte for 0 termination");
+				  "name member already has 1 byte for 0 termination");
 	size_t size = sizeof(*svp) + name_len;
 	svp = (struct txn_savepoint *)region_aligned_alloc(&txn->region, size,
-							   alignof(*svp));
-	if (svp == NULL) {
+													   alignof(*svp));
+	if (svp == NULL)
+	{
 		diag_set(OutOfMemory, size, "region_aligned_alloc", "svp");
 		return NULL;
 	}
 	svp->stmt = stailq_last(&txn->stmts);
 	svp->in_sub_stmt = txn->in_sub_stmt;
 	svp->fk_deferred_count = txn->fk_deferred_count;
-	if (name != NULL) {
+	if (name != NULL)
+	{
 		/*
 		 * If savepoint with given name already exists,
 		 * erase it from the list. This has to be done
@@ -1160,7 +1216,9 @@ txn_savepoint_new(struct txn *txn, const char *name)
 		if (old_svp != NULL)
 			rlist_del(&old_svp->link);
 		memcpy(svp->name, name, name_len + 1);
-	} else {
+	}
+	else
+	{
 		svp->name[0] = 0;
 	}
 	rlist_add_entry(&txn->savepoints, svp, link);
@@ -1172,7 +1230,8 @@ txn_savepoint_by_name(struct txn *txn, const char *name)
 {
 	assert(txn == in_txn());
 	struct txn_savepoint *sv;
-	rlist_foreach_entry(sv, &txn->savepoints, link) {
+	rlist_foreach_entry(sv, &txn->savepoints, link)
+	{
 		if (strcmp(sv->name, name) == 0)
 			return sv;
 	}
@@ -1183,24 +1242,25 @@ box_txn_savepoint_t *
 box_txn_savepoint(void)
 {
 	struct txn *txn = in_txn();
-	if (txn == NULL) {
+	if (txn == NULL)
+	{
 		diag_set(ClientError, ER_NO_TRANSACTION);
 		return NULL;
 	}
 	return txn_savepoint_new(txn, NULL);
 }
 
-int
-box_txn_rollback_to_savepoint(box_txn_savepoint_t *svp)
+int box_txn_rollback_to_savepoint(box_txn_savepoint_t *svp)
 {
 	struct txn *txn = in_txn();
-	if (txn == NULL) {
+	if (txn == NULL)
+	{
 		diag_set(ClientError, ER_NO_TRANSACTION);
 		return -1;
 	}
-	struct txn_stmt *stmt = svp->stmt == NULL ? NULL :
-			stailq_entry(svp->stmt, struct txn_stmt, next);
-	if (stmt != NULL && stmt->space == NULL && stmt->row == NULL) {
+	struct txn_stmt *stmt = svp->stmt == NULL ? NULL : stailq_entry(svp->stmt, struct txn_stmt, next);
+	if (stmt != NULL && stmt->space == NULL && stmt->row == NULL)
+	{
 		/*
 		 * The statement at which this savepoint was
 		 * created has been rolled back.
@@ -1208,7 +1268,8 @@ box_txn_rollback_to_savepoint(box_txn_savepoint_t *svp)
 		diag_set(ClientError, ER_NO_SUCH_SAVEPOINT);
 		return -1;
 	}
-	if (svp->in_sub_stmt != txn->in_sub_stmt) {
+	if (svp->in_sub_stmt != txn->in_sub_stmt)
+	{
 		diag_set(ClientError, ER_NO_SUCH_SAVEPOINT);
 		return -1;
 	}
@@ -1220,16 +1281,14 @@ box_txn_rollback_to_savepoint(box_txn_savepoint_t *svp)
 	return 0;
 }
 
-void
-txn_savepoint_release(struct txn_savepoint *svp)
+void txn_savepoint_release(struct txn_savepoint *svp)
 {
 	struct txn *txn = in_txn();
 	assert(txn != NULL);
 	/* Make sure that savepoint hasn't been released yet. */
-	struct txn_stmt *stmt = svp->stmt == NULL ? NULL :
-				stailq_entry(svp->stmt, struct txn_stmt, next);
+	struct txn_stmt *stmt = svp->stmt == NULL ? NULL : stailq_entry(svp->stmt, struct txn_stmt, next);
 	assert(stmt == NULL || (stmt->space != NULL && stmt->row != NULL));
-	(void) stmt;
+	(void)stmt;
 	/*
 	 * Discard current savepoint alongside with all
 	 * created after it savepoints.
@@ -1241,8 +1300,8 @@ txn_savepoint_release(struct txn_savepoint *svp)
 static int
 txn_on_stop(struct trigger *trigger, void *event)
 {
-	(void) trigger;
-	(void) event;
+	(void)trigger;
+	(void)event;
 	struct txn *txn = in_txn();
 	assert(txn->signature == TXN_SIGNATURE_UNKNOWN);
 	txn->signature = TXN_SIGNATURE_ROLLBACK;
@@ -1271,8 +1330,8 @@ txn_on_stop(struct trigger *trigger, void *event)
 static int
 txn_on_yield(struct trigger *trigger, void *event)
 {
-	(void) trigger;
-	(void) event;
+	(void)trigger;
+	(void)event;
 	struct txn *txn = in_txn();
 	assert(txn != NULL);
 	assert(!txn_has_flag(txn, TXN_CAN_YIELD));
