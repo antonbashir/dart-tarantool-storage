@@ -101,4 +101,5 @@
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",
+    "git.autoRepositoryDetection": false
 }
