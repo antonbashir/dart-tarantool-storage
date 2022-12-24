@@ -29,7 +29,6 @@ class Storage {
   void boot(BootstrapScript script, MessageLoopConfiguration loopConfiguration) {
     if (initialized()) return;
     final nativeConfiguration = loopConfiguration.native();
-    print(script.write());
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
       script.write().toNativeUtf8().cast(),
