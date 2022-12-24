@@ -19,7 +19,7 @@ void main() {
   final luaRoot = Directory(root.toFilePath() + luaDirectory);
   if (!luaRoot.existsSync()) luaRoot.createSync();
   copyHeaders(packageNativeRoot, nativeRoot);
-  copyLuaScrits(packageNativeRoot, packageLuaRoot);
+  copyLuaScrits(packageLuaRoot, luaRoot);
 }
 
 void copyHeaders(Directory packageNativeRoot, Directory nativeRoot) {
