@@ -43,7 +43,7 @@ file(GLOB TEST_SOURCES
 )
 
 add_library(tarantool_binding SHARED ${SOURCES})
-add_dependencies(tarantool_binding ck)
+add_dependencies(tarantool_binding ck api)
 set_target_properties(tarantool_binding PROPERTIES COMPILE_FLAGS "-fPIC")
 target_link_libraries(tarantool_binding PUBLIC tarantool_library ${ck_SOURCE_DIR}/build/lib/libck.a)
 add_custom_command(TARGET tarantool_binding POST_BUILD
