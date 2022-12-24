@@ -227,33 +227,9 @@ set (PACKAGE_VERSION "")
 set (TARANTOOL_VERSION "")
 
 # Try to get version from VERSION file
-set(VERSION_FILE_ORIG "${PROJECT_SOURCE_DIR}/VERSION")
-set(VERSION_FILE "${PROJECT_BINARY_DIR}/VERSION")
-if (EXISTS "${VERSION_FILE_ORIG}")
-    file (STRINGS "${VERSION_FILE_ORIG}" TARANTOOL_VERSION)
-elseif (EXISTS "${VERSION_FILE}")
-    file (STRINGS "${VERSION_FILE}" TARANTOOL_VERSION)
-endif()
-
-# Get git version only if source directory has .git repository, this
-# avoids git to search .git repository in parent
-# directories.
-#
-if (EXISTS "${CMAKE_SOURCE_DIR}/.git" AND GIT)
-    execute_process (COMMAND ${GIT} describe --long HEAD
-        OUTPUT_VARIABLE TARANTOOL_GIT_VERSION
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-
-    if (NOT ("${TARANTOOL_GIT_VERSION}" STREQUAL "${TARANTOOL_VERSION}"))
-        set(TARANTOOL_VERSION "${TARANTOOL_GIT_VERSION}")
-        message(STATUS "Generating VERSION file")
-        file(WRITE ${VERSION_FILE} "${TARANTOOL_VERSION}\n")
-
-        update_submodules()
-    endif()
-endif()
-
+set(VERSION_FILE "${PROJECT_SOURCE_DIR}/VERSION")
+file (STRINGS "${VERSION_FILE}" TARANTOOL_VERSION)
+update_submodules()
 if (NOT TARANTOOL_VERSION)
     message (FATAL_ERROR "Unable to retrive version from git or ${VERSION_FILE} file.")
 endif()
