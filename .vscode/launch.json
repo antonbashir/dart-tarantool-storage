@@ -17,9 +17,6 @@
           "value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
         },
       ],
-      "osx": {
-        "MIMode": "lldb",
-      },
       "MIMode": "gdb",
       "setupCommands": [
         {
@@ -39,30 +36,5 @@
       "cwd": "${workspaceFolder}/binding/dart",
       "preLaunchTask": "dart-benchmark-build"
     },
-    {
-      "name": "tarantool-debug",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${command:cmake.launchTargetPath}",
-      "args": [
-        "${cwd}/runner.lua"
-      ],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
-        {
-          "name": "PATH",
-          "value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
-        },
-      ],
-      "MIMode": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    }
   ]
 }
