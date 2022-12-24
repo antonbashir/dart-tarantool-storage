@@ -28,6 +28,8 @@ TestAndAppendFLag(CMAKE_C_FLAGS -Wno-tautological-compare)
 TestAndAppendFLag(CMAKE_C_FLAGS -Wno-misleading-indentation)
 TestAndAppendFLag(CMAKE_C_FLAGS -Wno-varargs)
 TestAndAppendFLag(CMAKE_C_FLAGS -Wno-implicit-fallthrough)
+TestAndAppendFLag(CMAKE_C_FLAGS -fPIC)
+add_compile_options("-fPIC")
 
 set(BUILDMODE static CACHE STRING
     "Build mode: build only static lib" FORCE)
