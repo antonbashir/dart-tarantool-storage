@@ -30,10 +30,10 @@ void copyHeaders(Directory packageNativeRoot, Directory nativeRoot) {
       .forEach((element) => element.copySync(nativeRoot.path + slash + basename(element.path)));
 }
 
-void copyLuaScrits(Directory packageNativeRoot, Directory packageLuaRoot) {
+void copyLuaScrits(Directory packageLuaRoot, Directory luaRoot) {
   packageLuaRoot
       .listSync()
       .whereType<File>()
       .where((element) => extension(element.path) == dot + luaExtension)
-      .forEach((element) => element.copySync(packageLuaRoot.path + slash + basename(element.path)));
+      .forEach((element) => element.copySync(luaRoot.path + slash + basename(element.path)));
 }
