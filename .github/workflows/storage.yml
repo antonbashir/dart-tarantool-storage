@@ -31,6 +31,3 @@ jobs:
 
       - name: Run tests
         run: cd binding/dart && dart compile exe test/test.dart && ./test/test.exe
-
-      - name: Run benchmark
-        run: cd binding/dart && dart compile exe test/benchmark.dart && ./test/benchmark.exe
