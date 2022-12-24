@@ -1,0 +1,11 @@
+.xlog exists
+_ = box.schema.space.create('test')
+---
+...
+_ = box.schema.space.create('test')
+---
+- error: Space 'test' already exists
+...
+box.space.test:drop()
+---
+...

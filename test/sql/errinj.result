@@ -1,0 +1,537 @@
+remote = require('net.box')
+---
+...
+test_run = require('test_run').new()
+---
+...
+engine = test_run:get_cfg('engine')
+---
+...
+_ = box.space._session_settings:update('sql_default_engine', {{'=', 2, engine}})
+---
+...
+errinj = box.error.injection
+---
+...
+fiber = require('fiber')
+---
+...
+-- gh-3924 Check that tuple_formats of ephemeral spaces are
+-- reused.
+box.execute("CREATE TABLE t4 (id INTEGER PRIMARY KEY, a INTEGER);")
+---
+- row_count: 1
+...
+box.execute("INSERT INTO t4 VALUES (1,1)")
+---
+- row_count: 1
+...
+box.execute("INSERT INTO t4 VALUES (2,1)")
+---
+- row_count: 1
+...
+box.execute("INSERT INTO t4 VALUES (3,2)")
+---
+- row_count: 1
+...
+errinj.set('ERRINJ_TUPLE_FORMAT_COUNT', 200)
+---
+- ok
+...
+errinj.set('ERRINJ_MEMTX_DELAY_GC', true)
+---
+- ok
+...
+for i = 1, 201 do box.execute("SELECT DISTINCT a FROM t4") end
+---
+...
+errinj.set('ERRINJ_MEMTX_DELAY_GC', false)
+---
+- ok
+...
+errinj.set('ERRINJ_TUPLE_FORMAT_COUNT', -1)
+---
+- ok
+...
+box.execute('DROP TABLE t4')
+---
+- row_count: 1
+...
+box.execute('create table test (id int primary key, a NUMBER, b text)')
+---
+- row_count: 1
+...
+box.schema.user.grant('guest','read,write,execute', 'universe')
+---
+...
+cn = remote.connect(box.cfg.listen)
+---
+...
+cn:ping()
+---
+- true
+...
+-- gh-2601 iproto messages are corrupted
+errinj = box.error.injection
+---
+...
+fiber = require('fiber')
+---
+...
+errinj.set("ERRINJ_WAL_DELAY", true)
+---
+- ok
+...
+insert_res = nil
+---
+...
+select_res = nil
+---
+...
+function execute_yield() insert_res = cn:execute("insert into test values (100, 1, '1')") end
+---
+...
+function execute_notyield() select_res = cn:execute('select 1') end
+---
+...
+f1 = fiber.create(execute_yield)
+---
+...
+while f1:status() ~= 'suspended' do fiber.sleep(0) end
+---
+...
+f2 = fiber.create(execute_notyield)
+---
+...
+while f2:status() ~= 'dead' do fiber.sleep(0) end
+---
+...
+errinj.set("ERRINJ_WAL_DELAY", false)
+---
+- ok
+...
+while f1:status() ~= 'dead' do fiber.sleep(0) end
+---
+...
+insert_res
+---
+- row_count: 1
+...
+select_res
+---
+- metadata:
+  - name: COLUMN_1
+    type: integer
+  rows:
+  - [1]
+...
+cn:close()
+---
+...
+box.execute('drop table test')
+---
+- row_count: 1
+...
+--
+-- gh-3326: after the iproto start using new buffers rotation
+-- policy, SQL responses could be corrupted, when DDL/DML is mixed
+-- with DQL. Same as gh-3255.
+--
+box.execute('CREATE TABLE test (id integer primary key)')
+---
+- row_count: 1
+...
+cn = remote.connect(box.cfg.listen)
+---
+...
+ch = fiber.channel(200)
+---
+...
+errinj.set("ERRINJ_IPROTO_TX_DELAY", true)
+---
+- ok
+...
+for i = 1, 100 do fiber.create(function() for j = 1, 10 do cn:execute('REPLACE INTO test VALUES (1)') end ch:put(true) end) end
+---
+...
+for i = 1, 100 do fiber.create(function() for j = 1, 10 do cn.space.TEST:get{1} end ch:put(true) end) end
+---
+...
+for i = 1, 200 do ch:get() end
+---
+...
+errinj.set("ERRINJ_IPROTO_TX_DELAY", false)
+---
+- ok
+...
+box.execute('DROP TABLE test')
+---
+- row_count: 1
+...
+box.schema.user.revoke('guest', 'read,write,execute', 'universe')
+---
+...
+----
+---- gh-3273: Move SQL TRIGGERs into server.
+----
+box.execute("CREATE TABLE t1(id INTEGER PRIMARY KEY, a INTEGER);");
+---
+- row_count: 1
+...
+box.execute("CREATE TABLE t2(id INTEGER PRIMARY KEY, a INTEGER);");
+---
+- row_count: 1
+...
+box.error.injection.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+box.execute("CREATE TRIGGER t1t INSERT ON t1 FOR EACH ROW BEGIN INSERT INTO t2 VALUES (1, 1); END;")
+---
+- null
+- Failed to write to disk
+...
+box.execute("CREATE INDEX t1a ON t1(a);")
+---
+- null
+- Failed to write to disk
+...
+box.error.injection.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+box.execute("CREATE TRIGGER t1t INSERT ON t1 FOR EACH ROW BEGIN INSERT INTO t2 VALUES (1, 1); END;")
+---
+- row_count: 1
+...
+box.execute("INSERT INTO t1 VALUES (3, 3);")
+---
+- row_count: 1
+...
+box.execute("SELECT * from t1");
+---
+- metadata:
+  - name: ID
+    type: integer
+  - name: A
+    type: integer
+  rows:
+  - [3, 3]
+...
+box.execute("SELECT * from t2");
+---
+- metadata:
+  - name: ID
+    type: integer
+  - name: A
+    type: integer
+  rows:
+  - [1, 1]
+...
+box.error.injection.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+t = box.space._trigger:get('T1T')
+---
+...
+t_new = t:totable()
+---
+...
+t_new[3]['sql'] = 'CREATE TRIGGER t1t INSERT ON t1 FOR EACH ROW BEGIN INSERT INTO t2 VALUES (2, 2); END;'
+---
+...
+_ = box.space._trigger:replace(t, t_new)
+---
+- error: Failed to write to disk
+...
+box.error.injection.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+_ = box.space._trigger:replace(t, t_new)
+---
+...
+box.error.injection.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+box.execute("DROP TRIGGER t1t;")
+---
+- null
+- Failed to write to disk
+...
+box.error.injection.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+box.execute("DELETE FROM t1;")
+---
+- row_count: 1
+...
+box.execute("DELETE FROM t2;")
+---
+- row_count: 1
+...
+box.execute("INSERT INTO t1 VALUES (3, 3);")
+---
+- row_count: 1
+...
+box.execute("SELECT * from t1");
+---
+- metadata:
+  - name: ID
+    type: integer
+  - name: A
+    type: integer
+  rows:
+  - [3, 3]
+...
+box.execute("SELECT * from t2");
+---
+- metadata:
+  - name: ID
+    type: integer
+  - name: A
+    type: integer
+  rows:
+  - [1, 1]
+...
+box.execute("DROP TABLE t1;")
+---
+- row_count: 1
+...
+box.execute("DROP TABLE t2;")
+---
+- row_count: 1
+...
+-- Tests which are aimed at verifying work of commit/rollback
+-- triggers on _fk_constraint space.
+--
+box.execute("CREATE TABLE t3 (id NUMBER PRIMARY KEY, a INT REFERENCES t3, b INT UNIQUE);")
+---
+- row_count: 1
+...
+t = box.space._fk_constraint:select{}[1]:totable()
+---
+...
+errinj = box.error.injection
+---
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+-- Make constraint reference B field instead of id.
+t[9] = {2}
+---
+...
+box.space._fk_constraint:replace(t)
+---
+- error: Failed to write to disk
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+box.execute("INSERT INTO t3 VALUES (1, 2, 2);")
+---
+- null
+- 'Failed to execute SQL statement: FOREIGN KEY constraint failed'
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+box.execute("ALTER TABLE t3 ADD CONSTRAINT fk1 FOREIGN KEY (b) REFERENCES t3;")
+---
+- null
+- Failed to write to disk
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+box.execute("INSERT INTO t3 VALUES(1, 1, 3);")
+---
+- row_count: 1
+...
+box.execute("DELETE FROM t3;")
+---
+- row_count: 1
+...
+box.snapshot()
+---
+- ok
+...
+box.execute("ALTER TABLE t3 ADD CONSTRAINT fk1 FOREIGN KEY (b) REFERENCES t3;")
+---
+- row_count: 1
+...
+box.execute("INSERT INTO t3 VALUES(1, 1, 3);")
+---
+- null
+- 'Failed to execute SQL statement: FOREIGN KEY constraint failed'
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+box.execute("ALTER TABLE t3 DROP CONSTRAINT fk1;")
+---
+- null
+- Failed to write to disk
+...
+box.execute("INSERT INTO t3 VALUES(1, 1, 3);")
+---
+- null
+- 'Failed to execute SQL statement: FOREIGN KEY constraint failed'
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+box.execute("DROP TABLE t3;")
+---
+- row_count: 1
+...
+--
+-- Tests which are aimed at verifying work of commit/rollback
+-- triggers on _ck_constraint space.
+--
+s = box.schema.space.create('test', {format = {{name = 'X', type = 'unsigned'}}})
+---
+...
+pk = box.space.test:create_index('pk')
+---
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+_ = box.space._ck_constraint:insert({s.id, 'CK_CONSTRAINT_01', false, 'SQL', 'X<5', true})
+---
+- error: Failed to write to disk
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+_ = box.space._ck_constraint:insert({s.id, 'CK_CONSTRAINT_01', false, 'SQL', 'X<5', true})
+---
+...
+box.execute("INSERT INTO \"test\" VALUES(5);")
+---
+- null
+- 'Check constraint failed ''CK_CONSTRAINT_01'': X<5'
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+_ = box.space._ck_constraint:replace({s.id, 'CK_CONSTRAINT_01', false, 'SQL', 'X<=5', true})
+---
+- error: Failed to write to disk
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+_ = box.space._ck_constraint:replace({s.id, 'CK_CONSTRAINT_01', false, 'SQL', 'X<=5', true})
+---
+...
+box.execute("INSERT INTO \"test\" VALUES(5);")
+---
+- row_count: 1
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+_ = box.space._ck_constraint:delete({s.id, 'CK_CONSTRAINT_01'})
+---
+- error: Failed to write to disk
+...
+box.execute("INSERT INTO \"test\" VALUES(6);")
+---
+- null
+- 'Check constraint failed ''CK_CONSTRAINT_01'': X<=5'
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+_ = box.space._ck_constraint:delete({s.id, 'CK_CONSTRAINT_01'})
+---
+...
+box.execute("INSERT INTO \"test\" VALUES(6);")
+---
+- row_count: 1
+...
+s:drop()
+---
+...
+--
+-- Test that failed space alter doesn't harm ck constraints
+--
+s = box.schema.create_space('test')
+---
+...
+_ = s:create_index('pk')
+---
+...
+s:format({{name='X', type='integer'}, {name='Y', type='integer'}})
+---
+...
+_ = box.space._ck_constraint:insert({s.id, 'XlessY', false, 'SQL', 'X < Y', true})
+---
+...
+_ = box.space._ck_constraint:insert({s.id, 'Xgreater10', false, 'SQL', 'X > 10', true})
+---
+...
+box.execute("INSERT INTO \"test\" VALUES(1, 2);")
+---
+- null
+- 'Check constraint failed ''Xgreater10'': X > 10'
+...
+box.execute("INSERT INTO \"test\" VALUES(20, 10);")
+---
+- null
+- 'Check constraint failed ''XlessY'': X < Y'
+...
+box.execute("INSERT INTO \"test\" VALUES(20, 100);")
+---
+- row_count: 1
+...
+s:truncate()
+---
+...
+errinj.set("ERRINJ_WAL_IO", true)
+---
+- ok
+...
+s:format({{name='Y', type='integer'}, {name='X', type='integer'}})
+---
+- error: Failed to write to disk
+...
+errinj.set("ERRINJ_WAL_IO", false)
+---
+- ok
+...
+box.execute("INSERT INTO \"test\" VALUES(1, 2);")
+---
+- null
+- 'Check constraint failed ''Xgreater10'': X > 10'
+...
+box.execute("INSERT INTO \"test\" VALUES(20, 10);")
+---
+- null
+- 'Check constraint failed ''XlessY'': X < Y'
+...
+box.execute("INSERT INTO \"test\" VALUES(20, 100);")
+---
+- row_count: 1
+...
+s:drop()
+---
+...

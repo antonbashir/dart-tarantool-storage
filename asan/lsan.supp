@@ -1,0 +1,75 @@
+# All exceptions are under control of the issue:
+# https://github.com/tarantool/tarantool/issues/4360
+#
+# File format:
+#leak:*
+
+# test: app/crypto.test.lua
+# source: /usr/lib/x86_64-linux-gnu/libcrypto.so
+leak:CRYPTO_zalloc
+
+# test: all (feedback demon fails using cURL)
+# https://github.com/tarantool/tarantool-qa/issues/116
+# source: /lib/x86_64-linux-gnu/libcrypto.so
+leak:libcrypto.so*
+# source: /lib/x86_64-linux-gnu/libssl.so
+leak:libssl.so*
+
+# test: app-tap/http_client.test.lua
+# source: src/tarantool
+leak:Curl_setstropt
+leak:create_conn
+leak:Curl_conncache_add_conn
+leak:Curl_cache_addr
+leak:Curl_hash_init
+leak:Curl_hash_add
+leak:Curl_he2ai
+leak:Curl_open
+leak:Curl_resolver_init
+
+# test: app-tap/iconv.test.lua
+# source: /usr/lib/x86_64-linux-gnu/gconv/UTF-16.so
+leak:gconv_init
+
+# XXX: All warnings reported for LuaJIT runtime are considered
+# false positive until sanitizers support is not introduced in
+# LuaJIT. See the issue below for more info.
+# https://github.com/tarantool/tarantool/issues/5878
+# source: third_party/luajit
+leak:lj_*
+
+# test: box/access.test.lua
+# test: box/access_bin.test.lua
+# test: box/access_misc.test.lua
+# source: src/box/error.cc
+leak:AccessDeniedError::AccessDeniedError
+
+# test: box/bitset.test.lua
+# source: src/lib/bitset/iterator.c
+leak:tt_bitset_iterator_init
+
+# test: box-py/args.test.py
+# source: /lib/x86_64-linux-gnu/libc.so*
+leak:libc.so*
+
+# test: box-tap/schema_mt.test.lua
+# source: src/lib/salad/mhash.h
+leak:mh_i32ptr_new
+
+# test: replication/gh-3637-misc-error-on-replica-auth-fail.test.lua
+# source: src/lib/core/coio_task.c
+leak:coio_on_call
+# source: src/lib/salad/mhash.h
+leak:mh_i64ptr_new
+
+# test: sql-tap/gh2250-trigger-chain-limit.test.lua
+# source: src/lib/core/exception.cc
+leak:Exception::operator new
+
+# test: vinyl/errinj.test.lua
+# source: src/lib/core/fiber.h
+leak:fiber_cxx_invoke
+
+# test: vinyl/recover.test.lua
+# source: src/lib/core/fiber.c
+leak:cord_costart_thread_func
