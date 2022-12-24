@@ -1,0 +1,38 @@
+name: Dart Tarantool Storage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1.3
+      - uses: jwlawson/actions-setup-cmake@v1.13
+        with:
+          cmake-version: '3.16.x'
+
+      - name: Setup
+        run: sudo apt-get -y install git build-essential cmake make zlib1g-dev \
+  libreadline-dev libncurses5-dev libssl-dev libunwind-dev libicu-dev \
+  python3 python3-yaml python3-six python3-gevent
+
+      - name: Native configure
+        run: cmake -DCMAKE_BUILD_TYPE=RELEASE --target tarantool_binding .
+
+      - name: Native build
+        run: make
+
+      - name: Dart dependencies
+        run: cd binding/dart && dart pub get
+
+      - name: Run tests
+        run: cd binding/dart && dart compile exe test/test.dart && ./test/test.exe
+
+      - name: Run benchmark
+        run: cd binding/dart && dart compile exe test/benchmark.dart && ./test/benchmark.exe
