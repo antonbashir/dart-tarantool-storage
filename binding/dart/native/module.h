@@ -68,7 +68,7 @@ extern "C" {
  * A string with major-minor-patch-commit-id identifier of the
  * release, e.g. 1.6.6-113-g8399d0e.
  */
-#define PACKAGE_VERSION "2.8.4-4-g775d91d"
+#define PACKAGE_VERSION "2.8.4-0-g473313f"
 
 /** \endcond public */
 /** \cond public */

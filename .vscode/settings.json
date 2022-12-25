@@ -97,7 +97,9 @@
       "sstream": "c",
       "on_shutdown.h": "c",
       "dart_native_api.h": "c",
-      "module.h": "c"
+      "module.h": "c",
+      "lua.h": "c",
+      "luaconf.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",

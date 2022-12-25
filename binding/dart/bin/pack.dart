@@ -10,7 +10,6 @@ Future<void> main(List<String> args) async {
     print('Specify dart execution entry point');
     exit(1);
   }
-  ;
   final root = Directory.current.uri;
   final entryPoint = File(args[0]);
   if (!entryPoint.existsSync()) {

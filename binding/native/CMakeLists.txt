@@ -53,6 +53,12 @@ add_custom_command(TARGET tarantool_binding POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/module.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/module.h
 )
 add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/lua.h
+)
+add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/third_party/luajit/src/luaconf.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/luaconf.h
+)
+add_custom_command(TARGET tarantool_binding POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/msgpuck.h
 )
 add_custom_command(TARGET tarantool_binding POST_BUILD
