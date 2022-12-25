@@ -177,10 +177,10 @@ Future<void> testMultiIsolate() async {
   for (var i = 0; i < count; i++) {
     ReceivePort port = ReceivePort();
     Isolate.spawn((message) async {
-      final space = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName").executor().spaceByName("test");
+      final executor = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName").executor();
       final element = [...testSingleData]..[0] = i + 1;
       data.add(element);
-      await space.insert(element);
+      await executor.transactional((executor) => executor.spaceByName("test").then((space) => space.insert(element)));
     }, null, onExit: port.sendPort);
     ports.add(port);
   }
