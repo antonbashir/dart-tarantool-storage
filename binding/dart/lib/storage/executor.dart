@@ -24,7 +24,7 @@ class StorageExecutor {
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<void> transactional(void Function<T>(StorageExecutor executor) function) => _begin()
+  Future<void> transactional(void Function(StorageExecutor executor) function) => _begin()
       .then((_) {
         _transactional = true;
         function(this);
