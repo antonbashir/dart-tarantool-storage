@@ -131,16 +131,19 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       {
         tarantool_begin();
         transactional_backoff = CK_BACKOFF_INITIALIZER;
+        continue;
       }
 
       if (message->type == TARANTOOL_MESSAGE_ROLLBACK)
       {
         tarantool_rollback();
+        continue;
       }
 
       if (message->type == TARANTOOL_MESSAGE_COMMIT)
       {
         tarantool_commit();
+        continue;
       }
 
       if (unlikely(message->type == TARANTOOL_MESSAGE_STOP))
