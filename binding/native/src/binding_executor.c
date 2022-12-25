@@ -10,6 +10,8 @@
 #include "ck_backoff.h"
 #include "dart/dart_api_dl.h"
 
+#define MESSAGE_BUFFER_ERROR "Failed to allocate message ring buffer"
+
 static ck_ring_buffer_t *tarantool_message_buffer;
 static ck_ring_t tarantool_message_ring;
 static volatile bool active = false;
@@ -26,23 +28,7 @@ static inline void tarantool_message_handle_call(tarantool_message_t *message)
 {
   message->output = message->function(message->input);
   struct error *error = diag_last_error(diag_get());
-  if (unlikely(error))
-  {
-    if (message->transactional)
-    {
-      tarantool_rollback();
-      if (likely(message->callback_handle))
-      {
-        dart_post_pointer(message, message->callback_send_port);
-      }
-      return;
-    }
-  }
-
-  if (likely(message->callback_handle))
-  {
-    dart_post_pointer(message, message->callback_send_port);
-  }
+  dart_post_pointer(message, message->callback_send_port);
 }
 
 static inline void tarantool_message_handle_batch(tarantool_message_t *message)
@@ -66,18 +52,12 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
     if (message->transactional)
     {
       tarantool_rollback();
-      if (likely(message->callback_handle))
-      {
-        dart_post_pointer(message, message->callback_send_port);
-      }
+      dart_post_pointer(message, message->callback_send_port);
       return;
     }
   }
 
-  if (likely(message->callback_handle))
-  {
-    dart_post_pointer(message, message->callback_send_port);
-  }
+  dart_post_pointer(message, message->callback_send_port);
 }
 
 static inline void tarantool_message_handle(tarantool_message_t *message)
@@ -97,30 +77,21 @@ static inline void tarantool_message_handle(tarantool_message_t *message)
   if (message->type == TARANTOOL_MESSAGE_BEGIN)
   {
     tarantool_begin();
-    if (likely(message->callback_handle))
-    {
-      dart_post_pointer(message, message->callback_send_port);
-    }
+    dart_post_pointer(message, message->callback_send_port);
     return;
   }
 
   if (message->type == TARANTOOL_MESSAGE_ROLLBACK)
   {
     tarantool_rollback();
-    if (likely(message->callback_handle))
-    {
-      dart_post_pointer(message, message->callback_send_port);
-    }
+    dart_post_pointer(message, message->callback_send_port);
     return;
   }
 
   if (message->type == TARANTOOL_MESSAGE_COMMIT)
   {
     tarantool_commit();
-    if (likely(message->callback_handle))
-    {
-      dart_post_pointer(message, message->callback_send_port);
-    }
+    dart_post_pointer(message, message->callback_send_port);
     return;
   }
 }
@@ -130,12 +101,10 @@ void tarantool_message_loop_initialize(tarantool_message_loop_configuration_t *c
   tarantool_message_buffer = malloc(sizeof(ck_ring_buffer_t) * configuration->message_loop_ring_size);
   if (tarantool_message_buffer == NULL)
   {
-    say_crit("Failed to allocate message ring buffer");
+    say_crit(MESSAGE_BUFFER_ERROR);
     return;
   }
-
   ck_ring_init(&tarantool_message_ring, configuration->message_loop_ring_size);
-
   active = true;
 }
 
@@ -200,10 +169,7 @@ bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback)
   {
     return false;
   }
-  if (likely(callback))
-  {
-    message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
-  }
+  message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
   return ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
 }
 
@@ -220,7 +186,7 @@ void tarantool_message_loop_stop()
 {
   tarantool_message_t *message = malloc(sizeof(tarantool_message_t));
   message->type = TARANTOOL_MESSAGE_STOP;
-  tarantool_send_message(message, NULL);
+  ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
 }
 
 bool tarantool_message_loop_active()

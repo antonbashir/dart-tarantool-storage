@@ -126,7 +126,6 @@ class StorageExecutor {
 
   Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
     if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
-    message.ref.transactional = _transactional;
     message.ref.callback_send_port = _nativePort;
     final completer = Completer<Pointer<tarantool_message_t>>();
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
