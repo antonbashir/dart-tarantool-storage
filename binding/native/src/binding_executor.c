@@ -28,12 +28,6 @@ static inline void tarantool_message_handle_call(tarantool_message_t *message)
   struct error *error = diag_last_error(diag_get());
   if (unlikely(error))
   {
-    error_log(error);
-    diag_clear(diag_get());
-  }
-
-  if (unlikely(error))
-  {
     if (message->transactional)
     {
       tarantool_rollback();
@@ -180,7 +174,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       {
         tarantool_message_handle(message);
       }
-      
+
       break;
     }
 
@@ -212,10 +206,7 @@ bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback)
   {
     return false;
   }
-  if (likely(callback))
-  {
-    message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
-  }
+  message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
   return ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
 }
 
