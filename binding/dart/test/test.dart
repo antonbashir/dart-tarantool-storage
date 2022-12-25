@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/constants.dart';
@@ -129,6 +130,7 @@ void main() {
   });
 
   test("pairs iterator", testIterator);
+  test("multi isolate", testIterator);
 }
 
 Future<void> testExecuteLua() async {
@@ -166,4 +168,22 @@ Future<void> testIterator() async {
     await (await _space.iterator()).collect(map: (value) => value[2], filter: (value) => value[0] != 3, offset: 1, limit: 3),
     equals(testMultipleData.where((element) => element[0] != 3).skip(1).take(2).map((data) => data[2]).toList()),
   );
+}
+
+Future<void> testMultiIsolate() async {
+  final count = 100;
+  final ports = <ReceivePort>[];
+  final data = [];
+  for (var i = 0; i < count; i++) {
+    ReceivePort port = ReceivePort();
+    Isolate.spawn((message) async {
+      final space = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName").executor().spaceByName("test");
+      final element = [...testSingleData]..[0] = i + 1;
+      data.add(element);
+      await space.insert(element);
+    }, null, onExit: port.sendPort);
+    ports.add(port);
+  }
+  await Future.wait(ports.map((port) => port.first));
+  expect(await _space.select(), equals(data));
 }
