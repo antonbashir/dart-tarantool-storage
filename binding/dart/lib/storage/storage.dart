@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'bindings.dart';
 import 'configuration.dart';
+import 'constants.dart';
 import 'lookup.dart';
 import 'script.dart';
 
@@ -42,6 +43,12 @@ class Storage {
   bool initialized() => _bindings.tarantool_initialized();
 
   bool immutable() => _bindings.tarantool_is_read_only();
+
+  Future<void> awaitInitialized() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !initialized()));
+
+  Future<void> awaitImmutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !immutable()));
+
+  Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !mutable()));
 
   void shutdown() {
     _bindings.tarantool_shutdown(0);

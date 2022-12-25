@@ -25,6 +25,8 @@ const boxCfgPrefix = "box.cfg{";
 
 const int32Max = 4294967295;
 const batchInitiaSize = 512;
+const awaitStateDuration = Duration(seconds: 1);
+const awaitTransactionDuration = Duration(milliseconds: 1);
 
 const packageConfigJsonFile = "package_config.json";
 
@@ -87,6 +89,10 @@ extension UpdateOperationTypeExtension on UpdateOperationType {
   }
 }
 
-String luaRequireScript(String module) => """require '$module'""";
-String luaExtendPackagePathScript(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";
-String luaExtendPackageNativePathScript(String extension) => """package.cpath = package.cpath .. ';${extension + "/?.so"}'""";
+String requireluaScript(String module) => """require '$module'""";
+String extendPackagePathluaScript(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";
+String extendPackageNativePathluaScript(String extension) => """package.cpath = package.cpath .. ';${extension + "/?.so"}'""";
+
+const startBackupLuaScript = "box.backup.start()";
+const stopBackupLuaScript = "box.backup.start()";
+const promoteLuaScript = "box.ctl.promote()";
