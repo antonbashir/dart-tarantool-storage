@@ -24,28 +24,28 @@ class StorageExecutor {
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<void> transactional(T Function<T>(StorageExecutor executor) function) => begin()
+  Future<void> transactional(T Function<T>(StorageExecutor executor) function) => _begin()
       .then((_) {
         _transactional = true;
         function(this);
         _transactional = false;
       })
-      .then((_) => commit())
-      .catchError((error, stackTrace) => rollback());
+      .then((_) => _commit())
+      .catchError((error, stackTrace) => _rollback());
 
-  Future<void> begin() => using((Arena arena) {
+  Future<void> _begin() => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
         return sendSingle(message);
       });
 
-  Future<void> commit() => using((Arena arena) {
+  Future<void> _commit() => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
         return sendSingle(message);
       });
 
-  Future<void> rollback() => using((Arena arena) {
+  Future<void> _rollback() => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
         return sendSingle(message);
