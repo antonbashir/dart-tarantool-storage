@@ -129,7 +129,9 @@ class StorageExecutor {
     message.ref.transactional = _transactional;
     message.ref.callback_send_port = _nativePort;
     final completer = Completer<Pointer<tarantool_message_t>>();
-    _bindings.tarantool_send_message(message, completer.complete);
+    if (!_bindings.tarantool_send_message(message, completer.complete)) {
+      completer.completeError(StorageRequestsLimitException(), StackTrace.current);
+    }
     return completer.future.then((value) => value.ref.output);
   }
 
@@ -137,7 +139,9 @@ class StorageExecutor {
     if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
     message.ref.callback_send_port = _nativePort;
     final completer = Completer<Pointer<tarantool_message_t>>();
-    _bindings.tarantool_send_message(message, completer.complete);
+    if (!_bindings.tarantool_send_message(message, completer.complete)) {
+      completer.completeError(StorageRequestsLimitException(), StackTrace.current);
+    }
     return completer.future;
   }
 

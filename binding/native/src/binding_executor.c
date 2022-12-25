@@ -148,7 +148,6 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
   double max_sleep_seconds = configuration->message_loop_max_sleep_seconds;
   int current_empty_cycles = 0;
   int curent_empty_cycles_limit = initial_empty_cycles;
-  ck_backoff_t transactional_backoff = CK_BACKOFF_INITIALIZER;
 
   while (likely(active))
   {
@@ -158,13 +157,9 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       current_empty_cycles = 0;
       curent_empty_cycles_limit = initial_empty_cycles;
 
-      if (message->type != TARANTOOL_MESSAGE_STOP)
+      if (likely(message->type != TARANTOOL_MESSAGE_STOP))
       {
         tarantool_message_handle(message);
-        if (message->type == TARANTOOL_MESSAGE_BEGIN)
-        {
-          transactional_backoff = transactional_backoff;
-        }
         continue;
       }
 
@@ -180,7 +175,6 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
 
     if (tarantool_in_transaction())
     {
-      ck_backoff_eb(&transactional_backoff);
       continue;
     }
 
@@ -206,7 +200,10 @@ bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback)
   {
     return false;
   }
-  message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
+  if (likely(callback))
+  {
+    message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
+  }
   return ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
 }
 

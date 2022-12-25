@@ -81,6 +81,6 @@ Future<void> benchBatch() async {
 Future<void> benchIterator() async {
   final stopwatch = Stopwatch();
   stopwatch.start();
-  await _executor.transactional((executor) async => await (await _space.iterator()).collect());
+  await _space.iterator().then((value) => value.collect());
   print("Iterator collect seconds: ${stopwatch.elapsedMilliseconds / 1000}");
 }

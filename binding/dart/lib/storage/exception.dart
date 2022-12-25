@@ -1,2 +1,3 @@
-class StorageQueueLimitException implements Exception {}
+class StorageRequestsLimitException implements Exception {}
+
 class StorageShutdownException implements Exception {}
