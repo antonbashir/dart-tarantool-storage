@@ -23,8 +23,7 @@ void main() {
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });
-    _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
-      ..boot(BootstrapScript(defaultStorageConfiguration())..file(File("test/test.lua")), defaultMessageLoopConfiguration());
+    _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")..boot(BootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
     _executor = _storage.executor();
     final spaceId = await _executor.spaceId("test");
     _space = _executor.space(spaceId);
