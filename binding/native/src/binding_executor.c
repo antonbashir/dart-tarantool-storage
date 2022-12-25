@@ -131,18 +131,30 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       {
         tarantool_begin();
         transactional_backoff = CK_BACKOFF_INITIALIZER;
+        if (likely(message->callback_handle))
+        {
+          dart_post_pointer(message, message->callback_send_port);
+        }
         continue;
       }
 
       if (message->type == TARANTOOL_MESSAGE_ROLLBACK)
       {
         tarantool_rollback();
+        if (likely(message->callback_handle))
+        {
+          dart_post_pointer(message, message->callback_send_port);
+        }
         continue;
       }
 
       if (message->type == TARANTOOL_MESSAGE_COMMIT)
       {
         tarantool_commit();
+        if (likely(message->callback_handle))
+        {
+          dart_post_pointer(message, message->callback_send_port);
+        }
         continue;
       }
 
