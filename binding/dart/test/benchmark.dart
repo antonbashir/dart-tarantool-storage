@@ -19,7 +19,7 @@ void main() {
     _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")..boot(BootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
     _executor = _storage.executor();
     final spaceId = await _executor.spaceId("test");
-    _space = _executor.space(spaceId);
+    _space = _executor.spaceById(spaceId);
     await _executor.transactional((executor) => _space.batch((builder) => builder..insertMany(benchmarkData)));
     print("Benhcing: $benchmarkDataCount");
   });

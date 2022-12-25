@@ -6,14 +6,14 @@ search = function(request)
       local key = request.key
       local predicate = request.predicate
       local mapper = request.mapper
-      local getLast = request.getLast
+      local provider = request.provider
 
       local entities = {}
 
       local count = 0
       local index = 0
 
-      if getLast ~= nil then
+      if provider ~= nil then
           local found = {}
           for _, entity in object:pairs(key) do
               if index >= offset then
@@ -21,7 +21,7 @@ search = function(request)
                       break
                   end
                   if not found[entity.id:str()] then
-                      entity = getLast(entity[1])
+                      entity = provider(entity[1])
                       if (predicate == nil or predicate(entity)) then
                           if mapper ~= nil then
                               entity = mapper(entity)

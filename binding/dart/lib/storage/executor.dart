@@ -28,9 +28,15 @@ class StorageExecutor {
     return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
   }
 
-  StorageSpace space(int id) => StorageSpace(_bindings, this, id);
+  StorageSpace spaceById(int id) => StorageSpace(_bindings, this, id);
 
-  StorageIndex index(int spaceId, int indexId) => StorageIndex(_bindings, this, spaceId, indexId);
+  StorageIndex indexById(int spaceId, int indexId) => StorageIndex(_bindings, this, spaceId, indexId);
+
+  Future<StorageSpace> spaceByName(String name) => spaceId(name).then((id) => StorageSpace(_bindings, this, id));
+
+  Future<StorageIndex> indexByName(String spaceName, String indexName) {
+    return spaceId(spaceName).then((spaceId) => indexId(spaceId, indexName).then((indexId) => StorageIndex(_bindings, this, spaceId, indexId)));
+  }
 
   Future<int> spaceId(String space) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
@@ -65,7 +71,7 @@ class StorageExecutor {
 
   Future<void> evaluateLuaFile(File file) => file.readAsString().then(evaluateLuaScript);
 
-  Future<void> requireLua(String module) => evaluateLuaScript(requireluaScript(module));
+  Future<void> requireLuaModule(String module) => evaluateLuaScript(requireluaScript(module));
 
   Future<List<dynamic>> executeLua(String function, {List<dynamic> argument = const []}) => using((Arena arena) {
         final request = arena<tarantool_call_request_t>();

@@ -26,8 +26,8 @@ void main() {
     _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")..boot(BootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
     _executor = _storage.executor();
     final spaceId = await _executor.spaceId("test");
-    _space = _executor.space(spaceId);
-    _index = _executor.index(spaceId, await _executor.indexId(spaceId, "test"));
+    _space = _executor.spaceById(spaceId);
+    _index = _executor.indexById(spaceId, await _executor.indexId(spaceId, "test"));
   });
 
   setUp(() async => await _space.truncate());
