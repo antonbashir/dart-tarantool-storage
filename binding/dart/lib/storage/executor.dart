@@ -33,24 +33,6 @@ class StorageExecutor {
       .then((_) => _commit())
       .catchError((error, stackTrace) => _rollback());
 
-  Future<void> _begin() => using((Arena arena) {
-        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
-        return sendSingle(message);
-      });
-
-  Future<void> _commit() => using((Arena arena) {
-        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
-        return sendSingle(message);
-      });
-
-  Future<void> _rollback() => using((Arena arena) {
-        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
-        return sendSingle(message);
-      });
-
   StorageSpace space(int id) => StorageSpace(_bindings, this, id);
 
   StorageIndex index(int spaceId, int indexId) => StorageIndex(_bindings, this, spaceId, indexId);
@@ -123,6 +105,24 @@ class StorageExecutor {
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_iterator_destroy.cast();
         message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
+        return sendSingle(message);
+      });
+
+  Future<void> _begin() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
+        return sendSingle(message);
+      });
+
+  Future<void> _commit() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
+        return sendSingle(message);
+      });
+
+  Future<void> _rollback() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
         return sendSingle(message);
       });
 

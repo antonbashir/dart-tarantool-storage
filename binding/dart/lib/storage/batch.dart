@@ -11,11 +11,8 @@ class StorageBatchSpaceBuilder {
   final TarantoolBindings _bindings;
   final int _id;
   final Allocator _allocator;
-  var _transactional = false;
 
   StorageBatchSpaceBuilder(this._bindings, this._id, this._allocator);
-
-  void transactional({bool transactional = true}) => _transactional = transactional;
 
   void insert(List<dynamic> data) {
     Pointer<tarantool_message_batch_element_t> message = _allocator<tarantool_message_batch_element_t>();
@@ -94,9 +91,6 @@ class StorageBatchSpaceBuilder {
   Pointer<tarantool_message_t> build() {
     Pointer<tarantool_message_t> message = _allocator<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BATCH;
-    if (_transactional) {
-      message.ref.transactional = true;
-    }
     final Pointer<Pointer<tarantool_message_batch_element_t>> batchData = _allocator.allocate(sizeOf<Pointer<tarantool_message_batch_element_t>>() * batches.length);
     var batchIndex = 0;
     message.ref.batch_size = batches.length;
