@@ -23,7 +23,8 @@ class StorageExecutor {
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
+  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) async {
+    await Future.doWhile(inTransaction);
     return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
   }
 
@@ -118,6 +119,13 @@ class StorageExecutor {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
         return sendSingle(message);
+      });
+
+  Future<bool> inTransaction() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
+        message.ref.function = _bindings.addresses.tarantool_in_transaction.cast();
+        return sendSingle(message).then((pointer) => pointer.address != 0);
       });
 
   Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
