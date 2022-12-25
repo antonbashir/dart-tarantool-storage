@@ -96,8 +96,6 @@ class StorageBatchSpaceBuilder {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BATCH;
     if (_transactional) {
       message.ref.transactional = true;
-      message.ref.begin_transaction = true;
-      message.ref.commit_transaction = true;
     }
     final Pointer<Pointer<tarantool_message_batch_element_t>> batchData = _allocator.allocate(sizeOf<Pointer<tarantool_message_batch_element_t>>() * batches.length);
     var batchIndex = 0;

@@ -21,7 +21,7 @@ class StorageIndex {
 
   Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_count.cast();
         final request = arena<tarantool_index_count_request_t>();
         request.ref.space_id = _spaceId;
@@ -29,23 +29,23 @@ class StorageIndex {
         request.ref.iterator_type = iteratorType.index;
         request.ref.key = TarantoolTuple.write(arena, key);
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => pointer.address);
+        return _executor.sendSingle(message).then((pointer) => pointer.address);
       });
 
   Future<int> length() => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_length.cast();
         final request = arena<tarantool_index_id_t>();
         request.ref.space_id = _spaceId;
         request.ref.index_id = _indexId;
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => pointer.address);
+        return _executor.sendSingle(message).then((pointer) => pointer.address);
       });
 
   Future<StorageIterator> iterator({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_iterator.cast();
         final request = arena<tarantool_index_iterator_request_t>();
         request.ref.space_id = _spaceId;
@@ -53,48 +53,48 @@ class StorageIndex {
         request.ref.type = iteratorType.index;
         request.ref.key = TarantoolTuple.write(arena, key);
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => pointer.address).then((iterator) => StorageIterator(_executor, iterator));
+        return _executor.sendSingle(message).then((pointer) => pointer.address).then((iterator) => StorageIterator(_executor, iterator));
       });
 
   Future<List<dynamic>> get(List<dynamic> key) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_get.cast();
         final request = arena<tarantool_index_request_t>();
         request.ref.space_id = _spaceId;
         request.ref.index_id = _indexId;
         request.ref.tuple = TarantoolTuple.write(arena, key);
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<List<dynamic>> min({List<dynamic> key = const []}) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_min.cast();
         final request = arena<tarantool_index_request_t>();
         request.ref.space_id = _spaceId;
         request.ref.index_id = _indexId;
         request.ref.tuple = TarantoolTuple.write(arena, key);
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<List<dynamic>> max({List<dynamic> key = const []}) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_max.cast();
         final request = arena<tarantool_index_request_t>();
         request.ref.space_id = _spaceId;
         request.ref.index_id = _indexId;
         request.ref.tuple = TarantoolTuple.write(arena, key);
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<List<dynamic>> update(List<dynamic> key, List<UpdateOperation> operations) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_update.cast();
         final request = arena<tarantool_index_update_request_t>();
         request.ref.space_id = _spaceId;
@@ -110,7 +110,7 @@ class StorageIndex {
                     ])
                 .toList());
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<List<dynamic>> select({
@@ -121,7 +121,7 @@ class StorageIndex {
   }) =>
       using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_select.cast();
         final request = arena<tarantool_index_select_request_t>();
         request.ref.space_id = _spaceId;
@@ -131,7 +131,7 @@ class StorageIndex {
         request.ref.offset = offset;
         request.ref.limit = limit;
         message.ref.input = request.cast();
-        return _executor.send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<List<dynamic>> batch(StorageBatchIndexBuilder Function(StorageBatchIndexBuilder builder) builder) => using((Arena arena) {

@@ -8524,10 +8524,13 @@ typedef Dart_StreamingCloseCallback
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>;
 
 abstract class tarantool_message_type {
-  static const int TARANTOOL_MESSAGE_CALL_FUNCTION = 0;
+  static const int TARANTOOL_MESSAGE_CALL = 0;
   static const int TARANTOOL_MESSAGE_BATCH = 1;
-  static const int TARANTOOL_MESSAGE_STOP_LOOP = 2;
-  static const int tarantool_message_type_MAX = 3;
+  static const int TARANTOOL_MESSAGE_STOP = 2;
+  static const int TARANTOOL_MESSAGE_BEGIN = 3;
+  static const int TARANTOOL_MESSAGE_COMMIT = 4;
+  static const int TARANTOOL_MESSAGE_ROLLBACK = 5;
+  static const int tarantool_message_type_MAX = 6;
 }
 
 class tarantool_message_batch_element_t extends ffi.Struct {
@@ -8564,12 +8567,6 @@ class tarantool_message_t extends ffi.Struct {
 
   @ffi.Bool()
   external bool transactional;
-
-  @ffi.Bool()
-  external bool begin_transaction;
-
-  @ffi.Bool()
-  external bool commit_transaction;
 }
 
 class tarantool_tuple_t extends ffi.Struct {

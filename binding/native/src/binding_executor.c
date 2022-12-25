@@ -24,10 +24,6 @@ static inline void dart_post_pointer(void *pointer, Dart_Port port)
 
 static inline void tarantool_message_handle_function(tarantool_message_t *message)
 {
-  if (message->begin_transaction)
-  {
-    tarantool_begin();
-  }
   message->output = message->function(message->input);
   struct error *error = diag_last_error(diag_get());
   if (unlikely(error))
@@ -36,21 +32,14 @@ static inline void tarantool_message_handle_function(tarantool_message_t *messag
     diag_clear(diag_get());
   }
 
-  if (message->transactional)
+  if (unlikely(message->transactional && error))
   {
-    if (unlikely(error))
+    tarantool_rollback();
+    if (likely(message->callback_handle))
     {
-      tarantool_rollback();
-      if (likely(message->callback_handle))
-      {
-        dart_post_pointer(message, message->callback_send_port);
-      }
-      return;
+      dart_post_pointer(message, message->callback_send_port);
     }
-    if (message->commit_transaction)
-    {
-      tarantool_commit();
-    }
+    return;
   }
 
   if (likely(message->callback_handle))
@@ -61,10 +50,6 @@ static inline void tarantool_message_handle_function(tarantool_message_t *messag
 
 static inline void tarantool_message_handle_batch(tarantool_message_t *message)
 {
-  if (message->begin_transaction)
-  {
-    tarantool_begin();
-  }
   bool rollback = false;
   for (size_t index = 0; index < message->batch_size; index++)
   {
@@ -89,11 +74,6 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
         dart_post_pointer(message, message->callback_send_port);
       }
       return;
-    }
-
-    if (message->commit_transaction)
-    {
-      tarantool_commit();
     }
   }
 
@@ -135,7 +115,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
     {
       current_empty_cycles = 0;
       curent_empty_cycles_limit = initial_empty_cycles;
-      if (message->type == TARANTOOL_MESSAGE_CALL_FUNCTION)
+      if (message->type == TARANTOOL_MESSAGE_CALL)
       {
         tarantool_message_handle_function(message);
         continue;
@@ -147,14 +127,30 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
         continue;
       }
 
-      if (unlikely(message->type == TARANTOOL_MESSAGE_STOP_LOOP))
+      if (message->type == TARANTOOL_MESSAGE_BEGIN)
+      {
+        tarantool_begin();
+        transactional_backoff = CK_BACKOFF_INITIALIZER;
+      }
+
+      if (message->type == TARANTOOL_MESSAGE_ROLLBACK)
+      {
+        tarantool_rollback();
+      }
+
+      if (message->type == TARANTOOL_MESSAGE_COMMIT)
+      {
+        tarantool_commit();
+      }
+
+      if (unlikely(message->type == TARANTOOL_MESSAGE_STOP))
       {
         active = false;
         free(message);
 
         while (likely(ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message)))
         {
-          if (message->type == TARANTOOL_MESSAGE_CALL_FUNCTION)
+          if (message->type == TARANTOOL_MESSAGE_CALL)
           {
             tarantool_message_handle_function(message);
             continue;
@@ -168,11 +164,6 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
           }
         }
         break;
-      }
-
-      if (unlikely(message->begin_transaction || message->commit_transaction))
-      {
-        transactional_backoff = CK_BACKOFF_INITIALIZER;
       }
 
       continue;
@@ -225,7 +216,7 @@ bool tarantool_run_message(tarantool_message_t *message)
 void tarantool_message_loop_stop()
 {
   tarantool_message_t *message = malloc(sizeof(tarantool_message_t));
-  message->type = TARANTOOL_MESSAGE_STOP_LOOP;
+  message->type = TARANTOOL_MESSAGE_STOP;
   tarantool_send_message(message, NULL);
 }
 

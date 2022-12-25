@@ -17,11 +17,39 @@ class StorageExecutor {
   late TarantoolBindings _bindings;
   late RawReceivePort _receiverPort;
   late int _nativePort;
+  var _transactional = false;
 
   StorageExecutor(this._bindings) {
     _receiverPort = RawReceivePort(_receive);
     _nativePort = _receiverPort.sendPort.nativePort;
   }
+
+  Future<void> transactional(T Function<T>(StorageExecutor executor) function) => begin()
+      .then((_) {
+        _transactional = true;
+        function(this);
+        _transactional = false;
+      })
+      .then((_) => commit())
+      .catchError((error, stackTrace) => rollback());
+
+  Future<void> begin() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
+        return sendSingle(message);
+      });
+
+  Future<void> commit() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
+        return sendSingle(message);
+      });
+
+  Future<void> rollback() => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
+        return sendSingle(message);
+      });
 
   StorageSpace space(int id) => StorageSpace(_bindings, this, id);
 
@@ -29,33 +57,33 @@ class StorageExecutor {
 
   Future<int> spaceId(String space) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_space_id_by_name.cast();
         final request = arena<tarantool_space_id_request_t>();
         request.ref.name = space.toNativeUtf8().cast();
         request.ref.name_length = space.length;
         message.ref.input = request.cast();
-        return send(message).then((pointer) => pointer.address);
+        return sendSingle(message).then((pointer) => pointer.address);
       });
 
   Future<int> indexId(int spaceId, String index) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_index_id_by_name.cast();
         final request = arena<tarantool_index_id_request_t>();
         request.ref.space_id = spaceId;
         request.ref.name = index.toNativeUtf8().cast();
         request.ref.name_length = index.length;
         message.ref.input = request.cast();
-        return send(message).then((pointer) => pointer.address);
+        return sendSingle(message).then((pointer) => pointer.address);
       });
 
   Future<void> evaluateLuaScript(String script) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_evaluate.cast();
         message.ref.input = script.toNativeUtf8().cast();
-        return send(message);
+        return sendSingle(message);
       });
 
   Future<void> evaluateLuaFile(File file) => file.readAsString().then(evaluateLuaScript);
@@ -68,38 +96,39 @@ class StorageExecutor {
         request.ref.function_length = function.length;
         request.ref.input = TarantoolTuple.write(arena, argument);
         final message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_call.cast();
         message.ref.input = request.cast();
-        return send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<Pointer<Void>> executeNative(tarantool_function function, {tarantool_function_argument? argument}) async => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = function.cast();
         message.ref.input = argument?.cast() ?? nullptr;
-        return send(message);
+        return sendSingle(message);
       });
 
   Future<List<dynamic>> next(StorageIterator iterator) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_iterator_next.cast();
         message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-        return send(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<void> destroyIterator(StorageIterator iterator) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
-        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL_FUNCTION;
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_iterator_destroy.cast();
         message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-        return send(message);
+        return sendSingle(message);
       });
 
-  Future<Pointer<Void>> send(Pointer<tarantool_message_t> message) {
+  Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
     if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
+    message.ref.transactional = _transactional;
     message.ref.callback_send_port = _nativePort;
     final completer = Completer<Pointer<tarantool_message_t>>();
     _bindings.tarantool_send_message(message, completer.complete);

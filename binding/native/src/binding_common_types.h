@@ -10,9 +10,12 @@ extern "C"
 #endif
 	enum tarantool_message_type
 	{
-		TARANTOOL_MESSAGE_CALL_FUNCTION = 0,
+		TARANTOOL_MESSAGE_CALL = 0,
 		TARANTOOL_MESSAGE_BATCH = 1,
-		TARANTOOL_MESSAGE_STOP_LOOP = 2,
+		TARANTOOL_MESSAGE_STOP = 2,
+		TARANTOOL_MESSAGE_BEGIN = 3,
+		TARANTOOL_MESSAGE_COMMIT = 4,
+		TARANTOOL_MESSAGE_ROLLBACK = 5,
 		tarantool_message_type_MAX,
 	};
 
@@ -38,8 +41,6 @@ extern "C"
 		tarantool_message_batch_element_t **batch;
 		size_t batch_size;
     bool transactional;
-    bool begin_transaction;
-    bool commit_transaction;
 	} tarantool_message_t;
 
 	typedef struct tarantool_tuple_t
