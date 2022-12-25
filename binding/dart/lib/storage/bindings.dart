@@ -8539,6 +8539,9 @@ class tarantool_message_batch_element_t extends ffi.Struct {
   external tarantool_function_argument input;
 
   external tarantool_function_argument output;
+
+  @ffi.Bool()
+  external bool failed;
 }
 
 typedef tarantool_function = ffi.Pointer<
@@ -8566,7 +8569,7 @@ class tarantool_message_t extends ffi.Struct {
   external int batch_size;
 
   @ffi.Bool()
-  external bool transactional;
+  external bool failed;
 }
 
 class tarantool_tuple_t extends ffi.Struct {

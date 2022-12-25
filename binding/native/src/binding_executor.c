@@ -28,12 +28,16 @@ static inline void tarantool_message_handle_call(tarantool_message_t *message)
 {
   message->output = message->function(message->input);
   struct error *error = diag_last_error(diag_get());
-  dart_post_pointer(message, message->callback_send_port);
+  if (unlikely(error))
+  {
+    message->failed = true;
+    error_log(error);
+    diag_clear(diag_get());
+  }
 }
 
 static inline void tarantool_message_handle_batch(tarantool_message_t *message)
 {
-  bool rollback = false;
   for (size_t index = 0; index < message->batch_size; index++)
   {
     tarantool_message_batch_element_t *element = message->batch[index];
@@ -41,57 +45,40 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
     struct error *error = diag_last_error(diag_get());
     if (unlikely(error))
     {
+      message->failed = true;
+      element->failed = true;
+      element->output = NULL;
       error_log(error);
       diag_clear(diag_get());
-      rollback = true;
     }
   }
-
-  if (unlikely(rollback))
-  {
-    if (message->transactional)
-    {
-      tarantool_rollback();
-      dart_post_pointer(message, message->callback_send_port);
-      return;
-    }
-  }
-
-  dart_post_pointer(message, message->callback_send_port);
 }
 
 static inline void tarantool_message_handle(tarantool_message_t *message)
 {
-  if (message->type == TARANTOOL_MESSAGE_CALL)
+  switch (message->type)
   {
+  case TARANTOOL_MESSAGE_CALL:
     tarantool_message_handle_call(message);
+    dart_post_pointer(message, message->callback_send_port);
     return;
-  }
-
-  if (message->type == TARANTOOL_MESSAGE_BATCH)
-  {
+  case TARANTOOL_MESSAGE_BATCH:
     tarantool_message_handle_batch(message);
+    dart_post_pointer(message, message->callback_send_port);
     return;
-  }
-
-  if (message->type == TARANTOOL_MESSAGE_BEGIN)
-  {
+  case TARANTOOL_MESSAGE_BEGIN:
     tarantool_begin();
     dart_post_pointer(message, message->callback_send_port);
     return;
-  }
-
-  if (message->type == TARANTOOL_MESSAGE_ROLLBACK)
-  {
+  case TARANTOOL_MESSAGE_ROLLBACK:
     tarantool_rollback();
     dart_post_pointer(message, message->callback_send_port);
     return;
-  }
-
-  if (message->type == TARANTOOL_MESSAGE_COMMIT)
-  {
+  case TARANTOOL_MESSAGE_COMMIT:
     tarantool_commit();
     dart_post_pointer(message, message->callback_send_port);
+    return;
+  default:
     return;
   }
 }

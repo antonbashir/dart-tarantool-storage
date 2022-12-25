@@ -17,7 +17,6 @@ class StorageExecutor {
   late TarantoolBindings _bindings;
   late RawReceivePort _receiverPort;
   late int _nativePort;
-  var _transactional = false;
 
   StorageExecutor(this._bindings) {
     _receiverPort = RawReceivePort(_receive);
@@ -104,21 +103,18 @@ class StorageExecutor {
       });
 
   Future<void> begin() => using((Arena arena) {
-        _transactional = true;
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
         return sendSingle(message);
       });
 
   Future<void> commit() => using((Arena arena) {
-        _transactional = false;
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
         return sendSingle(message);
       });
 
   Future<void> rollback() => using((Arena arena) {
-        _transactional = false;
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
         return sendSingle(message);
@@ -131,7 +127,15 @@ class StorageExecutor {
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
       completer.completeError(StorageRequestsLimitException(), StackTrace.current);
     }
-    return completer.future.then((value) => value.ref.output);
+    return completer.future.then((value) {
+      if (value.ref.failed) {
+        if (_bindings.tarantool_in_transaction()) {
+          return rollback().then((value) => throw StorageExceutionException());
+        }
+        throw StorageExceutionException();
+      }
+      return value.ref.output;
+    });
   }
 
   Future<Pointer<tarantool_message_t>> sendBatch(Pointer<tarantool_message_t> message) {
@@ -141,7 +145,15 @@ class StorageExecutor {
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
       completer.completeError(StorageRequestsLimitException(), StackTrace.current);
     }
-    return completer.future;
+    return completer.future.then((value) {
+      if (value.ref.failed) {
+        if (_bindings.tarantool_in_transaction()) {
+          return rollback().then((value) => throw StorageExceutionException());
+        }
+        throw StorageExceutionException();
+      }
+      return value;
+    });
   }
 
   void close() => _receiverPort.close();
