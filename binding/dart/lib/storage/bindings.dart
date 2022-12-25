@@ -6033,15 +6033,22 @@ class TarantoolBindings {
   late final _tarantool_shutdown =
       _tarantool_shutdownPtr.asFunction<void Function(int)>();
 
-  void tarantool_message_loop_initialize() {
-    return _tarantool_message_loop_initialize();
+  void tarantool_message_loop_initialize(
+    ffi.Pointer<tarantool_message_loop_configuration_t> configuration,
+  ) {
+    return _tarantool_message_loop_initialize(
+      configuration,
+    );
   }
 
-  late final _tarantool_message_loop_initializePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
-          'tarantool_message_loop_initialize');
+  late final _tarantool_message_loop_initializePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_message_loop_configuration_t>)>>(
+      'tarantool_message_loop_initialize');
   late final _tarantool_message_loop_initialize =
-      _tarantool_message_loop_initializePtr.asFunction<void Function()>();
+      _tarantool_message_loop_initializePtr.asFunction<
+          void Function(ffi.Pointer<tarantool_message_loop_configuration_t>)>();
 
   void tarantool_message_loop_start(
     ffi.Pointer<tarantool_message_loop_configuration_t> configuration,
@@ -7650,7 +7657,10 @@ class _SymbolAddresses {
       get tarantool_initialized => _library._tarantool_initializedPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>
       get tarantool_shutdown => _library._tarantool_shutdownPtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_message_loop_configuration_t>)>>
       get tarantool_message_loop_initialize =>
           _library._tarantool_message_loop_initializePtr;
   ffi.Pointer<
@@ -8551,6 +8561,15 @@ class tarantool_message_t extends ffi.Struct {
 
   @ffi.Size()
   external int batch_size;
+
+  @ffi.Bool()
+  external bool transactional;
+
+  @ffi.Bool()
+  external bool begin_transaction;
+
+  @ffi.Bool()
+  external bool commit_transaction;
 }
 
 class tarantool_tuple_t extends ffi.Struct {
@@ -8578,6 +8597,9 @@ class tarantool_configuration extends ffi.Struct {
 
   @ffi.Int()
   external int message_loop_initial_empty_cycles;
+
+  @ffi.Size()
+  external int message_loop_ring_size;
 }
 
 typedef tarantool_configuration_t = tarantool_configuration;
@@ -8597,6 +8619,9 @@ class tarantool_message_loop_configuration extends ffi.Struct {
 
   @ffi.Int()
   external int message_loop_initial_empty_cycles;
+
+  @ffi.Size()
+  external int message_loop_ring_size;
 }
 
 typedef tarantool_message_loop_configuration_t

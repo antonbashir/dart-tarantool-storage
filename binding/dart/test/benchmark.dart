@@ -21,7 +21,9 @@ void main() {
     _executor = _storage.executor();
     final spaceId = await _executor.spaceId("test");
     _space = _executor.space(spaceId);
-    await _space.batch((builder) => builder..insertMany(benchmarkData));
+    await _space.batch((builder) => builder
+      ..transactional()
+      ..insertMany(benchmarkData));
     print("Benhcing: $benchmarkDataCount");
   });
   tearDownAll(() => _storage.shutdown());
@@ -75,7 +77,9 @@ Future<void> benchSelect() async {
 Future<void> benchBatch() async {
   final stopwatch = Stopwatch();
   stopwatch.start();
-  await _space.batch((builder) => builder..putMany(benchmarkData));
+  await _space.batch((builder) => builder
+    ..transactional()
+    ..putMany(benchmarkData));
   print("Batch seconds: ${stopwatch.elapsedMilliseconds / 1000}");
 }
 

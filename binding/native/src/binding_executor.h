@@ -13,9 +13,10 @@ extern "C"
 		int message_loop_max_empty_cycles;
 		int message_loop_empty_cycles_multiplier;
 		int message_loop_initial_empty_cycles;
+		size_t message_loop_ring_size;
 	} tarantool_message_loop_configuration_t;
 
-	void tarantool_message_loop_initialize();
+	void tarantool_message_loop_initialize(tarantool_message_loop_configuration_t *configuration);
 	void tarantool_message_loop_start(tarantool_message_loop_configuration_t *configuration);
 	void tarantool_message_loop_stop();
 	bool tarantool_message_loop_active();

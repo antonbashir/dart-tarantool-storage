@@ -37,6 +37,9 @@ extern "C"
 		Dart_Handle *callback_handle;
 		tarantool_message_batch_element_t **batch;
 		size_t batch_size;
+    bool transactional;
+    bool begin_transaction;
+    bool commit_transaction;
 	} tarantool_message_t;
 
 	typedef struct tarantool_tuple_t

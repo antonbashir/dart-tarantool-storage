@@ -7,6 +7,7 @@
 #include <small/small.h>
 #include "box/tuple.h"
 #include "ck_ring.h"
+#include "ck_backoff.h"
 #include "dart/dart_api_dl.h"
 
 static ck_ring_buffer_t *tarantool_message_buffer;
@@ -23,6 +24,10 @@ static inline void dart_post_pointer(void *pointer, Dart_Port port)
 
 static inline void tarantool_message_handle_function(tarantool_message_t *message)
 {
+  if (message->begin_transaction)
+  {
+    tarantool_begin();
+  }
   message->output = message->function(message->input);
   struct error *error = diag_last_error(diag_get());
   if (unlikely(error))
@@ -30,6 +35,24 @@ static inline void tarantool_message_handle_function(tarantool_message_t *messag
     error_log(error);
     diag_clear(diag_get());
   }
+
+  if (message->transactional)
+  {
+    if (unlikely(error))
+    {
+      tarantool_rollback();
+      if (likely(message->callback_handle))
+      {
+        dart_post_pointer(message, message->callback_send_port);
+      }
+      return;
+    }
+    if (message->commit_transaction)
+    {
+      tarantool_commit();
+    }
+  }
+
   if (likely(message->callback_handle))
   {
     dart_post_pointer(message, message->callback_send_port);
@@ -38,6 +61,11 @@ static inline void tarantool_message_handle_function(tarantool_message_t *messag
 
 static inline void tarantool_message_handle_batch(tarantool_message_t *message)
 {
+  if (message->begin_transaction)
+  {
+    tarantool_begin();
+  }
+  bool rollback = false;
   for (size_t index = 0; index < message->batch_size; index++)
   {
     tarantool_message_batch_element_t *element = message->batch[index];
@@ -47,24 +75,44 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
     {
       error_log(error);
       diag_clear(diag_get());
+      rollback = true;
     }
   }
+
+  if (message->transactional)
+  {
+    if (unlikely(rollback))
+    {
+      tarantool_rollback();
+      if (likely(message->callback_handle))
+      {
+        dart_post_pointer(message, message->callback_send_port);
+      }
+      return;
+    }
+
+    if (message->commit_transaction)
+    {
+      tarantool_commit();
+    }
+  }
+
   if (likely(message->callback_handle))
   {
     dart_post_pointer(message, message->callback_send_port);
   }
 }
 
-void tarantool_message_loop_initialize()
+void tarantool_message_loop_initialize(tarantool_message_loop_configuration_t *configuration)
 {
-
-  tarantool_message_buffer = malloc(sizeof(ck_ring_buffer_t) * 16777216);
+  tarantool_message_buffer = malloc(sizeof(ck_ring_buffer_t) * configuration->message_loop_ring_size);
   if (tarantool_message_buffer == NULL)
   {
     say_crit("Failed to allocate message ring buffer");
+    return;
   }
 
-  ck_ring_init(&tarantool_message_ring, 16777216);
+  ck_ring_init(&tarantool_message_ring, configuration->message_loop_ring_size);
 
   active = true;
 }
@@ -76,9 +124,9 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
   int cycles_multiplier = configuration->message_loop_empty_cycles_multiplier;
   double regular_sleep_seconds = configuration->message_loop_regular_sleep_seconds;
   double max_sleep_seconds = configuration->message_loop_max_sleep_seconds;
-
   int current_empty_cycles = 0;
   int curent_empty_cycles_limit = initial_empty_cycles;
+  ck_backoff_t transactional_backoff = CK_BACKOFF_INITIALIZER;
 
   while (likely(active))
   {
@@ -119,23 +167,35 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
             continue;
           }
         }
-
         break;
       }
 
-      current_empty_cycles++;
-      if (current_empty_cycles >= max_empty_cycles)
+      if (unlikely(message->begin_transaction || message->commit_transaction))
       {
-        fiber_sleep(max_sleep_seconds);
-        continue;
+        transactional_backoff = CK_BACKOFF_INITIALIZER;
       }
 
-      if (current_empty_cycles >= curent_empty_cycles_limit)
-      {
-        curent_empty_cycles_limit *= cycles_multiplier;
-        fiber_sleep(regular_sleep_seconds);
-        continue;
-      }
+      continue;
+    }
+
+    if (tarantool_in_transaction())
+    {
+      ck_backoff_eb(&transactional_backoff);
+      continue;
+    }
+
+    current_empty_cycles++;
+    if (current_empty_cycles >= max_empty_cycles)
+    {
+      fiber_sleep(max_sleep_seconds);
+      continue;
+    }
+
+    if (current_empty_cycles >= curent_empty_cycles_limit)
+    {
+      curent_empty_cycles_limit *= cycles_multiplier;
+      fiber_sleep(regular_sleep_seconds);
+      continue;
     }
   }
 }

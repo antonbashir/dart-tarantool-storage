@@ -7,6 +7,7 @@ MessageLoopConfiguration defaultMessageLoopConfiguration() => MessageLoopConfigu
       messageLoopMaxEmptyCycles: 1000000,
       messageLoopEmptyCyclesMultiplier: 2,
       messageLoopInitialEmptyCycles: 1000,
+      messageLoopRingSize: 16777216,
     );
 
 StorageConfiguration defaultStorageConfiguration() => StorageConfiguration({

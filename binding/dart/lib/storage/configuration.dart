@@ -93,6 +93,7 @@ class StorageConfiguration {
 class MessageLoopConfiguration {
   final int boxOutputBufferCapacity;
   final double messageLoopMaxSleepSeconds;
+  final int messageLoopRingSize;
   final double messageLoopRegularSleepSeconds;
   final int messageLoopMaxEmptyCycles;
   final int messageLoopEmptyCyclesMultiplier;
@@ -105,6 +106,7 @@ class MessageLoopConfiguration {
     required this.messageLoopMaxEmptyCycles,
     required this.messageLoopEmptyCyclesMultiplier,
     required this.messageLoopInitialEmptyCycles,
+    required this.messageLoopRingSize,
   });
 
   Pointer<tarantool_configuration_t> native() {
@@ -115,6 +117,7 @@ class MessageLoopConfiguration {
     configuration.ref.message_loop_initial_empty_cycles = messageLoopInitialEmptyCycles;
     configuration.ref.message_loop_regular_sleep_seconds = messageLoopRegularSleepSeconds;
     configuration.ref.message_loop_max_sleep_seconds = messageLoopMaxSleepSeconds;
+    configuration.ref.message_loop_ring_size = messageLoopRingSize;
     return configuration;
   }
 }

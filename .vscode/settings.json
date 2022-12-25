@@ -99,7 +99,8 @@
       "dart_native_api.h": "c",
       "module.h": "c",
       "lua.h": "c",
-      "luaconf.h": "c"
+      "luaconf.h": "c",
+      "ck_ring.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",
