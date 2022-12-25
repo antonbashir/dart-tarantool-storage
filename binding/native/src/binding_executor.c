@@ -22,7 +22,7 @@ static inline void dart_post_pointer(void *pointer, Dart_Port port)
   Dart_PostCObject(port, &dart_object);
 };
 
-static inline void tarantool_message_handle_function(tarantool_message_t *message)
+static inline void tarantool_message_handle_call(tarantool_message_t *message)
 {
   message->output = message->function(message->input);
   struct error *error = diag_last_error(diag_get());
@@ -90,7 +90,7 @@ static inline void tarantool_message_handle(tarantool_message_t *message)
 {
   if (message->type == TARANTOOL_MESSAGE_CALL)
   {
-    tarantool_message_handle_function(message);
+    tarantool_message_handle_call(message);
     return;
   }
 

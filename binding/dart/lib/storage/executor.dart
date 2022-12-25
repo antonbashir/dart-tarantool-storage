@@ -24,18 +24,9 @@ class StorageExecutor {
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<T> transactional<T>(T Function(StorageExecutor executor) function) async => _begin().then((_) {
-        _transactional = true;
-        final result = function(this);
-        _transactional = false;
-        return result;
-      }).then((result) {
-        _commit();
-        return result;
-      }).onError((error, stackTrace) {
-        _rollback();
-        return Future.error(error!, stackTrace);
-      });
+  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
+    return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
+  }
 
   StorageSpace space(int id) => StorageSpace(_bindings, this, id);
 
@@ -112,19 +103,22 @@ class StorageExecutor {
         return sendSingle(message);
       });
 
-  Future<void> _begin() => using((Arena arena) {
+  Future<void> begin() => using((Arena arena) {
+        _transactional = true;
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
         return sendSingle(message);
       });
 
-  Future<void> _commit() => using((Arena arena) {
+  Future<void> commit() => using((Arena arena) {
+        _transactional = false;
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
         return sendSingle(message);
       });
 
-  Future<void> _rollback() => using((Arena arena) {
+  Future<void> rollback() => using((Arena arena) {
+        _transactional = false;
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
         return sendSingle(message);

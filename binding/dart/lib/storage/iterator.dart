@@ -32,34 +32,33 @@ class StorageIterator {
     dynamic Function(List<dynamic> value)? map,
     int? limit,
     int? offset,
-  }) =>
-      Stream.fromFuture(_executor.transactional((executor) async* {
-        var index = 0;
-        if (filter == null) {
-          List<dynamic> value;
-          while ((value = await _executor.next(this)).isNotEmpty) {
-            if (offset != null && index <= offset) {
-              index++;
-              continue;
-            }
-            if (limit != null && index > limit) return;
-            index++;
-            yield (map == null ? value : map(value));
-          }
-          await destroy();
-          return;
-        }
-        List<dynamic> value;
-        while ((value = await _executor.next(this)).isNotEmpty) {
-          if (offset != null && index <= offset) {
-            index++;
-            continue;
-          }
-          if (!filter(value)) continue;
-          if (limit != null && index > limit) return;
+  }) async* {
+    var index = 0;
+    if (filter == null) {
+      List<dynamic> value;
+      while ((value = await _executor.next(this)).isNotEmpty) {
+        if (offset != null && index <= offset) {
           index++;
-          yield (map == null ? value : map(value));
+          continue;
         }
-        await destroy();
-      }));
+        if (limit != null && index > limit) return;
+        index++;
+        yield (map == null ? value : map(value));
+      }
+      await destroy();
+      return;
+    }
+    List<dynamic> value;
+    while ((value = await _executor.next(this)).isNotEmpty) {
+      if (offset != null && index <= offset) {
+        index++;
+        continue;
+      }
+      if (!filter(value)) continue;
+      if (limit != null && index > limit) return;
+      index++;
+      yield (map == null ? value : map(value));
+    }
+    await destroy();
+  }
 }
