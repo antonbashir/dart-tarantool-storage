@@ -24,14 +24,18 @@ class StorageExecutor {
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<void> transactional(void Function(StorageExecutor executor) function) => _begin()
-      .then((_) {
+  Future<T> transactional<T>(T Function(StorageExecutor executor) function) async => _begin().then((_) {
         _transactional = true;
-        function(this);
+        final result = function(this);
         _transactional = false;
-      })
-      .then((_) => _commit())
-      .catchError((error, stackTrace) => _rollback());
+        return result;
+      }).then((result) {
+        _commit();
+        return result;
+      }).onError((error, stackTrace) {
+        _rollback();
+        return Future.error(error!, stackTrace);
+      });
 
   StorageSpace space(int id) => StorageSpace(_bindings, this, id);
 

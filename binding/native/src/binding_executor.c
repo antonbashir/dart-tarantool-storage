@@ -159,15 +159,15 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
   while (likely(active))
   {
     tarantool_message_t *message;
-    if (likely(ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message)))
+    if (ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message))
     {
       current_empty_cycles = 0;
       curent_empty_cycles_limit = initial_empty_cycles;
 
-      if (likely(message->type != TARANTOOL_MESSAGE_STOP))
+      if (message->type != TARANTOOL_MESSAGE_STOP)
       {
         tarantool_message_handle(message);
-        if (unlikely(message->type == TARANTOOL_MESSAGE_BEGIN))
+        if (message->type == TARANTOOL_MESSAGE_BEGIN)
         {
           transactional_backoff = transactional_backoff;
         }
@@ -176,7 +176,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
 
       active = false;
       free(message);
-      while (likely(ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message)))
+      while (ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message))
       {
         tarantool_message_handle(message);
       }
@@ -184,7 +184,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       break;
     }
 
-    if (unlikely(tarantool_in_transaction()))
+    if (tarantool_in_transaction())
     {
       ck_backoff_eb(&transactional_backoff);
       continue;
