@@ -179,7 +179,7 @@ Future<void> testIterator() async {
 }
 
 Future<void> testMultiIsolateInsert() async {
-  final count = 100;
+  final count = 1000;
   final ports = <ReceivePort>[];
   final data = [];
   for (var i = 0; i < count; i++) {

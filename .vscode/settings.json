@@ -102,7 +102,8 @@
       "luaconf.h": "c",
       "ck_ring.h": "c",
       "ck_backoff.h": "c",
-      "ck_cc.h": "c"
+      "ck_cc.h": "c",
+      "ck_spinlock.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",

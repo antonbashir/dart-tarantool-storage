@@ -7,7 +7,6 @@
 #include <small/small.h>
 #include "box/tuple.h"
 #include "ck_ring.h"
-#include "ck_backoff.h"
 #include "dart/dart_api_dl.h"
 #include "box/txn.h"
 
