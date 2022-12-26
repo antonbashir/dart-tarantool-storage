@@ -34,9 +34,32 @@ class StorageExecutor {
 
   Future<StorageSpace> spaceByName(String name) => spaceId(name).then((id) => StorageSpace(_bindings, this, id));
 
+  Future<bool> hasSpace(String space) => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
+        message.ref.function = _bindings.addresses.tarantool_has_space.cast();
+        final request = arena<tarantool_space_id_request_t>();
+        request.ref.name = space.toNativeUtf8().cast();
+        request.ref.name_length = space.length;
+        message.ref.input = request.cast();
+        return sendSingle(message).then((pointer) => pointer.address != 0);
+      });
+
   Future<StorageIndex> indexByName(String spaceName, String indexName) {
     return spaceId(spaceName).then((spaceId) => indexId(spaceId, indexName).then((indexId) => StorageIndex(_bindings, this, spaceId, indexId)));
   }
+
+  Future<bool> hasIndex(int spaceId, String indexName) => using((Arena arena) {
+        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+        message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
+        message.ref.function = _bindings.addresses.tarantool_index_id_by_name.cast();
+        final request = arena<tarantool_index_id_request_t>();
+        request.ref.space_id = spaceId;
+        request.ref.name = indexName.toNativeUtf8().cast();
+        request.ref.name_length = indexName.length;
+        message.ref.input = request.cast();
+        return sendSingle(message).then((pointer) => pointer.address != 0);
+      });
 
   Future<int> spaceId(String space) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();

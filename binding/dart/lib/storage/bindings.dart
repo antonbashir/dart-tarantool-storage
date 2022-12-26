@@ -6331,6 +6331,21 @@ class TarantoolBindings {
   late final _tarantool_space_truncate =
       _tarantool_space_truncatePtr.asFunction<void Function(int)>();
 
+  bool tarantool_has_space(
+    ffi.Pointer<tarantool_space_id_request_t> request,
+  ) {
+    return _tarantool_has_space(
+      request,
+    );
+  }
+
+  late final _tarantool_has_spacePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Bool Function(ffi.Pointer<tarantool_space_id_request_t>)>>(
+      'tarantool_has_space');
+  late final _tarantool_has_space = _tarantool_has_spacePtr
+      .asFunction<bool Function(ffi.Pointer<tarantool_space_id_request_t>)>();
+
   ffi.Pointer<tarantool_tuple_t> tarantool_space_put(
     ffi.Pointer<tarantool_space_request_t> request,
   ) {
@@ -6557,6 +6572,21 @@ class TarantoolBindings {
       'tarantool_index_id_by_name');
   late final _tarantool_index_id_by_name = _tarantool_index_id_by_namePtr
       .asFunction<int Function(ffi.Pointer<tarantool_index_id_request_t>)>();
+
+  bool tarantool_has_index(
+    ffi.Pointer<tarantool_index_id_request_t> request,
+  ) {
+    return _tarantool_has_index(
+      request,
+    );
+  }
+
+  late final _tarantool_has_indexPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Bool Function(ffi.Pointer<tarantool_index_id_request_t>)>>(
+      'tarantool_has_index');
+  late final _tarantool_has_index = _tarantool_has_indexPtr
+      .asFunction<bool Function(ffi.Pointer<tarantool_index_id_request_t>)>();
 
   ffi.Pointer<tarantool_tuple_t> tarantool_index_get(
     ffi.Pointer<tarantool_index_request_t> request,
@@ -7688,6 +7718,10 @@ class _SymbolAddresses {
       get tarantool_space_truncate => _library._tarantool_space_truncatePtr;
   ffi.Pointer<
           ffi.NativeFunction<
+              ffi.Bool Function(ffi.Pointer<tarantool_space_id_request_t>)>>
+      get tarantool_has_space => _library._tarantool_has_spacePtr;
+  ffi.Pointer<
+          ffi.NativeFunction<
               ffi.Pointer<tarantool_tuple_t> Function(
                   ffi.Pointer<tarantool_space_request_t>)>>
       get tarantool_space_put => _library._tarantool_space_putPtr;
@@ -7753,6 +7787,10 @@ class _SymbolAddresses {
           ffi.NativeFunction<
               ffi.Uint32 Function(ffi.Pointer<tarantool_index_id_request_t>)>>
       get tarantool_index_id_by_name => _library._tarantool_index_id_by_namePtr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Bool Function(ffi.Pointer<tarantool_index_id_request_t>)>>
+      get tarantool_has_index => _library._tarantool_has_indexPtr;
   ffi.Pointer<
           ffi.NativeFunction<
               ffi.Pointer<tarantool_tuple_t> Function(
