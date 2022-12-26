@@ -122,8 +122,6 @@ void main() {
             ..update(["key-1"], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])),
           equals(data));
     });
-    test("multi isolate batch", testMultiIsolateInsert);
-    test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
     test("pairs iterator", testIterator);
     test("fail with error", () async {
       await _space.insert(testSingleData);
@@ -133,6 +131,11 @@ void main() {
               exception is StorageExecutionException &&
               exception.toString() == """Duplicate key exists in unique index "primary" in space "test" with old tuple - [1, "key", "value"] and new tuple - [1, "key", "value"]""")));
     });
+  });
+
+  group("[isolate crud]", () {
+    test("multi isolate batch", testMultiIsolateInsert);
+    test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
   });
 
   group("[execution]", () {
