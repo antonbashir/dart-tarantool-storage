@@ -173,6 +173,7 @@ signal_cb(ev_loop *loop, struct ev_signal *w, int revents)
 	 * a bug that the server suddenly died. Make such case
 	 * explicit in the log.
 	 */
+  say_crit("got signal %d - %s", w->signum, strsignal(w->signum));
 	if (pid_file)
 		say_crit("got signal %d - %s", w->signum, strsignal(w->signum));
 	tarantool_exit(0);
