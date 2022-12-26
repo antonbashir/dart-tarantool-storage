@@ -58,7 +58,7 @@ class Storage {
 
   void shutdown() => _bindings.tarantool_shutdown(0);
 
-  void close() {
+  void close(dynamic message) {
     _executors.forEach((executor) => executor.close());
     _shutdownPort.close();
   }
