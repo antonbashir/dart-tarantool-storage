@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:tarantool_storage/storage/constants.dart';
 import 'package:tarantool_storage/tarantool_storage.dart';
@@ -29,6 +30,7 @@ void main() {
   test("bench batch", benchBatch, timeout: Timeout(Duration(minutes: 30)));
   test("bench execution", benchExecute, timeout: Timeout(Duration(minutes: 30)));
   test("bench iterator", benchIterator, timeout: Timeout(Duration(minutes: 30)));
+  test("bench isolated get", benchIsolatedGet, timeout: Timeout(Duration(minutes: 30)));
 }
 
 Future<void> benchGet() async {
@@ -45,6 +47,37 @@ Future<void> benchGet() async {
   }
   await completer.future;
   print("Get RPS: ${benchmarkDataCount ~/ (stopwatch.elapsedMilliseconds / 1000)}");
+}
+
+Future<void> benchIsolatedGet() async {
+  final stopwatch = Stopwatch();
+  final isolateCount = 2;
+  final ports = <ReceivePort>[];
+  for (var isolateIndex = 0; isolateIndex < isolateCount; isolateIndex++) {
+    ReceivePort port = ReceivePort();
+    ports.add(port);
+    Isolate.spawn<int>((count) async {
+      final completer = Completer();
+      int counter = 0;
+      final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
+      final space = await storage.executor().spaceByName("test");
+      for (var i = 0; i < count; i++) {
+        space.get([i + 1]).then((value) {
+          if (++counter >= count) {
+            completer.complete(null);
+          }
+        });
+      }
+      await completer.future;
+      storage.close();
+    }, benchmarkDataCount, onExit: port.sendPort);
+  }
+  stopwatch.start();
+  for (var port in ports) {
+    await port.first;
+  }
+  print("Get RPS ($isolateCount isolates): ${(benchmarkDataCount * isolateCount) ~/ (stopwatch.elapsedMilliseconds / 1000)}");
+  ports.forEach((port) => port.close());
 }
 
 Future<void> benchExecute() async {
