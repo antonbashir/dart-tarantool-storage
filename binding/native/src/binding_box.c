@@ -307,6 +307,11 @@ uint32_t tarantool_space_id_by_name(tarantool_space_id_request_t *request)
   return box_space_id_by_name(request->name, request->name_length);
 }
 
+bool tarantool_has_space(tarantool_space_id_request_t *request)
+{
+  return tarantool_space_id_by_name(request) != BOX_ID_NIL;
+}
+
 intptr_t tarantool_index_iterator(tarantool_index_iterator_request_t *request)
 {
   return (intptr_t)box_index_iterator(request->space_id,
@@ -332,6 +337,11 @@ uint64_t tarantool_index_length(tarantool_index_id_t *id)
 uint32_t tarantool_index_id_by_name(tarantool_index_id_request_t *request)
 {
   return box_index_id_by_name(request->space_id, request->name, request->name_length);
+}
+
+bool tarantool_has_index(tarantool_index_id_request_t *request)
+{
+  return tarantool_index_id_by_name(request) != BOX_ID_NIL;
 }
 
 tarantool_tuple_t *tarantool_index_get(tarantool_index_request_t *request)
