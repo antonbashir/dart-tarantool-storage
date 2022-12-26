@@ -9,6 +9,7 @@
 #include "ck_ring.h"
 #include "ck_backoff.h"
 #include "dart/dart_api_dl.h"
+#include "box/txn.h"
 
 #define MESSAGE_BUFFER_ERROR "Failed to allocate message ring buffer"
 
@@ -57,7 +58,7 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
 
 static inline void tarantool_message_handle(tarantool_message_t *message)
 {
-  if (tarantool_in_transaction())
+  if (in_txn())
   {
     if (message->owner != transaction_owner)
     {
@@ -139,7 +140,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       break;
     }
 
-    if (tarantool_in_transaction())
+    if (in_txn())
     {
       continue;
     }
@@ -180,35 +181,4 @@ void tarantool_message_loop_stop()
 bool tarantool_message_loop_active()
 {
   return active;
-}
-
-tarantool_tuple_t *tarantool_tuple_from_box(box_tuple_t *source)
-{
-  size_t size = box_tuple_bsize(source);
-  char *data = malloc(size);
-  box_tuple_to_buf(source, data, size);
-  return tarantool_tuple_new(data, size);
-}
-
-tarantool_tuple_t *tarantool_tuple_new(char *data, size_t size)
-{
-  tarantool_tuple_t *return_tuple = malloc(sizeof(tarantool_tuple_t));
-  if (unlikely(return_tuple == NULL))
-  {
-    return NULL;
-  }
-  return_tuple->data = data;
-  return_tuple->size = size;
-  return return_tuple;
-}
-
-void *tarantool_tuple_allocate(size_t size)
-{
-  return malloc(size);
-}
-
-void tarantool_tuple_free(tarantool_tuple_t *tuple)
-{
-  free(tuple->data);
-  free(tuple);
 }

@@ -6114,62 +6114,6 @@ class TarantoolBindings {
   late final _tarantool_send_message = _tarantool_send_messagePtr
       .asFunction<bool Function(ffi.Pointer<tarantool_message_t>, Object)>();
 
-  ffi.Pointer<ffi.Void> tarantool_tuple_allocate(
-    int size,
-  ) {
-    return _tarantool_tuple_allocate(
-      size,
-    );
-  }
-
-  late final _tarantool_tuple_allocatePtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
-          'tarantool_tuple_allocate');
-  late final _tarantool_tuple_allocate = _tarantool_tuple_allocatePtr
-      .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-
-  ffi.Pointer<tarantool_tuple_t> tarantool_tuple_new(
-    ffi.Pointer<ffi.Char> data,
-    int size,
-  ) {
-    return _tarantool_tuple_new(
-      data,
-      size,
-    );
-  }
-
-  late final _tarantool_tuple_newPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<tarantool_tuple_t> Function(
-              ffi.Pointer<ffi.Char>, ffi.Size)>>('tarantool_tuple_new');
-  late final _tarantool_tuple_new = _tarantool_tuple_newPtr.asFunction<
-      ffi.Pointer<tarantool_tuple_t> Function(ffi.Pointer<ffi.Char>, int)>();
-
-  void tarantool_tuple_free(
-    ffi.Pointer<tarantool_tuple_t> tuple,
-  ) {
-    return _tarantool_tuple_free(
-      tuple,
-    );
-  }
-
-  late final _tarantool_tuple_freePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<tarantool_tuple_t>)>>('tarantool_tuple_free');
-  late final _tarantool_tuple_free = _tarantool_tuple_freePtr
-      .asFunction<void Function(ffi.Pointer<tarantool_tuple_t>)>();
-
-  ffi.Pointer<obuf> tarantool_output_buffer() {
-    return _tarantool_output_buffer();
-  }
-
-  late final _tarantool_output_bufferPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<obuf> Function()>>(
-          'tarantool_output_buffer');
-  late final _tarantool_output_buffer =
-      _tarantool_output_bufferPtr.asFunction<ffi.Pointer<obuf> Function()>();
-
   Object dart_get_handle_from_message(
     ffi.Pointer<tarantool_message_t> message,
   ) {
@@ -7677,18 +7621,6 @@ class _SymbolAddresses {
           ffi.NativeFunction<
               ffi.Bool Function(ffi.Pointer<tarantool_message_t>, ffi.Handle)>>
       get tarantool_send_message => _library._tarantool_send_messagePtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>
-      get tarantool_tuple_allocate => _library._tarantool_tuple_allocatePtr;
-  ffi.Pointer<
-      ffi.NativeFunction<
-          ffi.Pointer<tarantool_tuple_t> Function(
-              ffi.Pointer<ffi.Char>, ffi.Size)>> get tarantool_tuple_new =>
-      _library._tarantool_tuple_newPtr;
-  ffi.Pointer<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<tarantool_tuple_t>)>>
-      get tarantool_tuple_free => _library._tarantool_tuple_freePtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Pointer<obuf> Function()>>
-      get tarantool_output_buffer => _library._tarantool_output_bufferPtr;
   ffi.Pointer<
           ffi.NativeFunction<
               ffi.Handle Function(ffi.Pointer<tarantool_message_t>)>>
@@ -8623,8 +8555,6 @@ class tarantool_message_loop_configuration extends ffi.Struct {
 
 typedef tarantool_message_loop_configuration_t
     = tarantool_message_loop_configuration;
-
-class obuf extends ffi.Opaque {}
 
 class tarantool_space_id_request_t extends ffi.Struct {
   external ffi.Pointer<ffi.Char> name;

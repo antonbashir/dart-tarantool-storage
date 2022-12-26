@@ -26,6 +26,29 @@ void tarantool_initialize_box(size_t output_buffer_capacity)
   obuf_create(&output_buffer, cord_slab_cache(), output_buffer_capacity);
 }
 
+static inline tarantool_tuple_t *tarantool_tuple_new(char *data, size_t size)
+{
+  tarantool_tuple_t *return_tuple = malloc(sizeof(tarantool_tuple_t));
+  if (unlikely(return_tuple == NULL))
+  {
+    return NULL;
+  }
+  return_tuple->data = data;
+  return_tuple->size = size;
+  return return_tuple;
+}
+
+static inline void *tarantool_tuple_allocate(size_t size)
+{
+  return malloc(size);
+}
+
+static inline void tarantool_tuple_free(tarantool_tuple_t *tuple)
+{
+  free(tuple->data);
+  free(tuple);
+}
+
 static inline tarantool_tuple_t *tarantool_tuple_from_box(box_tuple_t *source)
 {
   if (unlikely(source == NULL))
@@ -144,9 +167,9 @@ tarantool_tuple_t *tarantool_space_put(tarantool_space_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_replace(request->space_id,
-                  request->tuple->data,
-                  request->tuple->data + request->tuple->size,
-                  &result) < 0))
+                           request->tuple->data,
+                           request->tuple->data + request->tuple->size,
+                           &result) < 0))
   {
     return NULL;
   }
@@ -157,9 +180,9 @@ tarantool_tuple_t *tarantool_space_insert(tarantool_space_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_insert(request->space_id,
-                 request->tuple->data,
-                 request->tuple->data + request->tuple->size,
-                 &result) < 0))
+                          request->tuple->data,
+                          request->tuple->data + request->tuple->size,
+                          &result) < 0))
   {
     return NULL;
   }
@@ -170,13 +193,13 @@ tarantool_tuple_t *tarantool_space_update(tarantool_space_update_request_t *requ
 {
   box_tuple_t *result;
   if (unlikely(box_update(request->space_id,
-                 TARANTOOL_PRIMARY_INDEX_ID,
-                 request->key->data,
-                 request->key->data + request->key->size,
-                 request->operations->data,
-                 request->operations->data + request->operations->size,
-                 TARANTOOL_INDEX_BASE_C,
-                 &result) < 0))
+                          TARANTOOL_PRIMARY_INDEX_ID,
+                          request->key->data,
+                          request->key->data + request->key->size,
+                          request->operations->data,
+                          request->operations->data + request->operations->size,
+                          TARANTOOL_INDEX_BASE_C,
+                          &result) < 0))
   {
     return NULL;
   }
@@ -187,13 +210,13 @@ tarantool_tuple_t *tarantool_space_upsert(tarantool_space_upsert_request_t *requ
 {
   box_tuple_t *result;
   if (unlikely(box_upsert(request->space_id,
-                 TARANTOOL_PRIMARY_INDEX_ID,
-                 request->tuple->data,
-                 request->tuple->data + request->tuple->size,
-                 request->operations->data,
-                 request->operations->data + request->operations->size,
-                 TARANTOOL_INDEX_BASE_C,
-                 &result) < 0))
+                          TARANTOOL_PRIMARY_INDEX_ID,
+                          request->tuple->data,
+                          request->tuple->data + request->tuple->size,
+                          request->operations->data,
+                          request->operations->data + request->operations->size,
+                          TARANTOOL_INDEX_BASE_C,
+                          &result) < 0))
   {
     return NULL;
   }
@@ -204,10 +227,10 @@ tarantool_tuple_t *tarantool_space_get(tarantool_space_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_index_get(request->space_id,
-                    TARANTOOL_PRIMARY_INDEX_ID,
-                    request->tuple->data,
-                    request->tuple->data + request->tuple->size,
-                    &result) < 0))
+                             TARANTOOL_PRIMARY_INDEX_ID,
+                             request->tuple->data,
+                             request->tuple->data + request->tuple->size,
+                             &result) < 0))
   {
     return NULL;
   }
@@ -218,10 +241,10 @@ tarantool_tuple_t *tarantool_space_min(tarantool_space_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_index_min(request->space_id,
-                    TARANTOOL_PRIMARY_INDEX_ID,
-                    request->tuple->data,
-                    request->tuple->data + request->tuple->size,
-                    &result) < 0))
+                             TARANTOOL_PRIMARY_INDEX_ID,
+                             request->tuple->data,
+                             request->tuple->data + request->tuple->size,
+                             &result) < 0))
   {
     return NULL;
   }
@@ -232,10 +255,10 @@ tarantool_tuple_t *tarantool_space_max(tarantool_space_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_index_max(request->space_id,
-                    TARANTOOL_PRIMARY_INDEX_ID,
-                    request->tuple->data,
-                    request->tuple->data + request->tuple->size,
-                    &result) < 0))
+                             TARANTOOL_PRIMARY_INDEX_ID,
+                             request->tuple->data,
+                             request->tuple->data + request->tuple->size,
+                             &result) < 0))
   {
     return NULL;
   }
@@ -246,13 +269,13 @@ tarantool_tuple_t *tarantool_space_select(tarantool_space_select_request_t *requ
 {
   struct port port;
   if (unlikely(box_select(request->space_id,
-                 TARANTOOL_PRIMARY_INDEX_ID,
-                 request->iterator_type,
-                 request->offset,
-                 request->limit,
-                 request->key->data,
-                 request->key->data + request->key->size,
-                 &port) < 0))
+                          TARANTOOL_PRIMARY_INDEX_ID,
+                          request->iterator_type,
+                          request->offset,
+                          request->limit,
+                          request->key->data,
+                          request->key->data + request->key->size,
+                          &port) < 0))
   {
     return NULL;
   }
@@ -264,10 +287,10 @@ tarantool_tuple_t *tarantool_space_delete(tarantool_space_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_delete(request->space_id,
-                 TARANTOOL_PRIMARY_INDEX_ID,
-                 request->tuple->data,
-                 request->tuple->data + request->tuple->size,
-                 &result) < 0))
+                          TARANTOOL_PRIMARY_INDEX_ID,
+                          request->tuple->data,
+                          request->tuple->data + request->tuple->size,
+                          &result) < 0))
   {
     return NULL;
   }
@@ -315,10 +338,10 @@ tarantool_tuple_t *tarantool_index_get(tarantool_index_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_index_get(request->space_id,
-                    request->index_id,
-                    request->tuple->data,
-                    request->tuple->data + request->tuple->size,
-                    &result) < 0))
+                             request->index_id,
+                             request->tuple->data,
+                             request->tuple->data + request->tuple->size,
+                             &result) < 0))
   {
     return NULL;
   }
@@ -329,10 +352,10 @@ tarantool_tuple_t *tarantool_index_min(tarantool_index_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_index_min(request->space_id,
-                    request->index_id,
-                    request->tuple->data,
-                    request->tuple->data + request->tuple->size,
-                    &result) < 0))
+                             request->index_id,
+                             request->tuple->data,
+                             request->tuple->data + request->tuple->size,
+                             &result) < 0))
   {
     return NULL;
   }
@@ -343,10 +366,10 @@ tarantool_tuple_t *tarantool_index_max(tarantool_index_request_t *request)
 {
   box_tuple_t *result;
   if (unlikely(box_index_max(request->space_id,
-                    request->index_id,
-                    request->tuple->data,
-                    request->tuple->data + request->tuple->size,
-                    &result) < 0))
+                             request->index_id,
+                             request->tuple->data,
+                             request->tuple->data + request->tuple->size,
+                             &result) < 0))
   {
     return NULL;
   }
@@ -357,13 +380,13 @@ tarantool_tuple_t *tarantool_index_select(tarantool_index_select_request_t *requ
 {
   struct port port;
   if (unlikely(box_select(request->space_id,
-                 request->index_id,
-                 request->iterator_type,
-                 request->offset,
-                 request->limit,
-                 request->key->data,
-                 request->key->data + request->key->size,
-                 &port) < 0))
+                          request->index_id,
+                          request->iterator_type,
+                          request->offset,
+                          request->limit,
+                          request->key->data,
+                          request->key->data + request->key->size,
+                          &port) < 0))
   {
     return NULL;
   }
@@ -375,13 +398,13 @@ tarantool_tuple_t *tarantool_index_update(tarantool_index_update_request_t *requ
 {
   box_tuple_t *result;
   if (unlikely(box_update(request->space_id,
-                 request->index_id,
-                 request->key->data,
-                 request->key->data + request->key->size,
-                 request->operations->data,
-                 request->operations->data + request->operations->size,
-                 TARANTOOL_INDEX_BASE_C,
-                 &result) < 0))
+                          request->index_id,
+                          request->key->data,
+                          request->key->data + request->key->size,
+                          request->operations->data,
+                          request->operations->data + request->operations->size,
+                          TARANTOOL_INDEX_BASE_C,
+                          &result) < 0))
   {
     return NULL;
   }

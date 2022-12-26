@@ -21,10 +21,6 @@ extern "C"
 	void tarantool_message_loop_stop();
 	bool tarantool_message_loop_active();
 	bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback);
-	void *tarantool_tuple_allocate(size_t size);
-	tarantool_tuple_t *tarantool_tuple_new(char *data, size_t size);
-	void tarantool_tuple_free(tarantool_tuple_t *tuple);
-	struct obuf *tarantool_output_buffer();
 #if defined(__cplusplus)
 }
 #endif
