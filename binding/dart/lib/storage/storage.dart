@@ -29,7 +29,7 @@ class Storage {
     _bindings = TarantoolBindings(_library);
     _ownerId = _bindings.tarantool_generate_owner_id();
     _defaultExecutor = executor();
-    _shutdownPort = RawReceivePort(() => close());
+    _shutdownPort = RawReceivePort(close);
   }
 
   void boot(BootstrapScript script, MessageLoopConfiguration loopConfiguration) {
