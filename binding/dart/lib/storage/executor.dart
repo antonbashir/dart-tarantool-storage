@@ -24,7 +24,9 @@ class StorageExecutor {
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) => begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
+  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
+    return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
+  }
 
   StorageSpace spaceById(int id) => StorageSpace(_bindings, this, id);
 
@@ -151,9 +153,9 @@ class StorageExecutor {
     return completer.future.then((value) {
       if (value.ref.failed) {
         if (_bindings.tarantool_in_transaction()) {
-          return rollback().then((value) => throw StorageExceutionException());
+          return rollback().then((_) => Future.error(StorageExceutionException(), StackTrace.current));
         }
-        throw StorageExceutionException();
+        return Future.error(StorageExceutionException(), StackTrace.current);
       }
       return value.ref.output;
     });
@@ -170,9 +172,9 @@ class StorageExecutor {
     return completer.future.then((value) {
       if (value.ref.failed) {
         if (_bindings.tarantool_in_transaction()) {
-          return rollback().then((value) => throw StorageExceutionException());
+          return rollback().then((_) => Future.error(StorageExceutionException(), StackTrace.current));
         }
-        throw StorageExceutionException();
+        return Future.error(StorageExceutionException(), StackTrace.current);
       }
       return value;
     });

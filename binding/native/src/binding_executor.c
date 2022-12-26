@@ -59,7 +59,8 @@ static inline void tarantool_message_handle(tarantool_message_t *message)
 {
   if (tarantool_in_transaction())
   {
-    if (message->owner != transaction_owner) {
+    if (message->owner != transaction_owner)
+    {
       ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
       return;
     }

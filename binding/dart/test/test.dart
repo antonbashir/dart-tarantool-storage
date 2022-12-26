@@ -124,14 +124,13 @@ void main() {
     });
     test("multi isolate batch", testMultiIsolateInsert);
     test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
+    test("pairs iterator", testIterator);
   });
 
   group("[execution]", () {
     test("execute native", testExecuteNative);
     test("execute lua", testExecuteLua);
   });
-
-  test("pairs iterator", testIterator);
 }
 
 Future<void> testExecuteLua() async {
