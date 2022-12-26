@@ -6043,6 +6043,21 @@ class TarantoolBindings {
   late final _tarantool_shutdown =
       _tarantool_shutdownPtr.asFunction<void Function(int)>();
 
+  void tarantool_register_shutdown_callback(
+    ffi.Pointer<ffi.Handle> handle,
+  ) {
+    return _tarantool_register_shutdown_callback(
+      handle,
+    );
+  }
+
+  late final _tarantool_register_shutdown_callbackPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Handle>)>>(
+          'tarantool_register_shutdown_callback');
+  late final _tarantool_register_shutdown_callback =
+      _tarantool_register_shutdown_callbackPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Handle>)>();
+
   void tarantool_message_loop_initialize(
     ffi.Pointer<tarantool_message_loop_configuration_t> configuration,
   ) {
@@ -7599,6 +7614,9 @@ class _SymbolAddresses {
       get tarantool_initialized => _library._tarantool_initializedPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>
       get tarantool_shutdown => _library._tarantool_shutdownPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Handle>)>>
+      get tarantool_register_shutdown_callback =>
+          _library._tarantool_register_shutdown_callbackPtr;
   ffi.Pointer<
           ffi.NativeFunction<
               ffi.Void Function(
@@ -8529,6 +8547,8 @@ class tarantool_configuration extends ffi.Struct {
 
   @ffi.Size()
   external int message_loop_ring_size;
+
+  external ffi.Pointer<ffi.Handle> shutdown_handle;
 }
 
 typedef tarantool_configuration_t = tarantool_configuration;

@@ -11,6 +11,7 @@
 #include "binding_executor.h"
 #include "binding_box.h"
 #include "on_shutdown.h"
+#include "dart/dart_api_dl.h"
 
 #define TARANTOOL_MESSAGE_LOOP_FIBER "message-loop"
 
@@ -37,6 +38,14 @@ void *tarantool_process_initialization(void *binary_path);
 int tarantool_fiber(va_list args);
 void tarantool_complete_initialization();
 
+static inline void dart_post_pointer(void *pointer, Dart_Port port)
+{
+  Dart_CObject dart_object;
+  dart_object.type = Dart_CObject_kInt64;
+  dart_object.value.as_int64 = (int64_t)pointer;
+  Dart_PostCObject(port, &dart_object);
+};
+
 int tarantool_shutdown_trigger(void *ignore)
 {
   (void)ignore;
@@ -55,6 +64,7 @@ void tarantool_initialize(char *binary_path, char *script, tarantool_configurati
     return;
   }
   storage.configuration = *configuration;
+  storage.configuration.shutdown_handle = (Dart_Handle *)Dart_NewPersistentHandle(configuration->shutdown_handle);
   struct initialization_args *args = malloc(sizeof(struct initialization_args));
   args->binary_path = binary_path;
   args->script = script;
@@ -104,6 +114,8 @@ void *tarantool_process_initialization(void *input)
     tarantool_destroy_box();
     tarantool_shutdown_library(0);
     storage.initialized = false;
+    dart_post_pointer(NULL, storage.configuration.shutdown_handle);
+    Dart_DeletePersistentHandle(storage.configuration.shutdown_handle);
     tt_pthread_cond_broadcast(&storage.shutdown_condition);
     tt_pthread_mutex_unlock(&storage.shutdown_mutex);
   }

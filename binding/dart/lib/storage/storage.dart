@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 import 'bindings.dart';
@@ -17,6 +18,7 @@ class Storage {
   late DynamicLibrary _library;
   late StorageExecutor _defaultExecutor;
   late int _ownerId;
+  late int _shutdownPort;
 
   Storage({String? libraryPath}) {
     _library = libraryPath != null
@@ -27,11 +29,13 @@ class Storage {
     _bindings = TarantoolBindings(_library);
     _ownerId = _bindings.tarantool_generate_owner_id();
     _defaultExecutor = executor();
+    _shutdownPort = RawReceivePort(() => close()).sendPort.nativePort;
   }
 
   void boot(BootstrapScript script, MessageLoopConfiguration loopConfiguration) {
     if (initialized()) return;
     final nativeConfiguration = loopConfiguration.native();
+    nativeConfiguration.ref.shutdown_handle = Pointer.fromAddress(_shutdownPort);
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
       script.write().toNativeUtf8().cast(),

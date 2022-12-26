@@ -16,11 +16,13 @@ extern "C"
 		int message_loop_empty_cycles_multiplier;
 		int message_loop_initial_empty_cycles;
 		size_t message_loop_ring_size;
+    Dart_Handle *shutdown_handle;
 	} tarantool_configuration_t;
 
 	void tarantool_initialize(char *binary_path, char *script, tarantool_configuration_t *configuration);
 	bool tarantool_initialized();
 	void tarantool_shutdown(int code);
+  void tarantool_register_shutdown_callback(Dart_Handle * handle);
 #if defined(__cplusplus)
 }
 #endif
