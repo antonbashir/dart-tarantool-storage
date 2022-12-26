@@ -1,6 +1,6 @@
 #ifndef BINDING_DART_FUNCTIONS_H_INCLUDED
 #define BINDING_DART_FUNCTIONS_H_INCLUDED
-#include "binding_common_types.h"
+#include "binding_common.h"
 
 #if defined(__cplusplus)
 extern "C"

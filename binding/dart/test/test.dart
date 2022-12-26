@@ -122,6 +122,8 @@ void main() {
             ..update(["key-1"], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])),
           equals(data));
     });
+    test("multi isolate batch", testMultiIsolateInsert);
+    test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
   });
 
   group("[execution]", () {
@@ -130,7 +132,6 @@ void main() {
   });
 
   test("pairs iterator", testIterator);
-  test("multi isolate", testIterator);
 }
 
 Future<void> testExecuteLua() async {
@@ -170,20 +171,51 @@ Future<void> testIterator() async {
   );
 }
 
-Future<void> testMultiIsolate() async {
+Future<void> testMultiIsolateInsert() async {
   final count = 100;
   final ports = <ReceivePort>[];
   final data = [];
   for (var i = 0; i < count; i++) {
     ReceivePort port = ReceivePort();
-    Isolate.spawn((message) async {
-      final executor = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName").executor();
-      final element = [...testSingleData]..[0] = i + 1;
-      data.add(element);
-      await executor.transactional((executor) => executor.spaceByName("test").then((space) => space.insert(element)));
-    }, null, onExit: port.sendPort);
     ports.add(port);
+    final element = [...testSingleData];
+    element[0] = i + 1;
+    element[1] = "key-${i + 1}";
+    data.add(element);
+    Isolate.spawn<dynamic>((element) async {
+      final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
+      await storage.executor().spaceByName("test").then((space) => space.insert(element));
+      storage.close();
+    }, element, onExit: port.sendPort);
   }
-  await Future.wait(ports.map((port) => port.first));
+  for (var port in ports) {
+    await port.first;
+  }
+  ports.forEach((port) => port.close());
+  expect(await _space.select(), equals(data));
+}
+
+Future<void> testMultiIsolateTransactionalInsert() async {
+  final count = 100;
+  final ports = <ReceivePort>[];
+  final data = [];
+  for (var i = 0; i < count; i++) {
+    ReceivePort port = ReceivePort();
+    ports.add(port);
+    final element = [...testSingleData];
+    element[0] = i + 1;
+    element[1] = "key-${i + 1}";
+    data.add(element);
+    Isolate.spawn<dynamic>((element) async {
+      final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
+      final executor = storage.executor();
+      await executor.spaceByName("test").then((space) => executor.transactional((executor) => space.insert(element)));
+      storage.close();
+    }, element, onExit: port.sendPort);
+  }
+  for (var port in ports) {
+    await port.first;
+  }
+  ports.forEach((port) => port.close());
   expect(await _space.select(), equals(data));
 }

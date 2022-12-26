@@ -1,6 +1,6 @@
 #ifndef BINDING_EXECUTOR_H_INCLUDED
 #define BINDING_EXECUTOR_H_INCLUDED
-#include "binding_common_types.h"
+#include "binding_common.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -21,7 +21,6 @@ extern "C"
 	void tarantool_message_loop_stop();
 	bool tarantool_message_loop_active();
 	bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback);
-	bool tarantool_run_message(tarantool_message_t *message);
 	void *tarantool_tuple_allocate(size_t size);
 	tarantool_tuple_t *tarantool_tuple_new(char *data, size_t size);
 	void tarantool_tuple_free(tarantool_tuple_t *tuple);

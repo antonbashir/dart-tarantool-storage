@@ -5990,6 +5990,16 @@ class TarantoolBindings {
   late final _Dart_PrepareToAbort =
       _Dart_PrepareToAbortPtr.asFunction<void Function()>();
 
+  int tarantool_generate_owner_id() {
+    return _tarantool_generate_owner_id();
+  }
+
+  late final _tarantool_generate_owner_idPtr =
+      _lookup<ffi.NativeFunction<ffi.UnsignedInt Function()>>(
+          'tarantool_generate_owner_id');
+  late final _tarantool_generate_owner_id =
+      _tarantool_generate_owner_idPtr.asFunction<int Function()>();
+
   void tarantool_initialize(
     ffi.Pointer<ffi.Char> binary_path,
     ffi.Pointer<ffi.Char> script,
@@ -6103,21 +6113,6 @@ class TarantoolBindings {
               ffi.Handle)>>('tarantool_send_message');
   late final _tarantool_send_message = _tarantool_send_messagePtr
       .asFunction<bool Function(ffi.Pointer<tarantool_message_t>, Object)>();
-
-  bool tarantool_run_message(
-    ffi.Pointer<tarantool_message_t> message,
-  ) {
-    return _tarantool_run_message(
-      message,
-    );
-  }
-
-  late final _tarantool_run_messagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Bool Function(
-              ffi.Pointer<tarantool_message_t>)>>('tarantool_run_message');
-  late final _tarantool_run_message = _tarantool_run_messagePtr
-      .asFunction<bool Function(ffi.Pointer<tarantool_message_t>)>();
 
   ffi.Pointer<ffi.Void> tarantool_tuple_allocate(
     int size,
@@ -7648,6 +7643,9 @@ class _SymbolAddresses {
       get Dart_DumpNativeStackTrace => _library._Dart_DumpNativeStackTracePtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>
       get Dart_PrepareToAbort => _library._Dart_PrepareToAbortPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.UnsignedInt Function()>>
+      get tarantool_generate_owner_id =>
+          _library._tarantool_generate_owner_idPtr;
   ffi.Pointer<
           ffi.NativeFunction<
               ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
@@ -7679,10 +7677,6 @@ class _SymbolAddresses {
           ffi.NativeFunction<
               ffi.Bool Function(ffi.Pointer<tarantool_message_t>, ffi.Handle)>>
       get tarantool_send_message => _library._tarantool_send_messagePtr;
-  ffi.Pointer<
-          ffi.NativeFunction<
-              ffi.Bool Function(ffi.Pointer<tarantool_message_t>)>>
-      get tarantool_run_message => _library._tarantool_run_messagePtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>
       get tarantool_tuple_allocate => _library._tarantool_tuple_allocatePtr;
   ffi.Pointer<
@@ -8570,6 +8564,9 @@ class tarantool_message_t extends ffi.Struct {
 
   @ffi.Bool()
   external bool failed;
+
+  @ffi.UnsignedInt()
+  external int owner;
 }
 
 class tarantool_tuple_t extends ffi.Struct {

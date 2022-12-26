@@ -15,6 +15,7 @@
 static ck_ring_buffer_t *tarantool_message_buffer;
 static ck_ring_t tarantool_message_ring;
 static volatile bool active = false;
+unsigned int __thread transaction_owner = -1;
 
 static inline void dart_post_pointer(void *pointer, Dart_Port port)
 {
@@ -56,6 +57,13 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
 
 static inline void tarantool_message_handle(tarantool_message_t *message)
 {
+  if (tarantool_in_transaction())
+  {
+    if (message->owner != transaction_owner) {
+      ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
+      return;
+    }
+  }
   switch (message->type)
   {
   case TARANTOOL_MESSAGE_CALL:
@@ -67,6 +75,7 @@ static inline void tarantool_message_handle(tarantool_message_t *message)
     dart_post_pointer(message, message->callback_send_port);
     return;
   case TARANTOOL_MESSAGE_BEGIN:
+    transaction_owner = message->owner;
     tarantool_begin();
     dart_post_pointer(message, message->callback_send_port);
     return;
@@ -157,15 +166,6 @@ bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback)
     return false;
   }
   message->callback_handle = (Dart_Handle *)Dart_NewPersistentHandle(callback);
-  return ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
-}
-
-bool tarantool_run_message(tarantool_message_t *message)
-{
-  if (unlikely(active == false))
-  {
-    return false;
-  }
   return ck_ring_enqueue_mpsc(&tarantool_message_ring, tarantool_message_buffer, message);
 }
 

@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "binding_common_types.h"
+#include "binding_common.h"
 #include "binding_controller.h"
 #include "binding_executor.h"
 #include "binding_dart_functions.h"

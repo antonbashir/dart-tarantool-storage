@@ -51,7 +51,7 @@
       "binding_box.h": "c",
       "tarantool_executor.h": "c",
       "binding_executor.h": "c",
-      "binding_common_types.h": "c",
+      "binding_common.h": "c",
       "small.h": "c",
       "region.h": "c",
       "txn.h": "c",
@@ -100,7 +100,9 @@
       "module.h": "c",
       "lua.h": "c",
       "luaconf.h": "c",
-      "ck_ring.h": "c"
+      "ck_ring.h": "c",
+      "ck_backoff.h": "c",
+      "ck_cc.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",

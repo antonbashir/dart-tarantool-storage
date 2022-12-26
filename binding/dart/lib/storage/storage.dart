@@ -11,11 +11,12 @@ import 'script.dart';
 import 'executor.dart';
 
 class Storage {
-  final List<StorageExecutor> executors = [];
+  final List<StorageExecutor> _executors = [];
 
   late TarantoolBindings _bindings;
   late DynamicLibrary _library;
   late StorageExecutor _defaultExecutor;
+  late int _ownerId;
 
   Storage({String? libraryPath}) {
     _library = libraryPath != null
@@ -24,6 +25,7 @@ class Storage {
             : loadBindingLibrary()
         : loadBindingLibrary();
     _bindings = TarantoolBindings(_library);
+    _ownerId = _bindings.tarantool_generate_owner_id();
     _defaultExecutor = executor();
   }
 
@@ -48,16 +50,18 @@ class Storage {
 
   Future<void> awaitImmutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !immutable()));
 
-  Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !mutable()));
+  Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => mutable()));
 
   void shutdown() {
     _bindings.tarantool_shutdown(0);
-    executors.forEach((executor) => executor.close());
+    _executors.forEach((executor) => executor.close());
   }
 
+  void close() => _executors.forEach((executor) => executor.close());
+
   StorageExecutor executor() {
-    final executor = StorageExecutor(_bindings);
-    executors.add(executor);
+    final executor = StorageExecutor(_bindings, _ownerId);
+    _executors.add(executor);
     return executor;
   }
 

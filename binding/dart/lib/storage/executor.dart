@@ -17,16 +17,14 @@ class StorageExecutor {
   late TarantoolBindings _bindings;
   late RawReceivePort _receiverPort;
   late int _nativePort;
+  final int _ownerId;
 
-  StorageExecutor(this._bindings) {
+  StorageExecutor(this._bindings, this._ownerId) {
     _receiverPort = RawReceivePort(_receive);
     _nativePort = _receiverPort.sendPort.nativePort;
   }
 
-  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) async {
-    await Future.doWhile(() => Future.delayed(awaitTransactionDuration).then((_) => hasTransaction()));
-    return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
-  }
+  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) => begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
 
   StorageSpace spaceById(int id) => StorageSpace(_bindings, this, id);
 
@@ -131,7 +129,9 @@ class StorageExecutor {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_in_transaction.cast();
-        return sendSingle(message).then((pointer) => pointer.address != 0);
+        return sendSingle(message).then((pointer) {
+          return pointer.cast<Bool>().value;
+        });
       });
 
   Future<void> startBackup() => evaluateLuaScript(startBackupLuaScript);
@@ -143,6 +143,7 @@ class StorageExecutor {
   Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
     if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
     message.ref.callback_send_port = _nativePort;
+    message.ref.owner = _ownerId;
     final completer = Completer<Pointer<tarantool_message_t>>();
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
       completer.completeError(StorageRequestsLimitException(), StackTrace.current);
@@ -161,6 +162,7 @@ class StorageExecutor {
   Future<Pointer<tarantool_message_t>> sendBatch(Pointer<tarantool_message_t> message) {
     if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
     message.ref.callback_send_port = _nativePort;
+    message.ref.owner = _ownerId;
     final completer = Completer<Pointer<tarantool_message_t>>();
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
       completer.completeError(StorageRequestsLimitException(), StackTrace.current);
