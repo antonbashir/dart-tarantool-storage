@@ -8548,7 +8548,8 @@ class tarantool_configuration extends ffi.Struct {
   @ffi.Size()
   external int message_loop_ring_size;
 
-  external ffi.Pointer<ffi.Handle> shutdown_handle;
+  @Dart_Port()
+  external int shutdown_port;
 }
 
 typedef tarantool_configuration_t = tarantool_configuration;

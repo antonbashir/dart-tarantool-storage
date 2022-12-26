@@ -18,7 +18,7 @@ class Storage {
   late DynamicLibrary _library;
   late StorageExecutor _defaultExecutor;
   late int _ownerId;
-  late int _shutdownPort;
+  late RawReceivePort _shutdownPort;
 
   Storage({String? libraryPath}) {
     _library = libraryPath != null
@@ -29,13 +29,13 @@ class Storage {
     _bindings = TarantoolBindings(_library);
     _ownerId = _bindings.tarantool_generate_owner_id();
     _defaultExecutor = executor();
-    _shutdownPort = RawReceivePort(() => close()).sendPort.nativePort;
+    _shutdownPort = RawReceivePort(() => close());
   }
 
   void boot(BootstrapScript script, MessageLoopConfiguration loopConfiguration) {
     if (initialized()) return;
     final nativeConfiguration = loopConfiguration.native();
-    nativeConfiguration.ref.shutdown_handle = Pointer.fromAddress(_shutdownPort);
+    nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
       script.write().toNativeUtf8().cast(),
@@ -56,12 +56,12 @@ class Storage {
 
   Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => mutable()));
 
-  void shutdown() {
-    _bindings.tarantool_shutdown(0);
-    _executors.forEach((executor) => executor.close());
-  }
+  void shutdown() => _bindings.tarantool_shutdown(0);
 
-  void close() => _executors.forEach((executor) => executor.close());
+  void close() {
+    _executors.forEach((executor) => executor.close());
+    _shutdownPort.close();
+  }
 
   StorageExecutor executor() {
     final executor = StorageExecutor(_bindings, _ownerId);

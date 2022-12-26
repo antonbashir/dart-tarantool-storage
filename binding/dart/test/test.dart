@@ -122,8 +122,8 @@ void main() {
             ..update(["key-1"], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])),
           equals(data));
     });
-    test("multi isolate batch", testMultiIsolateInsert);
-    test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
+    // test("multi isolate batch", testMultiIsolateInsert);
+    // test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
     test("pairs iterator", testIterator);
   });
 

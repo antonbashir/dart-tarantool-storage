@@ -2,6 +2,7 @@
 #define BINDING_CONTROLLER_H_INCLUDED
 #include <stdbool.h>
 #include <stddef.h>
+#include "dart/dart_api.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -16,7 +17,7 @@ extern "C"
 		int message_loop_empty_cycles_multiplier;
 		int message_loop_initial_empty_cycles;
 		size_t message_loop_ring_size;
-    Dart_Handle *shutdown_handle;
+    Dart_Port shutdown_port;
 	} tarantool_configuration_t;
 
 	void tarantool_initialize(char *binary_path, char *script, tarantool_configuration_t *configuration);
