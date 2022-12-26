@@ -13,6 +13,10 @@ class BootstrapScript {
 
   void file(File file) => content += (newLine + file.readAsStringSync() + newLine);
 
+  void schema() {
+    
+  }
+
   String write() {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(luaDirectory))) {
       code(extendPackagePathluaScript(Directory.current.path + luaDirectory));

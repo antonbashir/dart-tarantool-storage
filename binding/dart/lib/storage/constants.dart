@@ -89,6 +89,18 @@ extension UpdateOperationTypeExtension on UpdateOperationType {
   }
 }
 
+enum StorageEngine {
+  memtx,
+  vinly
+}
+
+enum IndexType {
+  hash,
+  tree,
+  bitset,
+  rtree
+}
+
 String requireluaScript(String module) => """require '$module'""";
 String extendPackagePathluaScript(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";
 String extendPackageNativePathluaScript(String extension) => """package.cpath = package.cpath .. ';${extension + "/?.so"}'""";
