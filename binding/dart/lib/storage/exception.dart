@@ -1,4 +1,4 @@
-class StorageRequestsLimitException implements Exception {}
+class StorageLimitException implements Exception {}
 
 class StorageShutdownException implements Exception {}
 

@@ -11,6 +11,7 @@ class StorageDefaults {
         messageLoopEmptyCyclesMultiplier: 2,
         messageLoopInitialEmptyCycles: 1000,
         messageLoopRingSize: 33554432,
+        messageLoopRingRetryMaxCount: 5,
       );
 
   static StorageConfiguration storage() => StorageConfiguration({

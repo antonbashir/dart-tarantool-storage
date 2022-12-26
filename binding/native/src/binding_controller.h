@@ -17,6 +17,7 @@ extern "C"
 		int message_loop_empty_cycles_multiplier;
 		int message_loop_initial_empty_cycles;
 		size_t message_loop_ring_size;
+		int message_loop_ring_retry_max_count;
     Dart_Port shutdown_port;
 	} tarantool_configuration_t;
 

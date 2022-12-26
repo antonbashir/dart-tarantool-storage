@@ -18,6 +18,13 @@ extern "C"
     TARANTOOL_MESSAGE_ROLLBACK = 5,
     tarantool_message_type_MAX,
   };
+  
+  enum tarantool_error_type
+  {
+    TARANTOOL_ERROR_LIMIT = 0,
+    TARANTOOL_ERROR_INTERNAL = 1,
+    tarantool_error_type_MAX,
+  };
 
   typedef void *(*tarantool_function)(void *);
   typedef void (*tarantool_consumer)(void *);
@@ -29,6 +36,7 @@ extern "C"
     tarantool_function_argument input;
     tarantool_function_argument output;
     char *error;
+    enum tarantool_error_type error_type;
   } tarantool_message_batch_element_t;
 
   typedef struct tarantool_message_t
@@ -42,6 +50,7 @@ extern "C"
     tarantool_message_batch_element_t **batch;
     size_t batch_size;
     char *error;
+    enum tarantool_error_type error_type;
     unsigned int owner;
   } tarantool_message_t;
 

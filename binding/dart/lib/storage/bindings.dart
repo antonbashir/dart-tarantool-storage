@@ -8477,6 +8477,12 @@ abstract class tarantool_message_type {
   static const int tarantool_message_type_MAX = 6;
 }
 
+abstract class tarantool_error_type {
+  static const int TARANTOOL_ERROR_LIMIT = 0;
+  static const int TARANTOOL_ERROR_INTERNAL = 1;
+  static const int tarantool_error_type_MAX = 2;
+}
+
 class tarantool_message_batch_element_t extends ffi.Struct {
   external tarantool_function function;
 
@@ -8485,6 +8491,9 @@ class tarantool_message_batch_element_t extends ffi.Struct {
   external tarantool_function_argument output;
 
   external ffi.Pointer<ffi.Char> error;
+
+  @ffi.Int32()
+  external int error_type;
 }
 
 typedef tarantool_function = ffi.Pointer<
@@ -8512,6 +8521,9 @@ class tarantool_message_t extends ffi.Struct {
   external int batch_size;
 
   external ffi.Pointer<ffi.Char> error;
+
+  @ffi.Int32()
+  external int error_type;
 
   @ffi.UnsignedInt()
   external int owner;
@@ -8546,6 +8558,9 @@ class tarantool_configuration extends ffi.Struct {
   @ffi.Size()
   external int message_loop_ring_size;
 
+  @ffi.Int()
+  external int message_loop_ring_retry_max_count;
+
   @Dart_Port()
   external int shutdown_port;
 }
@@ -8570,6 +8585,9 @@ class tarantool_message_loop_configuration extends ffi.Struct {
 
   @ffi.Size()
   external int message_loop_ring_size;
+
+  @ffi.Size()
+  external int message_loop_ring_retry_max_count;
 }
 
 typedef tarantool_message_loop_configuration_t

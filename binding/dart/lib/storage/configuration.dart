@@ -101,6 +101,7 @@ class MessageLoopConfiguration {
   final int messageLoopMaxEmptyCycles;
   final int messageLoopEmptyCyclesMultiplier;
   final int messageLoopInitialEmptyCycles;
+  final int messageLoopRingRetryMaxCount;
 
   const MessageLoopConfiguration({
     required this.boxOutputBufferCapacity,
@@ -110,6 +111,7 @@ class MessageLoopConfiguration {
     required this.messageLoopEmptyCyclesMultiplier,
     required this.messageLoopInitialEmptyCycles,
     required this.messageLoopRingSize,
+    required this.messageLoopRingRetryMaxCount,
   });
 
   Pointer<tarantool_configuration_t> native() {
@@ -121,6 +123,7 @@ class MessageLoopConfiguration {
     configuration.ref.message_loop_regular_sleep_seconds = messageLoopRegularSleepSeconds;
     configuration.ref.message_loop_max_sleep_seconds = messageLoopMaxSleepSeconds;
     configuration.ref.message_loop_ring_size = messageLoopRingSize;
+    configuration.ref.message_loop_ring_retry_max_count = messageLoopRingRetryMaxCount;
     return configuration;
   }
 }

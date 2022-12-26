@@ -146,7 +146,7 @@ class StorageExecutor {
     message.ref.owner = _ownerId;
     final completer = Completer<Pointer<tarantool_message_t>>();
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
-      completer.completeError(StorageRequestsLimitException(), StackTrace.current);
+      completer.completeError(StorageLimitException(), StackTrace.current);
     }
     return completer.future.then((value) {
       if (value.ref.error != nullptr) {
@@ -162,7 +162,7 @@ class StorageExecutor {
     message.ref.owner = _ownerId;
     final completer = Completer<Pointer<tarantool_message_t>>();
     if (!_bindings.tarantool_send_message(message, completer.complete)) {
-      completer.completeError(StorageRequestsLimitException(), StackTrace.current);
+      completer.completeError(StorageLimitException(), StackTrace.current);
     }
     return completer.future.then((value) {
       if (value.ref.error != nullptr) {
@@ -175,20 +175,25 @@ class StorageExecutor {
   void close() => _receiverPort.close();
 
   Future<Pointer<Void>> _handleSingleError(Pointer<tarantool_message_t> value) {
-    Future<Pointer<Void>> future = Future.error(StorageExecutionException(value.ref.error.cast<Utf8>().toDartString()), StackTrace.current);
+    Future<Pointer<Void>> future = Future.error(
+      value.ref.error_type == tarantool_error_type.TARANTOOL_ERROR_INTERNAL ? StorageExecutionException(value.ref.error.cast<Utf8>().toDartString()) : StorageLimitException(),
+      StackTrace.current,
+    );
     malloc.free(value.ref.error);
     return future;
   }
 
   Future<Pointer<tarantool_message_t>> _handleBatchError(Pointer<tarantool_message_t> value) {
-    StringBuffer error = StringBuffer();
+    if (value.ref.error_type == tarantool_error_type.TARANTOOL_ERROR_LIMIT) return Future.error(StorageLimitException(), StackTrace.current);
+    StringBuffer error = StringBuffer(value.ref.error.cast<Utf8>().toDartString());
     for (var index = 0; index < value.ref.batch_size; index++) {
       final batch = value.ref.batch.elementAt(index).value.ref;
       if (batch.error != nullptr) {
         error.writeln(batch.error.cast<Utf8>().toDartString());
-        malloc.free(value.ref.error);
+        malloc.free(batch.error);
       }
     }
+    malloc.free(value.ref.error);
     return Future.error(StorageExecutionException(error.toString()), StackTrace.current);
   }
 

@@ -14,6 +14,7 @@ extern "C"
 		int message_loop_empty_cycles_multiplier;
 		int message_loop_initial_empty_cycles;
 		size_t message_loop_ring_size;
+		size_t message_loop_ring_retry_max_count;
 	} tarantool_message_loop_configuration_t;
 
 	void tarantool_message_loop_initialize(tarantool_message_loop_configuration_t *configuration);

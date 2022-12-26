@@ -130,6 +130,7 @@ int tarantool_fiber(va_list args)
       .message_loop_max_sleep_seconds = storage.configuration.message_loop_max_sleep_seconds,
       .message_loop_regular_sleep_seconds = storage.configuration.message_loop_regular_sleep_seconds,
       .message_loop_ring_size = storage.configuration.message_loop_ring_size,
+      .message_loop_ring_retry_max_count = storage.configuration.message_loop_ring_retry_max_count,
   };
   tarantool_message_loop_initialize(&loop_configuration);
   tarantool_initialize_box(storage.configuration.box_output_buffer_capacity);
