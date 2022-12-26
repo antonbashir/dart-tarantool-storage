@@ -32,8 +32,8 @@ static inline void tarantool_message_handle_call(tarantool_message_t *message)
   struct error *error = diag_last_error(diag_get());
   if (unlikely(error))
   {
-    message->failed = true;
-    error_log(error);
+    message->error = strdup(error->errmsg);
+    message->output = NULL;
     diag_clear(diag_get());
   }
 }
@@ -47,10 +47,8 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
     struct error *error = diag_last_error(diag_get());
     if (unlikely(error))
     {
-      message->failed = true;
-      element->failed = true;
+      message->error = strdup(error->errmsg);
       element->output = NULL;
-      error_log(error);
       diag_clear(diag_get());
     }
   }

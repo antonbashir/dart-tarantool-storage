@@ -10,13 +10,13 @@ class StorageDefaults {
         messageLoopMaxEmptyCycles: 1000000,
         messageLoopEmptyCyclesMultiplier: 2,
         messageLoopInitialEmptyCycles: 1000,
-        messageLoopRingSize: 16777216,
+        messageLoopRingSize: 33554432,
       );
 
   static StorageConfiguration storage() => StorageConfiguration({
         ...{
           "listen": null,
-          "memtx_memory": 256 * 1024 * 1024,
+          "memtx_memory": 1 * 1024 * 1024 * 1024,
           "strip_core": true,
           "memtx_min_tuple_size": 16,
           "memtx_max_tuple_size": 1024 * 1024,
@@ -39,9 +39,9 @@ class StorageDefaults {
           "vinyl_page_size": 8 * 1024,
           "vinyl_bloom_fpr": 0.05,
           "io_collect_interval": null,
-          "readahead": 16320,
+          "readahead": 1048576,
           "snap_io_rate_limit": null,
-          "too_long_threshold": 0.5,
+          "too_long_threshold": 1,
           "wal_mode": "\"write\"",
           "wal_max_size": 256 * 1024 * 1024,
           "wal_dir_rescan_delay": 2,
@@ -74,12 +74,13 @@ class StorageDefaults {
           "replication_connect_quorum": null,
           "replication_skip_conflict": false,
           "replication_anon": false,
-          "feedback_enabled": true,
-          "feedback_crashinfo": true,
+          "feedback_enabled": false,
+          "feedback_crashinfo": false,
           "feedback_host": "\"https://feedback.tarantool.io\"",
           "feedback_interval": 3600,
-          "net_msg_max": 768,
+          "net_msg_max": 65536,
           "sql_cache_size": 5 * 1024 * 1024,
+          "log_level": 5,
         }
       });
 }

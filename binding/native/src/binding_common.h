@@ -28,7 +28,7 @@ extern "C"
     tarantool_function function;
     tarantool_function_argument input;
     tarantool_function_argument output;
-    bool failed;
+    char *error;
   } tarantool_message_batch_element_t;
 
   typedef struct tarantool_message_t
@@ -41,7 +41,7 @@ extern "C"
     Dart_Handle *callback_handle;
     tarantool_message_batch_element_t **batch;
     size_t batch_size;
-    bool failed;
+    char *error;
     unsigned int owner;
   } tarantool_message_t;
 

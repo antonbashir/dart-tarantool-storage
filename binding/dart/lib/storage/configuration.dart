@@ -76,6 +76,9 @@ class StorageConfiguration {
   set feedbackInterval(int value) => configurationMap["feedback_interval"] = value;
   set netMsgMax(int value) => configurationMap["net_msg_max"] = value;
   set sqlCacheSize(int value) => configurationMap["sql_cache_size"] = value;
+  
+  set logLevel(int value) => configurationMap["log_level"] = value;
+  set log(String value) => configurationMap["log"] = value;
 
   String write() {
     StringBuffer buffer = StringBuffer();

@@ -122,9 +122,17 @@ void main() {
             ..update(["key-1"], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])),
           equals(data));
     });
-    // test("multi isolate batch", testMultiIsolateInsert);
-    // test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
+    test("multi isolate batch", testMultiIsolateInsert);
+    test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
     test("pairs iterator", testIterator);
+    test("fail with error", () async {
+      await _space.insert(testSingleData);
+      expect(
+          () async => await _space.insert(testSingleData),
+          throwsA(predicate((exception) =>
+              exception is StorageExecutionException &&
+              exception.toString() == """Duplicate key exists in unique index "primary" in space "test" with old tuple - [1, "key", "value"] and new tuple - [1, "key", "value"]""")));
+    });
   });
 
   group("[execution]", () {
@@ -195,7 +203,7 @@ Future<void> testMultiIsolateInsert() async {
 }
 
 Future<void> testMultiIsolateTransactionalInsert() async {
-  final count = 100;
+  final count = 1000;
   final ports = <ReceivePort>[];
   final data = [];
   for (var i = 0; i < count; i++) {
@@ -216,5 +224,6 @@ Future<void> testMultiIsolateTransactionalInsert() async {
     await port.first;
   }
   ports.forEach((port) => port.close());
-  expect(await _space.select(), equals(data));
+  expect(await _space.length(), equals(data.length));
+  expect(await _space.select(), containsAll(data));
 }

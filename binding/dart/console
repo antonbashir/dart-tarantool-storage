@@ -1,0 +1,26 @@
+2022-12-26 15:49:53.901 [144976] main/103/library C> Tarantool 2.8.4-0-g473313f
+2022-12-26 15:49:53.901 [144976] main/103/library C> log level 5
+2022-12-26 15:49:53.901 [144976] main/103/library I> wal/engine cleanup is paused
+2022-12-26 15:49:53.902 [144976] main/103/library I> mapping 1073741824 bytes for memtx tuple arena...
+2022-12-26 15:49:53.902 [144976] main/103/library I> Actual slab_alloc_factor calculated on the basis of desired slab_alloc_factor = 1.044274
+2022-12-26 15:49:53.902 [144976] main/103/library I> mapping 134217728 bytes for vinyl tuple arena...
+2022-12-26 15:49:53.905 [144976] main/103/library I> instance uuid b13b6362-dd10-4286-9f31-1baaf58c0661
+2022-12-26 15:49:53.905 [144976] main/103/library I> tx_binary: stopped
+2022-12-26 15:49:53.905 [144976] main/103/library I> initializing an empty data directory
+2022-12-26 15:49:53.927 [144976] main/103/library I> assigned id 1 to replica b13b6362-dd10-4286-9f31-1baaf58c0661
+2022-12-26 15:49:53.927 [144976] main/103/library I> cluster uuid c34dbd35-fa7e-4ea6-9d2d-b59eb0e37c76
+2022-12-26 15:49:53.929 [144976] snapshot/101/main I> saving snapshot `./00000000000000000000.snap.inprogress'
+2022-12-26 15:49:53.931 [144976] snapshot/101/main I> done
+2022-12-26 15:49:53.932 [144976] main/103/library I> ready to accept requests
+2022-12-26 15:49:53.932 [144976] main/104/gc I> wal/engine cleanup is resumed
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'log_level' configuration option to 5
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'feedback_crashinfo' configuration option to false
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'feedback_enabled' configuration option to false
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'too_long_threshold' configuration option to 1
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'memtx_memory' configuration option to 1073741824
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'net_msg_max' configuration option to 65536
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'log_format' configuration option to "plain"
+2022-12-26 15:49:53.932 [144976] main/103/library I> set 'readahead' configuration option to 1048576
+2022-12-26 15:49:53.932 [144976] main/105/checkpoint_daemon I> scheduled next checkpoint for Mon Dec 26 16:49:57 2022
+2022-12-26 15:49:54.232 [144976] main C> exiting the event loop
+2022-12-26 15:49:54.275 [144976] main I> tx_binary: stopped

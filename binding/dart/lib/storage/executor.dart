@@ -131,9 +131,7 @@ class StorageExecutor {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_in_transaction.cast();
-        return sendSingle(message).then((pointer) {
-          return pointer.cast<Bool>().value;
-        });
+        return sendSingle(message).then((pointer) => pointer.address != 0);
       });
 
   Future<void> startBackup() => evaluateLuaScript(startBackupLuaScript);
@@ -151,11 +149,8 @@ class StorageExecutor {
       completer.completeError(StorageRequestsLimitException(), StackTrace.current);
     }
     return completer.future.then((value) {
-      if (value.ref.failed) {
-        if (_bindings.tarantool_in_transaction()) {
-          return rollback().then((_) => Future.error(StorageExceutionException(), StackTrace.current));
-        }
-        return Future.error(StorageExceutionException(), StackTrace.current);
+      if (value.ref.error != nullptr) {
+        return hasTransaction().then((has) => has ? rollback().then((_) => _handleSingleError(value)) : _handleSingleError(value));
       }
       return value.ref.output;
     });
@@ -170,17 +165,32 @@ class StorageExecutor {
       completer.completeError(StorageRequestsLimitException(), StackTrace.current);
     }
     return completer.future.then((value) {
-      if (value.ref.failed) {
-        if (_bindings.tarantool_in_transaction()) {
-          return rollback().then((_) => Future.error(StorageExceutionException(), StackTrace.current));
-        }
-        return Future.error(StorageExceutionException(), StackTrace.current);
+      if (value.ref.error != nullptr) {
+        return hasTransaction().then((has) => has ? rollback().then((_) => _handleBatchError(value)) : _handleBatchError(value));
       }
       return value;
     });
   }
 
   void close() => _receiverPort.close();
+
+  Future<Pointer<Void>> _handleSingleError(Pointer<tarantool_message_t> value) {
+    Future<Pointer<Void>> future = Future.error(StorageExecutionException(value.ref.error.cast<Utf8>().toDartString()), StackTrace.current);
+    malloc.free(value.ref.error);
+    return future;
+  }
+
+  Future<Pointer<tarantool_message_t>> _handleBatchError(Pointer<tarantool_message_t> value) {
+    StringBuffer error = StringBuffer();
+    for (var index = 0; index < value.ref.batch_size; index++) {
+      final batch = value.ref.batch.elementAt(index).value.ref;
+      if (batch.error != nullptr) {
+        error.writeln(batch.error.cast<Utf8>().toDartString());
+        malloc.free(value.ref.error);
+      }
+    }
+    return Future.error(StorageExecutionException(error.toString()), StackTrace.current);
+  }
 
   void _receive(dynamic message) {
     Pointer<tarantool_message_t> messagePointer = Pointer.fromAddress(message);
