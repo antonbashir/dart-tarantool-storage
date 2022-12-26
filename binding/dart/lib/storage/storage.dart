@@ -20,7 +20,7 @@ class Storage {
   late int _ownerId;
   late RawReceivePort _shutdownPort;
 
-  Storage({String? libraryPath}) {
+  Storage({String? libraryPath, void Function()? onShutdown}) {
     _library = libraryPath != null
         ? File(libraryPath).existsSync()
             ? DynamicLibrary.open(libraryPath)
@@ -29,7 +29,10 @@ class Storage {
     _bindings = TarantoolBindings(_library);
     _ownerId = _bindings.tarantool_generate_owner_id();
     _defaultExecutor = executor();
-    _shutdownPort = RawReceivePort(() => close());
+    _shutdownPort = RawReceivePort(() {
+      onShutdown?.call();
+      close();
+    });
   }
 
   void boot(BootstrapScript script, MessageLoopConfiguration loopConfiguration) {
