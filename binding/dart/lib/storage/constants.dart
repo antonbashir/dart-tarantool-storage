@@ -122,11 +122,11 @@ class LuaExpressions {
   static String changePassword(String user, String newPassword) => "box.schema.user.passwd('$user', '$newPassword')";
   static const userExists = "box.schema.user.exists";
   static const userGrant = "box.schema.user.grant";
-  static const userRevoke = "box.schema.user.grant";
+  static const userRevoke = "box.schema.user.revoke";
 
   static String createIndex(String space) => "box.space['$space']:create_index";
-  static String alterIndex(String space, String index) => "box.space['$space'].index.['$index']:alter";
-  static String dropIndex(String space, String index) => "box.space['$space'].index.['$index']:drop()";
+  static String alterIndex(String space, String index) => "box.space['$space'].index['$index']:alter";
+  static String dropIndex(String space, String index) => "box.space['$space'].index['$index']:drop()";
 
   static const createSpace = "box.schema.create_space";
   static String alterSpace(String space) => "box.space['$space']:alter";
@@ -136,6 +136,7 @@ class LuaExpressions {
 
 class LuaField {
   static String stringField(String name, String value) => '$name = $value';
+  static String tableField(String name, String value) => '$name = {$value}';
   static String quottedField(String name, String value) => "$name = '$value'";
   static String intField(String name, int value) => '$name = $value';
   static String boolField(String name, bool value) => '$name = $value';
@@ -160,7 +161,7 @@ class SchemaFields {
   static const temporary = "temporary";
   static const field = "field";
   static const type = "type";
-  static const isUnique = "is_unique";
+  static const unique = "unique";
   static const parts = "parts";
   static const user = "user";
   static const password = "password";

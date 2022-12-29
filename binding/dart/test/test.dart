@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
 import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/constants.dart';
@@ -169,24 +168,31 @@ Future<void> testSchema() async {
   await _executor.schema().createIndex(
     "test-space",
     "test-index",
-    id: 5,
+    id: 0,
     ifNotExists: true,
     type: IndexType.hash,
-    unique: false,
+    unique: true,
     parts: [
       IndexPart.byName("field-1"),
-      IndexPart.boolean(2),
-      IndexPart.byName("field-3"),
+      IndexPart.integer(3),
     ],
   );
   expect(await _executor.executeLua("validateCreatedIndex"), equals([true]));
   expect(await _executor.schema().indexExists(3, "test-index"), isTrue);
 
   await _executor.schema().createUser("test-user", "test-password", ifNotExists: true);
-  expect(await _executor.executeLua("validateCreatedUser"), equals([true]));
   expect(await _executor.schema().userExists("test-user"), isTrue);
-  await _executor.schema().changePassword("test-user", "changed-password");
-  expect(await _executor.executeLua("validateChangedUser"), equals([true]));
+  await _executor.schema().userGrant("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
+  try {
+    await _executor.schema().userGrant("test-user", privileges: "write", objectType: "universe");
+  } catch (error) {
+    expect(
+      error,
+      predicate((exception) => exception is StorageExecutionException && exception.toString() == "User 'test-user' already has write access on universe"),
+    );
+  }
+  await _executor.schema().userRevoke("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
+  await _executor.schema().userRevoke("test-user", privileges: "write", objectType: "universe", ifNotExists: true);
   await _executor.schema().dropUser("test-user");
   expect(await _executor.schema().userExists("test-user"), isFalse);
 
@@ -198,7 +204,7 @@ Future<void> testSchema() async {
 }
 
 Future<void> testExecuteLua() async {
-  await _executor.evaluateLuaScript("function test() return {'test'} end");
+  await _executor.evaluateLua("function test() return {'test'} end");
   File("test.lua").writeAsStringSync("function testFile() return {'testFile'} end");
   await _executor.evaluateLuaFile(File("test.lua"));
   File("test.lua").deleteSync();

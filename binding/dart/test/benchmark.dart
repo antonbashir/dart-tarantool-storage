@@ -81,7 +81,7 @@ Future<void> benchIsolatedGet() async {
 }
 
 Future<void> benchExecute() async {
-  await _executor.evaluateLuaScript("function test() return {'test'} end");
+  await _executor.evaluateLua("function test() return {'test'} end");
   int counter = 0;
   final completer = Completer();
   final stopwatch = Stopwatch();

@@ -22,7 +22,7 @@ extern "C"
 	} tarantool_configuration_t;
 
 	void tarantool_initialize(char *binary_path, char *script, tarantool_configuration_t *configuration);
-	bool tarantool_initialized();
+	int tarantool_initialized();
 	void tarantool_shutdown(int code);
   void tarantool_register_shutdown_callback(Dart_Handle * handle);
 #if defined(__cplusplus)

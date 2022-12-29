@@ -40,11 +40,11 @@ class Storage {
     malloc.free(nativeConfiguration);
   }
 
-  bool mutable() => !_bindings.tarantool_is_read_only();
+  bool mutable() => _bindings.tarantool_is_read_only() == 0;
 
-  bool initialized() => _bindings.tarantool_initialized();
+  bool initialized() => _bindings.tarantool_initialized() == 1;
 
-  bool immutable() => _bindings.tarantool_is_read_only();
+  bool immutable() => _bindings.tarantool_is_read_only() == 1;
 
   Future<void> awaitInitialized() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !initialized()));
 

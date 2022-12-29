@@ -165,7 +165,7 @@ void tarantool_shutdown(int code)
   }
 }
 
-bool tarantool_initialized()
+int tarantool_initialized()
 {
-  return storage.initialized;
+  return storage.initialized ? 1 : 0;
 }

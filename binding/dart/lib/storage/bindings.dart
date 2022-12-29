@@ -6020,14 +6020,14 @@ class TarantoolBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<tarantool_configuration_t>)>();
 
-  bool tarantool_initialized() {
+  int tarantool_initialized() {
     return _tarantool_initialized();
   }
 
   late final _tarantool_initializedPtr =
-      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('tarantool_initialized');
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('tarantool_initialized');
   late final _tarantool_initialized =
-      _tarantool_initializedPtr.asFunction<bool Function()>();
+      _tarantool_initializedPtr.asFunction<int Function()>();
 
   void tarantool_shutdown(
     int code,
@@ -6183,19 +6183,22 @@ class TarantoolBindings {
   late final _tarantool_destroy_box =
       _tarantool_destroy_boxPtr.asFunction<void Function()>();
 
-  int tarantool_evaluate(
-    ffi.Pointer<ffi.Char> script,
+  ffi.Pointer<tarantool_tuple_t> tarantool_evaluate(
+    ffi.Pointer<tarantool_evaluate_request_t> request,
   ) {
     return _tarantool_evaluate(
-      script,
+      request,
     );
   }
 
-  late final _tarantool_evaluatePtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
-          'tarantool_evaluate');
-  late final _tarantool_evaluate =
-      _tarantool_evaluatePtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+  late final _tarantool_evaluatePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<tarantool_tuple_t> Function(
+                  ffi.Pointer<tarantool_evaluate_request_t>)>>(
+      'tarantool_evaluate');
+  late final _tarantool_evaluate = _tarantool_evaluatePtr.asFunction<
+      ffi.Pointer<tarantool_tuple_t> Function(
+          ffi.Pointer<tarantool_evaluate_request_t>)>();
 
   ffi.Pointer<tarantool_tuple_t> tarantool_call(
     ffi.Pointer<tarantool_call_request_t> request,
@@ -6223,15 +6226,14 @@ class TarantoolBindings {
   late final _tarantool_status =
       _tarantool_statusPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
 
-  bool tarantool_is_read_only() {
+  int tarantool_is_read_only() {
     return _tarantool_is_read_only();
   }
 
   late final _tarantool_is_read_onlyPtr =
-      _lookup<ffi.NativeFunction<ffi.Bool Function()>>(
-          'tarantool_is_read_only');
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('tarantool_is_read_only');
   late final _tarantool_is_read_only =
-      _tarantool_is_read_onlyPtr.asFunction<bool Function()>();
+      _tarantool_is_read_onlyPtr.asFunction<int Function()>();
 
   int tarantool_begin() {
     return _tarantool_begin();
@@ -6260,15 +6262,15 @@ class TarantoolBindings {
   late final _tarantool_rollback =
       _tarantool_rollbackPtr.asFunction<int Function()>();
 
-  bool tarantool_in_transaction() {
+  int tarantool_in_transaction() {
     return _tarantool_in_transaction();
   }
 
   late final _tarantool_in_transactionPtr =
-      _lookup<ffi.NativeFunction<ffi.Bool Function()>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
           'tarantool_in_transaction');
   late final _tarantool_in_transaction =
-      _tarantool_in_transactionPtr.asFunction<bool Function()>();
+      _tarantool_in_transactionPtr.asFunction<int Function()>();
 
   int tarantool_space_iterator(
     ffi.Pointer<tarantool_space_iterator_request_t> request,
@@ -6331,7 +6333,7 @@ class TarantoolBindings {
   late final _tarantool_space_truncate =
       _tarantool_space_truncatePtr.asFunction<void Function(int)>();
 
-  bool tarantool_has_space(
+  int tarantool_has_space(
     ffi.Pointer<tarantool_space_id_request_t> request,
   ) {
     return _tarantool_has_space(
@@ -6341,10 +6343,10 @@ class TarantoolBindings {
 
   late final _tarantool_has_spacePtr = _lookup<
           ffi.NativeFunction<
-              ffi.Bool Function(ffi.Pointer<tarantool_space_id_request_t>)>>(
+              ffi.Int Function(ffi.Pointer<tarantool_space_id_request_t>)>>(
       'tarantool_has_space');
   late final _tarantool_has_space = _tarantool_has_spacePtr
-      .asFunction<bool Function(ffi.Pointer<tarantool_space_id_request_t>)>();
+      .asFunction<int Function(ffi.Pointer<tarantool_space_id_request_t>)>();
 
   ffi.Pointer<tarantool_tuple_t> tarantool_space_put(
     ffi.Pointer<tarantool_space_request_t> request,
@@ -6573,7 +6575,7 @@ class TarantoolBindings {
   late final _tarantool_index_id_by_name = _tarantool_index_id_by_namePtr
       .asFunction<int Function(ffi.Pointer<tarantool_index_id_request_t>)>();
 
-  bool tarantool_has_index(
+  int tarantool_has_index(
     ffi.Pointer<tarantool_index_id_request_t> request,
   ) {
     return _tarantool_has_index(
@@ -6583,10 +6585,10 @@ class TarantoolBindings {
 
   late final _tarantool_has_indexPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Bool Function(ffi.Pointer<tarantool_index_id_request_t>)>>(
+              ffi.Int Function(ffi.Pointer<tarantool_index_id_request_t>)>>(
       'tarantool_has_index');
   late final _tarantool_has_index = _tarantool_has_indexPtr
-      .asFunction<bool Function(ffi.Pointer<tarantool_index_id_request_t>)>();
+      .asFunction<int Function(ffi.Pointer<tarantool_index_id_request_t>)>();
 
   ffi.Pointer<tarantool_tuple_t> tarantool_index_get(
     ffi.Pointer<tarantool_index_request_t> request,
@@ -7640,7 +7642,7 @@ class _SymbolAddresses {
               ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
                   ffi.Pointer<tarantool_configuration_t>)>>
       get tarantool_initialize => _library._tarantool_initializePtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Bool Function()>>
+  ffi.Pointer<ffi.NativeFunction<ffi.Int Function()>>
       get tarantool_initialized => _library._tarantool_initializedPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>
       get tarantool_shutdown => _library._tarantool_shutdownPtr;
@@ -7683,7 +7685,10 @@ class _SymbolAddresses {
       get tarantool_initialize_box => _library._tarantool_initialize_boxPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>
       get tarantool_destroy_box => _library._tarantool_destroy_boxPtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Pointer<tarantool_tuple_t> Function(
+                  ffi.Pointer<tarantool_evaluate_request_t>)>>
       get tarantool_evaluate => _library._tarantool_evaluatePtr;
   ffi.Pointer<
       ffi.NativeFunction<
@@ -7692,7 +7697,7 @@ class _SymbolAddresses {
       _library._tarantool_callPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>
       get tarantool_status => _library._tarantool_statusPtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Bool Function()>>
+  ffi.Pointer<ffi.NativeFunction<ffi.Int Function()>>
       get tarantool_is_read_only => _library._tarantool_is_read_onlyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Int Function()>> get tarantool_begin =>
       _library._tarantool_beginPtr;
@@ -7700,7 +7705,7 @@ class _SymbolAddresses {
       _library._tarantool_commitPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Int Function()>> get tarantool_rollback =>
       _library._tarantool_rollbackPtr;
-  ffi.Pointer<ffi.NativeFunction<ffi.Bool Function()>>
+  ffi.Pointer<ffi.NativeFunction<ffi.Int Function()>>
       get tarantool_in_transaction => _library._tarantool_in_transactionPtr;
   ffi.Pointer<
           ffi.NativeFunction<
@@ -7718,7 +7723,7 @@ class _SymbolAddresses {
       get tarantool_space_truncate => _library._tarantool_space_truncatePtr;
   ffi.Pointer<
           ffi.NativeFunction<
-              ffi.Bool Function(ffi.Pointer<tarantool_space_id_request_t>)>>
+              ffi.Int Function(ffi.Pointer<tarantool_space_id_request_t>)>>
       get tarantool_has_space => _library._tarantool_has_spacePtr;
   ffi.Pointer<
           ffi.NativeFunction<
@@ -7789,7 +7794,7 @@ class _SymbolAddresses {
       get tarantool_index_id_by_name => _library._tarantool_index_id_by_namePtr;
   ffi.Pointer<
           ffi.NativeFunction<
-              ffi.Bool Function(ffi.Pointer<tarantool_index_id_request_t>)>>
+              ffi.Int Function(ffi.Pointer<tarantool_index_id_request_t>)>>
       get tarantool_has_index => _library._tarantool_has_indexPtr;
   ffi.Pointer<
           ffi.NativeFunction<
@@ -8749,6 +8754,15 @@ class tarantool_call_request_t extends ffi.Struct {
 
   @ffi.Uint32()
   external int function_length;
+
+  external ffi.Pointer<tarantool_tuple_t> input;
+}
+
+class tarantool_evaluate_request_t extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> expression;
+
+  @ffi.Uint32()
+  external int expression_length;
 
   external ffi.Pointer<tarantool_tuple_t> input;
 }

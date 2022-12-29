@@ -84,18 +84,23 @@ static inline tarantool_tuple_t *tarantool_tuple_from_port(struct port_c *source
   return tarantool_tuple_new(result_buffer, result_size);
 }
 
-int tarantool_evaluate(const char *script)
+tarantool_tuple_t *tarantool_evaluate(tarantool_evaluate_request_t *request)
 {
-  lua_settop(tarantool_L, 0);
-  luaL_loadstring(tarantool_L, script);
-  lua_call(tarantool_L, 0, 0);
-  return 0;
+  struct port out_port, in_port;
+  port_msgpack_create(&in_port, request->input->data, request->input->size);
+  box_lua_eval(request->expression, request->expression_length, &in_port, &out_port);
+  port_destroy(&in_port);
+  uint32_t result_size;
+  const char *result = port_get_msgpack(&out_port, &result_size);
+  char *result_buffer = tarantool_tuple_allocate((size_t)result_size);
+  memcpy(result_buffer, result, result_size);
+  tarantool_tuple_t *result_tuple = tarantool_tuple_new(result_buffer, (size_t)result_size);
+  port_destroy(&out_port);
+  return result_tuple;
 }
 
 tarantool_tuple_t *tarantool_call(tarantool_call_request_t *request)
 {
-  struct region *region = &fiber()->gc;
-  size_t region_svp = region_used(region);
   struct port out_port, in_port;
   port_msgpack_create(&in_port, request->input->data, request->input->size);
   box_lua_call(request->function, request->function_length, &in_port, &out_port);
@@ -106,7 +111,6 @@ tarantool_tuple_t *tarantool_call(tarantool_call_request_t *request)
   memcpy(result_buffer, result, result_size);
   tarantool_tuple_t *result_tuple = tarantool_tuple_new(result_buffer, (size_t)result_size);
   port_destroy(&out_port);
-  region_truncate(region, region_svp);
   return result_tuple;
 }
 
@@ -115,9 +119,9 @@ const char *tarantool_status()
   return box_status();
 }
 
-bool tarantool_is_read_only()
+int tarantool_is_read_only()
 {
-  return box_is_ro();
+  return box_is_ro() ? 1 : 0;
 }
 
 int tarantool_begin()
@@ -135,9 +139,9 @@ int tarantool_rollback()
   return box_txn_rollback();
 }
 
-bool tarantool_in_transaction()
+int tarantool_in_transaction()
 {
-  return box_txn();
+  return box_txn() ? 1 : 0;
 }
 
 intptr_t tarantool_space_iterator(tarantool_space_iterator_request_t *request)
@@ -307,9 +311,9 @@ uint32_t tarantool_space_id_by_name(tarantool_space_id_request_t *request)
   return box_space_id_by_name(request->name, request->name_length);
 }
 
-bool tarantool_has_space(tarantool_space_id_request_t *request)
+int tarantool_has_space(tarantool_space_id_request_t *request)
 {
-  return tarantool_space_id_by_name(request) != BOX_ID_NIL;
+  return tarantool_space_id_by_name(request) != BOX_ID_NIL ? 1 : 0;
 }
 
 intptr_t tarantool_index_iterator(tarantool_index_iterator_request_t *request)
@@ -339,9 +343,9 @@ uint32_t tarantool_index_id_by_name(tarantool_index_id_request_t *request)
   return box_index_id_by_name(request->space_id, request->name, request->name_length);
 }
 
-bool tarantool_has_index(tarantool_index_id_request_t *request)
+int tarantool_has_index(tarantool_index_id_request_t *request)
 {
-  return tarantool_index_id_by_name(request) != BOX_ID_NIL;
+  return tarantool_index_id_by_name(request) != BOX_ID_NIL ? 1 : 0;
 }
 
 tarantool_tuple_t *tarantool_index_get(tarantool_index_request_t *request)

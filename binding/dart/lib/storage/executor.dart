@@ -31,17 +31,21 @@ class StorageExecutor {
     return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
   }
 
-  Future<void> evaluateLuaScript(String script) => using((Arena arena) {
-        Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
+  Future<List<dynamic>> evaluateLua(String expression, {List<dynamic> argument = const []}) => using((Arena arena) {
+        final request = arena<tarantool_evaluate_request_t>();
+        request.ref.expression = expression.toNativeUtf8().cast();
+        request.ref.expression_length = expression.length;
+        request.ref.input = TarantoolTuple.write(arena, argument);
+        final message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_evaluate.cast();
-        message.ref.input = script.toNativeUtf8().cast();
-        return sendSingle(message);
+        message.ref.input = request.cast();
+        return sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
-  Future<void> evaluateLuaFile(File file) => file.readAsString().then(evaluateLuaScript);
+  Future<void> evaluateLuaFile(File file) => file.readAsString().then(evaluateLua);
 
-  Future<void> requireLuaModule(String module) => evaluateLuaScript(LuaExpressions.require(module));
+  Future<void> requireLuaModule(String module) => evaluateLua(LuaExpressions.require(module));
 
   Future<List<dynamic>> executeLua(String function, {List<dynamic> argument = const []}) => using((Arena arena) {
         final request = arena<tarantool_call_request_t>();
@@ -104,14 +108,14 @@ class StorageExecutor {
         return sendSingle(message).then((pointer) => pointer.address != 0);
       });
 
-  Future<void> startBackup() => evaluateLuaScript(LuaExpressions.startBackup);
+  Future<void> startBackup() => evaluateLua(LuaExpressions.startBackup);
 
-  Future<void> stopBackup() => evaluateLuaScript(LuaExpressions.stopBackup);
+  Future<void> stopBackup() => evaluateLua(LuaExpressions.stopBackup);
 
-  Future<void> promote() => evaluateLuaScript(LuaExpressions.promote);
+  Future<void> promote() => evaluateLua(LuaExpressions.promote);
 
   Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
-    if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
+    if (_bindings.tarantool_initialized() == 0) return Future.error(StorageShutdownException());
     message.ref.callback_send_port = _nativePort;
     message.ref.owner = _ownerId;
     final completer = Completer<Pointer<tarantool_message_t>>();
@@ -127,7 +131,7 @@ class StorageExecutor {
   }
 
   Future<Pointer<tarantool_message_t>> sendBatch(Pointer<tarantool_message_t> message) {
-    if (!_bindings.tarantool_initialized()) return Future.error(StorageShutdownException());
+    if (_bindings.tarantool_initialized() == 0) return Future.error(StorageShutdownException());
     message.ref.callback_send_port = _nativePort;
     message.ref.owner = _ownerId;
     final completer = Completer<Pointer<tarantool_message_t>>();
