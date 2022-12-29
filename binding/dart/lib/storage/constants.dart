@@ -32,6 +32,9 @@ const loadError = "Unable to load Tarantool binding library";
 
 const moduleArchivFile = "module.tar.gz";
 
+const universeObjectType = "universe";
+const nil = "nil";
+
 class FileExtensions {
   static const exe = "exe";
   static const lua = "lua";
@@ -167,6 +170,3 @@ class SchemaFields {
   static const password = "password";
   static const isNullable = "is_nullable";
 }
-
-const universeObjectType = "universe";
-const nil = "nil";

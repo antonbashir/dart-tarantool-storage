@@ -10,11 +10,11 @@ import 'index.dart';
 import 'space.dart';
 
 class SpaceField {
-  final String name;
-  final String type;
+  final String _name;
+  final String _type;
   final bool nullable;
 
-  SpaceField._(this.name, this.type, this.nullable);
+  SpaceField._(this._name, this._type, this.nullable);
 
   factory SpaceField.any(String name, {bool nullable = false}) => SpaceField._(name, FieldType.any.name, nullable);
   factory SpaceField.unsigned(String name, {bool nullable = false}) => SpaceField._(name, FieldType.unsigned.name, nullable);
@@ -33,8 +33,8 @@ class SpaceField {
 
   String format() => LuaArgument.singleTableArgument(
         [
-          LuaField.quottedField(SchemaFields.name, name),
-          LuaField.quottedField(SchemaFields.type, type),
+          LuaField.quottedField(SchemaFields.name, _name),
+          LuaField.quottedField(SchemaFields.type, _type),
           LuaField.boolField(SchemaFields.isNullable, nullable),
         ].join(comma),
       );
@@ -76,7 +76,7 @@ class StorageSchema {
   final StorageExecutor _executor;
   final TarantoolBindings _bindings;
 
-  StorageSchema(this._bindings, this._executor);
+  const StorageSchema(this._bindings, this._executor);
 
   StorageSpace spaceById(int id) => StorageSpace(_bindings, _executor, id);
 

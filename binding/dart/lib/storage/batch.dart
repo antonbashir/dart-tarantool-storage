@@ -7,7 +7,7 @@ import 'tuple.dart';
 import 'updater.dart';
 
 class StorageBatchSpaceBuilder {
-  final Queue<Pointer<tarantool_message_batch_element_t>> batches = ListQueue(batchInitiaSize);
+  final Queue<Pointer<tarantool_message_batch_element_t>> _batches = ListQueue(batchInitiaSize);
   final TarantoolBindings _bindings;
   final int _id;
   final Allocator _allocator;
@@ -21,7 +21,7 @@ class StorageBatchSpaceBuilder {
     request.ref.space_id = _id;
     request.ref.tuple = TarantoolTuple.write(_allocator, data);
     message.ref.input = request.cast();
-    batches.add(message);
+    _batches.add(message);
   }
 
   void put(List<dynamic> data) {
@@ -31,7 +31,7 @@ class StorageBatchSpaceBuilder {
     request.ref.space_id = _id;
     request.ref.tuple = TarantoolTuple.write(_allocator, data);
     message.ref.input = request.cast();
-    batches.add(message);
+    _batches.add(message);
   }
 
   void delete(List<dynamic> data) {
@@ -41,7 +41,7 @@ class StorageBatchSpaceBuilder {
     request.ref.space_id = _id;
     request.ref.tuple = TarantoolTuple.write(_allocator, data);
     message.ref.input = request.cast();
-    batches.add(message);
+    _batches.add(message);
   }
 
   void update(List<dynamic> key, List<UpdateOperation> operations) {
@@ -60,7 +60,7 @@ class StorageBatchSpaceBuilder {
                 ])
             .toList());
     message.ref.input = request.cast();
-    batches.add(message);
+    _batches.add(message);
   }
 
   void upsert(List<dynamic> tuple, List<UpdateOperation> operations) {
@@ -79,7 +79,7 @@ class StorageBatchSpaceBuilder {
                 ])
             .toList());
     message.ref.input = request.cast();
-    batches.add(message);
+    _batches.add(message);
   }
 
   void insertMany(List<List<dynamic>> data) => data.forEach(insert);
@@ -91,11 +91,11 @@ class StorageBatchSpaceBuilder {
   Pointer<tarantool_message_t> build() {
     Pointer<tarantool_message_t> message = _allocator<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BATCH;
-    final Pointer<Pointer<tarantool_message_batch_element_t>> batchData = _allocator.allocate(sizeOf<Pointer<tarantool_message_batch_element_t>>() * batches.length);
+    final Pointer<Pointer<tarantool_message_batch_element_t>> batchData = _allocator.allocate(sizeOf<Pointer<tarantool_message_batch_element_t>>() * _batches.length);
     var batchIndex = 0;
-    message.ref.batch_size = batches.length;
-    while (batches.isNotEmpty) {
-      batchData[batchIndex] = batches.removeFirst();
+    message.ref.batch_size = _batches.length;
+    while (_batches.isNotEmpty) {
+      batchData[batchIndex] = _batches.removeFirst();
       batchIndex++;
     }
     message.ref.batch = batchData;

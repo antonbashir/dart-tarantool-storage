@@ -63,7 +63,6 @@ static inline tarantool_tuple_t *tarantool_tuple_from_box(box_tuple_t *source)
 
 static inline tarantool_tuple_t *tarantool_tuple_from_port(struct port_c *source)
 {
-  obuf_reset(&output_buffer);
   int count = port_dump_msgpack((struct port *)source, &output_buffer);
   port_destroy((struct port *)source);
   if (unlikely(count < 0))

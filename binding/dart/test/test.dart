@@ -59,7 +59,7 @@ void main() {
       final data = [...testSingleData];
       _space.insert(data);
       data[2] = "updated";
-      expect(await _space.update([1], [UpdateOperation(UpdateOperationType.assign, 2, "updated")]), equals(data));
+      expect(await _space.update([1], [UpdateOperation.assign(2, "updated")]), equals(data));
     });
     test("delete", () async {
       _space.insert(testSingleData);
@@ -92,7 +92,7 @@ void main() {
       final data = [...testSingleData];
       _space.insert(data);
       data[2] = "updated by index";
-      expect(await _index.update(["key"], [UpdateOperation(UpdateOperationType.assign, 2, "updated by index")]), equals(data));
+      expect(await _index.update(["key"], [UpdateOperation.assign(2, "updated by index")]), equals(data));
     });
 
     test("batch insert", () async {
@@ -110,8 +110,8 @@ void main() {
       data[1][2] = "updated";
       expect(
           await _space.batch((builder) => builder
-            ..update([1], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])
-            ..update([2], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])),
+            ..update([1], [UpdateOperation.assign(2, "updated")])
+            ..update([2], [UpdateOperation.assign(2, "updated")])),
           equals(data));
     });
     test("batch index update", () async {
@@ -123,8 +123,8 @@ void main() {
       data[1][2] = "updated";
       expect(
           await _index.batch((builder) => builder
-            ..update(["key-0"], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])
-            ..update(["key-1"], [UpdateOperation(UpdateOperationType.assign, 2, "updated")])),
+            ..update(["key-0"], [UpdateOperation.assign(2, "updated")])
+            ..update(["key-1"], [UpdateOperation.assign(2, "updated")])),
           equals(data));
     });
     test("pairs iterator", testIterator);

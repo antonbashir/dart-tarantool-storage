@@ -4,14 +4,14 @@ import 'configuration.dart';
 import 'constants.dart';
 
 class BootstrapScript {
-  final StorageConfiguration configuration;
-  String content = empty;
+  final StorageConfiguration _configuration;
+  String _content = empty;
 
-  BootstrapScript(this.configuration);
+  BootstrapScript(this._configuration);
 
-  void code(String expression) => content += (expression + newLine);
+  void code(String expression) => _content += (expression + newLine);
 
-  void file(File file) => content += (newLine + file.readAsStringSync() + newLine);
+  void file(File file) => _content += (newLine + file.readAsStringSync() + newLine);
 
   String write() {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(luaDirectory))) {
@@ -20,6 +20,6 @@ class BootstrapScript {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(nativeDirectory))) {
       code(LuaExpressions.extendPackageNativePath(Directory.current.path + nativeDirectory));
     }
-    return configuration.format() + newLine + content;
+    return _configuration.format() + newLine + _content;
   }
 }

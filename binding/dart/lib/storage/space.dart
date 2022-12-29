@@ -16,7 +16,7 @@ class StorageSpace {
   final StorageExecutor _executor;
   final int _id;
 
-  StorageSpace(this._bindings, this._executor, this._id);
+  const StorageSpace(this._bindings, this._executor, this._id);
 
   Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();

@@ -4,7 +4,7 @@ class StorageIterator {
   final StorageExecutor _executor;
   final int iterator;
 
-  StorageIterator(this._executor, this.iterator);
+  const StorageIterator(this._executor, this.iterator);
 
   Future<List<dynamic>> next() => _executor.next(this);
 
