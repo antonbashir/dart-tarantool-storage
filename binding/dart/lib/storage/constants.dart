@@ -74,6 +74,14 @@ enum StorageIteratorType {
   neighbor,
 }
 
+enum StorageEngine { memtx, vinly }
+
+enum IndexType { hash, tree, bitset, rtree }
+
+enum FieldType { any, unsigned, string, number, double, integer, boolean, decimal, uuid, scalar, array, map, datetime, varbinary }
+
+enum IndexPartType { unsigned, string, number, double, integer, boolean, decimal, uuid, scalar, datetime, varbinary }
+
 extension UpdateOperationTypeExtension on UpdateOperationType {
   String operation() {
     switch (this) {
@@ -99,10 +107,6 @@ extension UpdateOperationTypeExtension on UpdateOperationType {
   }
 }
 
-enum StorageEngine { memtx, vinly }
-
-enum IndexType { hash, tree, bitset, rtree }
-
 class LuaExpressions {
   static String require(String module) => """require '$module'""";
   static String extendPackagePath(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";
@@ -114,8 +118,9 @@ class LuaExpressions {
   static const schemaUpgrade = "box.schema.upgrade()";
 
   static const createUser = "box.schema.user.create";
+  static String dropUser(String name) => "box.schema.user.drop('$name')";
   static String changePassword(String user, String newPassword) => "box.schema.user.passwd('$user', '$newPassword')";
-  static String userExists(String user) => "box.schema.user.exists('$user')";
+  static const userExists = "box.schema.user.exists";
   static const userGrant = "box.schema.user.grant";
   static const userRevoke = "box.schema.user.grant";
 

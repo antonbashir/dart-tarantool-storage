@@ -4,9 +4,11 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 
 import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/constants.dart';
+import 'package:tarantool_storage/storage/schema.dart';
 import 'package:tarantool_storage/tarantool_storage.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -142,6 +144,57 @@ void main() {
     test("execute native", testExecuteNative);
     test("execute lua", testExecuteLua);
   });
+
+  group(["schema"], () {
+    test("schema operations", testSchema);
+  });
+}
+
+Future<void> testSchema() async {
+  await _executor.schema().createSpace(
+        "test-space",
+        engine: StorageEngine.memtx,
+        fieldCount: 3,
+        format: [
+          SpaceField.string("field-1"),
+          SpaceField.boolean("field-2"),
+          SpaceField.integer("field-3"),
+        ],
+        id: 3,
+        ifNotExists: true,
+      );
+  expect(await _executor.executeLua("validateCreatedSpace"), equals([true]));
+  expect(await _executor.schema().spaceExists("test-space"), isTrue);
+
+  await _executor.schema().createIndex(
+    "test-space",
+    "test-index",
+    id: 5,
+    ifNotExists: true,
+    type: IndexType.hash,
+    unique: false,
+    parts: [
+      IndexPart.byName("field-1"),
+      IndexPart.boolean(2),
+      IndexPart.byName("field-3"),
+    ],
+  );
+  expect(await _executor.executeLua("validateCreatedIndex"), equals([true]));
+  expect(await _executor.schema().indexExists(3, "test-index"), isTrue);
+
+  await _executor.schema().createUser("test-user", "test-password", ifNotExists: true);
+  expect(await _executor.executeLua("validateCreatedUser"), equals([true]));
+  expect(await _executor.schema().userExists("test-user"), isTrue);
+  await _executor.schema().changePassword("test-user", "changed-password");
+  expect(await _executor.executeLua("validateChangedUser"), equals([true]));
+  await _executor.schema().dropUser("test-user");
+  expect(await _executor.schema().userExists("test-user"), isFalse);
+
+  await _executor.schema().dropIndex("test-space", "test-index");
+  expect(await _executor.schema().indexExists(3, "test-index"), isFalse);
+
+  await _executor.schema().dropSpace("test-space");
+  expect(await _executor.schema().spaceExists("test-space"), isFalse);
 }
 
 Future<void> testExecuteLua() async {

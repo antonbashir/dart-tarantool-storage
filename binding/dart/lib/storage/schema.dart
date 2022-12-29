@@ -9,12 +9,27 @@ import 'executor.dart';
 import 'index.dart';
 import 'space.dart';
 
-class SpaceFormatPart {
+class SpaceField {
   final String name;
   final String type;
   final bool nullable;
 
-  SpaceFormatPart(this.name, this.type, {this.nullable = false});
+  SpaceField._(this.name, this.type, this.nullable);
+
+  factory SpaceField.any(String name, {bool nullable = false}) => SpaceField._(name, FieldType.any.name, nullable);
+  factory SpaceField.unsigned(String name, {bool nullable = false}) => SpaceField._(name, FieldType.unsigned.name, nullable);
+  factory SpaceField.string(String name, {bool nullable = false}) => SpaceField._(name, FieldType.string.name, nullable);
+  factory SpaceField.number(String name, {bool nullable = false}) => SpaceField._(name, FieldType.number.name, nullable);
+  factory SpaceField.double(String name, {bool nullable = false}) => SpaceField._(name, FieldType.double.name, nullable);
+  factory SpaceField.integer(String name, {bool nullable = false}) => SpaceField._(name, FieldType.integer.name, nullable);
+  factory SpaceField.boolean(String name, {bool nullable = false}) => SpaceField._(name, FieldType.boolean.name, nullable);
+  factory SpaceField.decimal(String name, {bool nullable = false}) => SpaceField._(name, FieldType.decimal.name, nullable);
+  factory SpaceField.uuid(String name, {bool nullable = false}) => SpaceField._(name, FieldType.uuid.name, nullable);
+  factory SpaceField.scalar(String name, {bool nullable = false}) => SpaceField._(name, FieldType.scalar.name, nullable);
+  factory SpaceField.array(String name, {bool nullable = false}) => SpaceField._(name, FieldType.array.name, nullable);
+  factory SpaceField.map(String name, {bool nullable = false}) => SpaceField._(name, FieldType.map.name, nullable);
+  factory SpaceField.datetime(String name, {bool nullable = false}) => SpaceField._(name, FieldType.datetime.name, nullable);
+  factory SpaceField.varbinary(String name, {bool nullable = false}) => SpaceField._(name, FieldType.varbinary.name, nullable);
 
   String format() => LuaArgument.singleTableArgument(
         [
@@ -26,19 +41,35 @@ class SpaceFormatPart {
 }
 
 class IndexPart {
-  final int field;
-  final String type;
-  final bool nullable;
+  final int? fieldIndex;
+  final String? fieldName;
+  final String? type;
+  final bool? nullable;
 
-  IndexPart(this.field, this.type, {this.nullable = false});
+  IndexPart._({this.fieldIndex, this.type, this.nullable, this.fieldName});
 
-  String format() => LuaArgument.singleTableArgument(
-        [
-          LuaField.intField(SchemaFields.field, field),
-          LuaField.quottedField(SchemaFields.type, type),
-          LuaField.boolField(SchemaFields.isNullable, nullable),
-        ].join(comma),
-      );
+  factory IndexPart.unsigned(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.unsigned.name, nullable: nullable);
+  factory IndexPart.string(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.string.name, nullable: nullable);
+  factory IndexPart.number(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.number.name, nullable: nullable);
+  factory IndexPart.double(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.double.name, nullable: nullable);
+  factory IndexPart.integer(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.integer.name, nullable: nullable);
+  factory IndexPart.boolean(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.boolean.name, nullable: nullable);
+  factory IndexPart.decimal(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.decimal.name, nullable: nullable);
+  factory IndexPart.uuid(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.uuid.name, nullable: nullable);
+  factory IndexPart.scalar(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.scalar.name, nullable: nullable);
+  factory IndexPart.datetime(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.datetime.name, nullable: nullable);
+  factory IndexPart.varbinary(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.varbinary.name, nullable: nullable);
+  factory IndexPart.byName(String field) => IndexPart._(fieldName: field);
+
+  String format() => fieldName != null && fieldName!.isNotEmpty
+      ? LuaArgument.singleTableArgument(fieldName!.quotted)
+      : LuaArgument.singleTableArgument(
+          [
+            LuaField.intField(SchemaFields.field, fieldIndex!),
+            LuaField.quottedField(SchemaFields.type, type!),
+            LuaField.boolField(SchemaFields.isNullable, nullable!),
+          ].join(comma),
+        );
 }
 
 class StorageSchema {
@@ -107,7 +138,7 @@ class StorageSchema {
     String name, {
     StorageEngine? engine,
     int? fieldCount,
-    List<SpaceFormatPart>? format,
+    List<SpaceField>? format,
     int? id,
     bool? ifNotExists,
     bool? local,
@@ -131,7 +162,7 @@ class StorageSchema {
   Future<void> alterSpace(
     String name, {
     int? fieldCount,
-    List<SpaceFormatPart>? format,
+    List<SpaceField>? format,
     bool? synchronous,
     bool? temporary,
     String? user,
@@ -180,9 +211,11 @@ class StorageSchema {
     return _executor.evaluateLuaScript(LuaExpressions.createUser + LuaArgument.singleQuottedArgument(name, options: arguments.join(comma)));
   }
 
+  Future<void> dropUser(String name) => _executor.evaluateLuaScript(LuaExpressions.dropUser(name));
+
   Future<void> changePassword(String name, String password) => _executor.evaluateLuaScript(LuaExpressions.changePassword(name, password));
 
-  Future<void> userExists(String name) => _executor.evaluateLuaScript(LuaExpressions.userExists(name));
+  Future<bool> userExists(String name) => _executor.executeLua(LuaExpressions.userExists, argument: [name]).then((value) => value.first);
 
   Future<void> userGrant(
     String name, {
