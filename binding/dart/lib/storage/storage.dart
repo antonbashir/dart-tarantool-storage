@@ -61,5 +61,7 @@ class Storage {
 
   StorageExecutor executor() => _executor;
 
+  DynamicLibrary library() => _library;
+
   void execute(void Function(StorageExecutor executor) executor) => executor(_executor);
 }
