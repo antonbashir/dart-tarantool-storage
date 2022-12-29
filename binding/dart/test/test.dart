@@ -26,9 +26,9 @@ void main() {
     });
     _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")..boot(BootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
     _executor = _storage.executor();
-    final spaceId = await _executor.spaceId("test");
-    _space = _executor.spaceById(spaceId);
-    _index = _executor.indexById(spaceId, await _executor.indexId(spaceId, "test"));
+    final spaceId = await _executor.schema().spaceId("test");
+    _space = _executor.schema().spaceById(spaceId);
+    _index = _executor.schema().indexById(spaceId, await _executor.schema().indexId(spaceId, "test"));
   });
 
   setUp(() async => await _space.truncate());
@@ -194,7 +194,7 @@ Future<void> testMultiIsolateInsert() async {
     data.add(element);
     Isolate.spawn<dynamic>((element) async {
       final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
-      await storage.executor().spaceByName("test").then((space) => space.insert(element));
+      await storage.executor().schema().spaceByName("test").then((space) => space.insert(element));
       storage.close();
     }, element, onExit: port.sendPort);
   }
@@ -219,7 +219,7 @@ Future<void> testMultiIsolateTransactionalInsert() async {
     Isolate.spawn<dynamic>((element) async {
       final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
       final executor = storage.executor();
-      await executor.spaceByName("test").then((space) => executor.transactional((executor) => space.insert(element)));
+      await executor.schema().spaceByName("test").then((space) => executor.transactional((executor) => space.insert(element)));
       storage.close();
     }, element, onExit: port.sendPort);
   }

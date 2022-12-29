@@ -13,17 +13,13 @@ class BootstrapScript {
 
   void file(File file) => content += (newLine + file.readAsStringSync() + newLine);
 
-  void schema() {
-    
-  }
-
   String write() {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(luaDirectory))) {
-      code(extendPackagePathluaScript(Directory.current.path + luaDirectory));
+      code(LuaExpressions.extendPackagePath(Directory.current.path + luaDirectory));
     }
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(nativeDirectory))) {
-      code(extendPackageNativePathluaScript(Directory.current.path + nativeDirectory));
+      code(LuaExpressions.extendPackageNativePath(Directory.current.path + nativeDirectory));
     }
-    return configuration.write() + newLine + content;
+    return configuration.format() + newLine + content;
   }
 }

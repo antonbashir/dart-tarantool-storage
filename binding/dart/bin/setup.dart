@@ -26,7 +26,7 @@ void copyHeaders(Directory packageNativeRoot, Directory nativeRoot) {
   packageNativeRoot
       .listSync()
       .whereType<File>()
-      .where((element) => extension(element.path) == dot + headerExtension)
+      .where((element) => extension(element.path) == dot + FileExtensions.h)
       .forEach((element) => element.copySync(nativeRoot.path + slash + basename(element.path)));
 }
 
@@ -34,6 +34,6 @@ void copyLuaScrits(Directory packageLuaRoot, Directory luaRoot) {
   packageLuaRoot
       .listSync()
       .whereType<File>()
-      .where((element) => extension(element.path) == dot + luaExtension)
+      .where((element) => extension(element.path) == dot + FileExtensions.lua)
       .forEach((element) => element.copySync(luaRoot.path + slash + basename(element.path)));
 }

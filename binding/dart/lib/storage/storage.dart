@@ -12,12 +12,9 @@ import 'script.dart';
 import 'executor.dart';
 
 class Storage {
-  final List<StorageExecutor> _executors = [];
-
   late TarantoolBindings _bindings;
   late DynamicLibrary _library;
-  late StorageExecutor _defaultExecutor;
-  late int _ownerId;
+  late StorageExecutor _executor;
   late RawReceivePort _shutdownPort;
 
   Storage({String? libraryPath}) {
@@ -27,8 +24,7 @@ class Storage {
             : loadBindingLibrary()
         : loadBindingLibrary();
     _bindings = TarantoolBindings(_library);
-    _ownerId = _bindings.tarantool_generate_owner_id();
-    _defaultExecutor = executor();
+    _executor = StorageExecutor(_bindings, _bindings.tarantool_generate_owner_id());
     _shutdownPort = RawReceivePort((_) => close());
   }
 
@@ -59,15 +55,11 @@ class Storage {
   void shutdown() => _bindings.tarantool_shutdown(0);
 
   void close() {
-    _executors.forEach((executor) => executor.close());
+    _executor.close();
     _shutdownPort.close();
   }
 
-  StorageExecutor executor() {
-    final executor = StorageExecutor(_bindings, _ownerId);
-    _executors.add(executor);
-    return executor;
-  }
+  StorageExecutor executor() => _executor;
 
-  void execute(void Function(StorageExecutor executor) executor) => executor(_defaultExecutor);
+  void execute(void Function(StorageExecutor executor) executor) => executor(_executor);
 }

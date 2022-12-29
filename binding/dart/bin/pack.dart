@@ -51,10 +51,10 @@ void compile(Directory moduleRoot, File entryPoint) {
     'dart',
     [
       'compile',
-      exeExtension,
+      FileExtensions.exe,
       entryPoint.path,
       "-o",
-      moduleRoot.path + slash + basenameWithoutExtension(entryPoint.path) + dot + exeExtension,
+      moduleRoot.path + slash + basenameWithoutExtension(entryPoint.path) + dot + FileExtensions.exe,
     ],
     runInShell: true,
   );
