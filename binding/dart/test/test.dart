@@ -36,6 +36,10 @@ void main() {
 
   tearDownAll(() => _storage.shutdown());
 
+  group(["schema"], () {
+    test("schema operations", testSchema);
+  });
+
   group("[crud]", () {
     test("insert", () async => expect(await _space.insert(testSingleData), equals(testSingleData)));
     test("put", () async => expect(await _space.put(testSingleData), equals(testSingleData)));
@@ -142,10 +146,6 @@ void main() {
   group("[execution]", () {
     test("execute native", testExecuteNative);
     test("execute lua", testExecuteLua);
-  });
-
-  group(["schema"], () {
-    test("schema operations", testSchema);
   });
 }
 
