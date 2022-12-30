@@ -24,7 +24,7 @@ void compileNative(Directory nativeRoot, String projectName) {
     CompileOptions.gccExecutable,
     [
       CompileOptions.gccSharedOption,
-      CompileOptions.gccSharedOption,
+      CompileOptions.gccFpicOption,
       CompileOptions.outputOption,
       nativeRoot.path + slash + projectName + dot + FileExtensions.so,
       ...nativeRoot.listSync().map((file) => file.path).toList()
