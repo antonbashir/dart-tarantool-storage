@@ -66,6 +66,7 @@ void compileDart(Directory resultPackageRoot, File entryPoint) {
       entryPoint.path,
       CompileOptions.outputOption,
       resultPackageRoot.path + slash + basenameWithoutExtension(entryPoint.path) + dot + FileExtensions.exe,
+      
     ],
     runInShell: true,
   );
@@ -83,7 +84,7 @@ Future<void> archive(Directory resultPackageRoot, String projectName) async {
       [
         CompileOptions.tarOption,
         resultPackageRoot.parent.path + slash + projectName + dot + FileExtensions.tarGz,
-        star,
+        currentDirectorySymbol,
       ],
       runInShell: true,
       workingDirectory: resultPackageRoot.path);
