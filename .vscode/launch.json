@@ -29,6 +29,8 @@
     },
     {
       "name": "dart-benchmark-run",
+      "type": "cppdbg",
+      "request": "launch",
       "program": "${workspaceFolder}/binding/dart/test/benchmark.exe",
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/binding/dart",
