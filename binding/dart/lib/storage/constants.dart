@@ -50,6 +50,9 @@ class FileExtensions {
   static const lua = "lua";
   static const so = "so";
   static const h = "h";
+  static const c = "cpp";
+  static const cpp = "c";
+  static const hpp = "hpp";
   static const tarGz = "tar.gz";
 }
 
