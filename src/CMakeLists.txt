@@ -252,12 +252,12 @@ if(BUILD_STATIC)
     endforeach(libstatic)
     string(REPLACE ";" " " EXPORT_LIST "${EXPORT_LIST}")
 
-    if (HAVE_OPENMP)
+#    if (HAVE_OPENMP)
         # Link libgomp explicitly to make it static. Avoid linking
         # against DSO version of libgomp, which implied by -fopenmp
-        set (common_libraries ${common_libraries} "libgomp.a")
-        set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fno-openmp")
-    endif()
+        # set (common_libraries ${common_libraries} "libgomp.a")
+        # set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fno-openmp")
+#    endif()
     
 endif()
 

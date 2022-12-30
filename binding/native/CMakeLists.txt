@@ -16,6 +16,7 @@ include_directories(${ck_SOURCE_DIR}/include)
 set(DEPENDENCY_CFLAGS "-fPIC")
 set(DEPENDENCY_CPPFLAGS "-fPIC")
 set(DEPENDENCY_LDFLAGS)
+set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS}")
 
 if(APPLE)
     set(DEPENDENCY_CFLAGS "${CMAKE_C_SYSROOT_FLAG} ${CMAKE_OSX_SYSROOT}")
@@ -44,13 +45,12 @@ file(GLOB TEST_SOURCES
 
 add_library(tarantool_binding SHARED ${SOURCES})
 add_dependencies(tarantool_binding ck api)
-set_target_properties(tarantool_binding PROPERTIES COMPILE_FLAGS "-fPIC")
+set_target_properties(tarantool_binding PROPERTIES COMPILE_FLAGS "-O3 -fPIC")
 target_link_libraries(tarantool_binding PUBLIC tarantool_library ${ck_SOURCE_DIR}/build/lib/libck.a)
+
+if (BUILD_STATIC)
 add_custom_command(TARGET tarantool_binding POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:tarantool_binding> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libstorage.so
-)
-add_custom_command(TARGET tarantool_binding POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/module.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/module.h
 )
 add_custom_command(TARGET tarantool_binding POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/lua.h
@@ -64,3 +64,20 @@ add_custom_command(TARGET tarantool_binding POST_BUILD
 add_custom_command(TARGET tarantool_binding POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/binding_extension.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/extension.h
 )
+else()
+add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:tarantool_binding> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libstorage.so
+)
+add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/third_party/luajit/src/lua.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/lua.h
+)
+add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/third_party/luajit/src/luaconf.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/luaconf.h
+)
+add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/lib/msgpuck/msgpuck.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/msgpuck.h
+)
+add_custom_command(TARGET tarantool_binding POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/binding_extension.h ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/extension.h
+)
+endif()

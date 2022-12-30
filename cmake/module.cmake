@@ -39,6 +39,9 @@ function(rebuild_module_api)
         )
 
     add_custom_target(api ALL DEPENDS ${dstfile})
+    add_custom_command(TARGET api POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${dstfile} ${CMAKE_CURRENT_SOURCE_DIR}/../binding/dart/native/module.h
+    )
     install(FILES ${dstfile} DESTINATION ${MODULE_INCLUDEDIR})
 endfunction()
 set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/module.h" PROPERTIES GENERATED HEADER_FILE_ONLY)

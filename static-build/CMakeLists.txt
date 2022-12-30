@@ -16,8 +16,7 @@ set(NCURSES_VERSION 6.2)
 set(NCURSES_HASH e812da327b1c2214ac1aed440ea3ae8d)
 set(READLINE_VERSION 8.0)
 set(READLINE_HASH 7e6c1f16aee3244a69aba6e438295ca3)
-set(UNWIND_VERSION 1.3-rc1)
-set(UNWIND_HASH f09b670de5db6430a3de666e6aed60e3)
+set(UNWIND_VERSION 1.6.2)
 set(BACKUP_STORAGE https://distrib.hb.bizmrg.com)
 
 # Pass -isysroot=<SDK_PATH> option on Mac OS to a preprocessor and a C
@@ -31,8 +30,8 @@ set(BACKUP_STORAGE https://distrib.hb.bizmrg.com)
 # using of corresponding environment variable. It is possible that a
 # linker flag assumes that some compilation flag is set. We don't pass
 # CFLAGS from environment, so we should not do it for LDFLAGS too.
-set(DEPENDENCY_CFLAGS "")
-set(DEPENDENCY_CPPFLAGS "")
+set(DEPENDENCY_CFLAGS "-fPIC")
+set(DEPENDENCY_CPPFLAGS "-fPIC")
 set(DEPENDENCY_LDFLAGS)
 if (APPLE)
     set(DEPENDENCY_CFLAGS   "${CMAKE_C_SYSROOT_FLAG} ${CMAKE_OSX_SYSROOT}")
@@ -251,7 +250,6 @@ if (APPLE)
 else()
     ExternalProject_Add(unwind
         URL https://download.savannah.nongnu.org/releases/libunwind/libunwind-${UNWIND_VERSION}.tar.gz
-        URL_MD5 ${UNWIND_HASH}
         CONFIGURE_COMMAND <SOURCE_DIR>/configure
             CC=${CMAKE_C_COMPILER}
             CXX=${CMAKE_CXX_COMPILER}
@@ -294,7 +292,7 @@ ExternalProject_Add(tarantool
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         ${CMAKE_TARANTOOL_ARGS}
     STEP_TARGETS build
-    BUILD_COMMAND $(MAKE)
+    BUILD_COMMAND $(MAKE) -j
 )
 
 enable_testing()
