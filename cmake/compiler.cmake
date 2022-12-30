@@ -383,7 +383,9 @@ macro(enable_tnt_compile_flags)
 endmacro(enable_tnt_compile_flags)
 
 if (HAVE_OPENMP)
+  if (NOT BUILD_STATIC)
     add_compile_flags("C;CXX" "-fopenmp")
+  endif()
 endif()
 
 if (CMAKE_COMPILER_IS_CLANG OR CMAKE_COMPILER_IS_GNUCC)
