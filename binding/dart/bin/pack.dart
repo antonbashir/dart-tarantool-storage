@@ -5,6 +5,8 @@ import 'package:tar/tar.dart';
 import 'package:tarantool_storage/storage/constants.dart';
 import 'package:tarantool_storage/storage/lookup.dart';
 
+import 'compile.dart';
+
 Future<void> main(List<String> args) async {
   if (args.isEmpty) {
     print('Specify dart execution entry point');
@@ -21,40 +23,47 @@ Future<void> main(List<String> args) async {
     print("Run 'dart pub get'");
     exit(1);
   }
+  final projectRoot = findProjectRoot();
+  if (projectRoot == null) {
+    print("Project root not found (parent of 'pubspec.yaml')");
+    exit(1);
+  }
+  final projectName = basename(projectRoot);
   final packageRoot = findPackageRoot(dotDartTool);
-  final packageNativeRoot = Directory(packageRoot.toFilePath() + nativeDirectory);
-  final moduleRoot = Directory(root.toFilePath() + moduleDirectory);
-  final nativeRoot = Directory(root.toFilePath() + nativeDirectory);
-  final luaRoot = Directory(root.toFilePath() + luaDirectory);
-  if (!moduleRoot.existsSync()) moduleRoot.createSync();
-  if (nativeRoot.existsSync()) copyNative(nativeRoot, moduleRoot);
-  if (luaRoot.existsSync()) copyLua(luaRoot, moduleRoot);
-  copyLibrary(packageNativeRoot, moduleRoot);
-  compile(moduleRoot, entryPoint);
-  archive(moduleRoot);
+  final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
+  final resultPackageRoot = Directory(root.toFilePath() + Directories.package);
+  final nativeRoot = Directory(root.toFilePath() + Directories.native);
+  final luaRoot = Directory(root.toFilePath() + Directories.lua);
+  if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
+  if (nativeRoot.existsSync()) copyNative(nativeRoot, resultPackageRoot);
+  if (luaRoot.existsSync()) copyLua(luaRoot, resultPackageRoot);
+  copyLibrary(packageNativeRoot, resultPackageRoot);
+  compileDart(resultPackageRoot, entryPoint);
+  compileNative(resultPackageRoot, projectName);
+  archive(resultPackageRoot, projectName);
 }
 
-void copyLibrary(Directory packageNativeRoot, Directory moduleRoot) {
-  File(packageNativeRoot.path + slash + storageLibraryName).copySync(moduleRoot.path + slash + storageLibraryName);
+void copyLibrary(Directory packageNativeRoot, Directory resultPackageRoot) {
+  File(packageNativeRoot.path + slash + storageLibraryName).copySync(resultPackageRoot.path + slash + storageLibraryName);
 }
 
-void copyNative(Directory nativeRoot, Directory moduleRoot) {
-  nativeRoot.listSync(recursive: true).whereType<File>().forEach((element) => element.copySync(moduleRoot.path + slash + basename(element.path)));
+void copyNative(Directory nativeRoot, Directory resultPackageRoot) {
+  nativeRoot.listSync(recursive: true).whereType<File>().forEach((element) => element.copySync(resultPackageRoot.path + slash + basename(element.path)));
 }
 
-void copyLua(Directory luaRoot, Directory moduleRoot) {
-  luaRoot.listSync(recursive: true).whereType<File>().forEach((element) => element.copySync(moduleRoot.path + slash + basename(element.path)));
+void copyLua(Directory luaRoot, Directory resultPackageRoot) {
+  luaRoot.listSync(recursive: true).whereType<File>().forEach((element) => element.copySync(resultPackageRoot.path + slash + basename(element.path)));
 }
 
-void compile(Directory moduleRoot, File entryPoint) {
+void compileDart(Directory resultPackageRoot, File entryPoint) {
   final compile = Process.runSync(
-    'dart',
+    CompileOptions.dartExecutable,
     [
-      'compile',
+      CompileOptions.compileCommand,
       FileExtensions.exe,
       entryPoint.path,
-      "-o",
-      moduleRoot.path + slash + basenameWithoutExtension(entryPoint.path) + dot + FileExtensions.exe,
+      CompileOptions.outputOption,
+      resultPackageRoot.path + slash + basenameWithoutExtension(entryPoint.path) + dot + FileExtensions.exe,
     ],
     runInShell: true,
   );
@@ -64,9 +73,9 @@ void compile(Directory moduleRoot, File entryPoint) {
   }
 }
 
-Future<void> archive(Directory moduleRoot) async {
+Future<void> archive(Directory resultPackageRoot, String projectName) async {
   final tarEntries = Stream<TarEntry>.fromIterable(
-    moduleRoot.listSync().whereType<File>().map((file) => TarEntry.data(TarHeader(name: basename(file.path)), file.readAsBytesSync())),
+    resultPackageRoot.listSync().whereType<File>().map((file) => TarEntry.data(TarHeader(name: basename(file.path)), file.readAsBytesSync())),
   );
-  await tarEntries.transform(tarWriter).transform(gzip.encoder).pipe(File(moduleArchivFile).openWrite());
+  await tarEntries.transform(tarWriter).transform(gzip.encoder).pipe(File(projectName + dot + FileExtensions.tarGz).openWrite());
 }

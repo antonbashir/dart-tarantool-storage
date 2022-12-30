@@ -11,11 +11,6 @@ const comma = ",";
 const parentDirectorySymbol = '..';
 const currentDirectorySymbol = './';
 
-const nativeDirectory = "/native";
-const moduleDirectory = "/module";
-const luaDirectory = "/lua";
-const dartToolDirectoryName = ".dart_tool";
-
 const storageLibraryName = "libstorage.so";
 const storagePackageName = "tarantool_storage";
 
@@ -30,16 +25,38 @@ const packageConfigJsonFile = "package_config.json";
 
 const loadError = "Unable to load Tarantool binding library";
 
-const moduleArchivFile = "module.tar.gz";
+const pubspecYamlFile = 'pubspec.yaml';
+const pubspecYmlFile = 'pubspec.yml';
 
 const universeObjectType = "universe";
 const nil = "nil";
+
+class Directories {
+  static const native = "/native";
+  static const package = "/package";
+  static const lua = "/lua";
+  static const dotDartTool = ".dart_tool";
+}
+
+class Messages {
+  static const runPubGet = "Run 'dart pub get'";
+}
 
 class FileExtensions {
   static const exe = "exe";
   static const lua = "lua";
   static const so = "so";
   static const h = "h";
+  static const tarGz = "tar.gz";
+}
+
+class CompileOptions {
+  static const dartExecutable = "dart";
+  static const compileCommand = "compile";
+  static const outputOption = "-o";
+  static const gccExecutable = "gcc";
+  static const gccSharedOption = "-shared";
+  static const gccFpicOption = "-fPIC";
 }
 
 class PackageConfigFields {

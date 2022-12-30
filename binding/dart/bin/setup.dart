@@ -1,22 +1,22 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:tarantool_storage/storage/constants.dart';
-import 'package:tarantool_storage/storage/lookup.dart';
+import '../lib/storage/constants.dart';
+import '../lib/storage/lookup.dart';
 
 void main() {
   final root = Directory.current.uri;
   final dotDartTool = findDotDartTool();
   if (dotDartTool == null) {
-    print("Run 'dart pub get'");
+    print(Messages.runPubGet);
     exit(1);
   }
   final packageRoot = findPackageRoot(dotDartTool);
-  final packageNativeRoot = Directory(packageRoot.toFilePath() + nativeDirectory);
-  final nativeRoot = Directory(root.toFilePath() + nativeDirectory);
+  final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
+  final nativeRoot = Directory(root.toFilePath() + Directories.native);
   if (!nativeRoot.existsSync()) nativeRoot.createSync();
-  final packageLuaRoot = Directory(packageRoot.toFilePath() + luaDirectory);
-  final luaRoot = Directory(root.toFilePath() + luaDirectory);
+  final packageLuaRoot = Directory(packageRoot.toFilePath() + Directories.lua);
+  final luaRoot = Directory(root.toFilePath() + Directories.lua);
   if (!luaRoot.existsSync()) luaRoot.createSync();
   copyHeaders(packageNativeRoot, nativeRoot);
   copyLuaScrits(packageLuaRoot, luaRoot);
