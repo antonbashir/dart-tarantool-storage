@@ -35,11 +35,11 @@ Future<void> main(List<String> args) async {
   final nativeRoot = Directory(root.toFilePath() + Directories.native);
   final luaRoot = Directory(root.toFilePath() + Directories.lua);
   if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
-  if (nativeRoot.existsSync()) copyNative(nativeRoot, resultPackageRoot);
   if (luaRoot.existsSync()) copyLua(luaRoot, resultPackageRoot);
-  copyLibrary(packageNativeRoot, resultPackageRoot);
   compileDart(resultPackageRoot, entryPoint);
-  compileNative(resultPackageRoot, projectName);
+  copyLibrary(packageNativeRoot, resultPackageRoot);
+  compileNative(nativeRoot, projectName);
+  if (nativeRoot.existsSync()) copyNative(nativeRoot, projectName, resultPackageRoot);
   archive(resultPackageRoot, projectName);
 }
 
@@ -47,8 +47,8 @@ void copyLibrary(Directory packageNativeRoot, Directory resultPackageRoot) {
   File(packageNativeRoot.path + slash + storageLibraryName).copySync(resultPackageRoot.path + slash + storageLibraryName);
 }
 
-void copyNative(Directory nativeRoot, Directory resultPackageRoot) {
-  nativeRoot.listSync(recursive: true).whereType<File>().forEach((element) => element.copySync(resultPackageRoot.path + slash + basename(element.path)));
+void copyNative(Directory nativeRoot, String projectName, Directory resultPackageRoot) {
+   File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).copySync(resultPackageRoot.path + slash + projectName + dot + FileExtensions.so);
 }
 
 void copyLua(Directory luaRoot, Directory resultPackageRoot) {

@@ -20,17 +20,16 @@ Future<void> main(List<String> args) async {
 }
 
 void compileNative(Directory nativeRoot, String projectName) {
-  if (File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).existsSync()) {
-    File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).deleteSync();
-  }
+  final resultLibrary = File(nativeRoot.path + slash + projectName + dot + FileExtensions.so);
+  if (resultLibrary.existsSync()) resultLibrary.deleteSync();
   final compile = Process.runSync(
     CompileOptions.gccExecutable,
     [
       CompileOptions.gccSharedOption,
       CompileOptions.gccFpicOption,
       CompileOptions.outputOption,
-      nativeRoot.path + slash + projectName + dot + FileExtensions.so,
-      ...nativeRoot.listSync().map((file) => file.path).toList()
+      resultLibrary.path,
+      ...nativeRoot.listSync().map((file) => file.path).toList(),
     ],
     runInShell: true,
   );
