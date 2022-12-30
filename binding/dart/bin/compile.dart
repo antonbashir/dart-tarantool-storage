@@ -28,7 +28,7 @@ void compileNative(Directory nativeRoot, String projectName) {
     [
       CompileOptions.gccSharedOption,
       CompileOptions.outputOption,
-      nativeRoot.path + projectName + dot + FileExtensions.so,
+      projectName + dot + FileExtensions.so,
       CompileOptions.gccFpicOption,
       resultLibrary.path,
       ...nativeRoot
