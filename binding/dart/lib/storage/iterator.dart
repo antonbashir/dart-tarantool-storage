@@ -6,7 +6,7 @@ class StorageIterator {
 
   const StorageIterator(this._executor, this.iterator);
 
-  Future<List<dynamic>> next() => _executor.next(this);
+  Future<List<dynamic>?> next() => _executor.next(this);
 
   Future<void> destroy() => _executor.destroyIterator(this);
 
@@ -35,26 +35,26 @@ class StorageIterator {
   }) async* {
     var index = 0;
     if (filter == null) {
-      List<dynamic> value;
-      while ((value = await _executor.next(this)).isNotEmpty) {
+      List<dynamic>? value;
+      while ((value = await _executor.next(this)) != null) {
         if (offset != null && index <= offset) {
           index++;
           continue;
         }
         if (limit != null && index > limit) return;
         index++;
-        yield (map == null ? value : map(value));
+        yield (map == null ? value : map(value!));
       }
       await destroy();
       return;
     }
-    List<dynamic> value;
-    while ((value = await _executor.next(this)).isNotEmpty) {
+    List<dynamic>? value;
+    while ((value = await _executor.next(this)) != null) {
       if (offset != null && index <= offset) {
         index++;
         continue;
       }
-      if (!filter(value)) continue;
+      if (!filter(value!)) continue;
       if (limit != null && index > limit) return;
       index++;
       yield (map == null ? value : map(value));

@@ -67,12 +67,12 @@ class StorageExecutor {
         return sendSingle(message);
       });
 
-  Future<List<dynamic>> next(StorageIterator iterator) => using((Arena arena) {
+  Future<List<dynamic>?> next(StorageIterator iterator) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_iterator_next.cast();
         message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-        return sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return sendSingle(message).then((pointer) => pointer == nullptr ? null : TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<void> destroyIterator(StorageIterator iterator) => using((Arena arena) {
