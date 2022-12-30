@@ -13,7 +13,7 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
   final projectName = basename(projectRoot);
-  final nativeRoot = Directory(root.toFilePath() + Directories.native);
+  final nativeRoot = Directory(root.toFilePath() + "native");
   if (!nativeRoot.existsSync()) {
     exit(1);
   }

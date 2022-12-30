@@ -18,7 +18,7 @@ class BootstrapScript {
       code(LuaExpressions.extendPackagePath(Directory.current.path + Directories.lua));
     }
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.native))) {
-      code(LuaExpressions.extendPackageNativePath(Directory.current.path + slash + Directories.native));
+      code(LuaExpressions.extendPackageNativePath(Directory.current.path + Directories.native));
     }
     return _configuration.format() + newLine + _content;
   }
