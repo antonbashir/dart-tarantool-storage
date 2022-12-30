@@ -14,6 +14,11 @@ Future<void> main(List<String> args) async {
   final projectName = basename(projectRoot);
   final nativeRoot = Directory(root.toFilePath() + Directories.native);
   if (!nativeRoot.existsSync()) {
+    print(Messages.nativeDirectoryNotFound);
+    exit(1);
+  }
+  if (!nativeRoot.listSync().any((element) => element is File && (element.path.endsWith(dot + FileExtensions.c) || element.path.endsWith(dot + FileExtensions.cpp)))) {
+    print(Messages.nativeSourcesNotFound);
     exit(1);
   }
   compileNative(nativeRoot, projectName);
