@@ -26,6 +26,8 @@ const packageConfigJsonFile = "package_config.json";
 
 const loadError = "Unable to load Tarantool binding library";
 
+const dlCloseFunction = 'dlclose';
+
 const pubspecYamlFile = 'pubspec.yaml';
 const pubspecYmlFile = 'pubspec.yml';
 

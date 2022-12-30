@@ -12,7 +12,6 @@ dependencies:
   ffi: ^2.0.1
   msgpack_dart : ^1.0.0
   path: ^1.8.3
-  tar: ^0.5.6
 
 ffigen:
   name: "TarantoolBindings"
