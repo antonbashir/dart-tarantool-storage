@@ -12,12 +12,11 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
   final projectName = basename(projectRoot);
-  final resultPackageRoot = Directory(root.toFilePath() + Directories.package);
   final nativeRoot = Directory(root.toFilePath() + Directories.native);
-  if (nativeRoot.existsSync()) {
+  if (!nativeRoot.existsSync()) {
     exit(1);
   }
-  compileNative(resultPackageRoot, projectName);
+  compileNative(nativeRoot, projectName);
 }
 
 void compileNative(Directory nativeRoot, String projectName) {

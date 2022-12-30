@@ -674,3 +674,8 @@ void tarantool_shutdown_library(int code)
 	}
 	tarantool_free();
 }
+
+int main()
+{
+  return 0;
+}
