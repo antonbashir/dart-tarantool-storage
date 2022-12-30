@@ -20,6 +20,9 @@ Future<void> main(List<String> args) async {
 }
 
 void compileNative(Directory nativeRoot, String projectName) {
+  if (File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).existsSync()) {
+    File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).deleteSync();
+  }
   final compile = Process.runSync(
     CompileOptions.gccExecutable,
     [
