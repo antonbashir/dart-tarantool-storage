@@ -75,11 +75,11 @@ void compileDart(Directory resultPackageRoot, File entryPoint) {
 }
 
 Future<void> archive(Directory resultPackageRoot, String projectName) async {
-    final compile = Process.runSync(
+  final compile = Process.runSync(
     CompileOptions.tarExecutable,
     [
       CompileOptions.tarOption,
-      projectName + FileExtensions.tarGz,
+      projectName + dot + FileExtensions.tarGz,
       resultPackageRoot.path,
     ],
     runInShell: true,
