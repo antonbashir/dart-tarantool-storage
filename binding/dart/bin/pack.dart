@@ -75,8 +75,16 @@ void compileDart(Directory resultPackageRoot, File entryPoint) {
 }
 
 Future<void> archive(Directory resultPackageRoot, String projectName) async {
-  final tarEntries = Stream<TarEntry>.fromIterable(
-    resultPackageRoot.listSync().whereType<File>().map((file) => TarEntry.data(TarHeader(name: basename(file.path)), file.readAsBytesSync())),
+    final compile = Process.runSync(
+    CompileOptions.tarExecutable,
+    [
+      CompileOptions.tarOption,
+      resultPackageRoot.path,
+    ],
+    runInShell: true,
   );
-  await tarEntries.transform(tarWriter).transform(gzip.encoder).pipe(File(projectName + dot + FileExtensions.tarGz).openWrite());
+  if (compile.exitCode != 0) {
+    print(compile.stderr.toString());
+    exit(compile.exitCode);
+  }
 }

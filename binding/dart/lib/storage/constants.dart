@@ -54,6 +54,8 @@ class FileExtensions {
 
 class CompileOptions {
   static const dartExecutable = "dart";
+  static const tarExecutable = "tar";
+  static const tarOption= "cf";
   static const compileCommand = "compile";
   static const outputOption = "-o";
   static const gccExecutable = "gcc";
