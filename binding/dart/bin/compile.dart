@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:path/path.dart';
 import 'package:tarantool_storage/storage/constants.dart';
@@ -28,15 +27,14 @@ void compileNative(Directory nativeRoot, String projectName) {
     [
       CompileOptions.gccSharedOption,
       CompileOptions.outputOption,
-      projectName + dot + FileExtensions.so,
-      CompileOptions.gccFpicOption,
       resultLibrary.path,
+      CompileOptions.gccFpicOption,
       ...nativeRoot
           .listSync()
           .whereType<File>()
           .where((file) => [dot + FileExtensions.c, dot + FileExtensions.h, dot + FileExtensions.hpp, dot + FileExtensions.cpp].contains(extension(file.path)))
           .map((file) => file.path)
-          .toList(),      
+          .toList(),
     ],
     runInShell: true,
   );
