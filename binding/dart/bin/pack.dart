@@ -42,6 +42,7 @@ Future<void> main(List<String> args) async {
   compileNative(nativeRoot, projectName);
   if (nativeRoot.existsSync()) copyNative(nativeRoot, projectName, resultPackageRoot);
   archive(resultPackageRoot, projectName);
+  resultPackageRoot.deleteSync(recursive: true);
 }
 
 void copyLibrary(Directory packageNativeRoot, Directory resultPackageRoot) {
@@ -78,15 +79,14 @@ Future<void> archive(Directory resultPackageRoot, String projectName) async {
   final archiveFile = File(projectName + dot + FileExtensions.tarGz);
   if (archiveFile.existsSync()) archiveFile.deleteSync();
   final compile = Process.runSync(
-    CompileOptions.tarExecutable,
-    [
-      CompileOptions.tarOption,
-      projectName + dot + FileExtensions.tarGz,
-      star,
-    ],
-    runInShell: true,
-    workingDirectory: resultPackageRoot.path
-  );
+      CompileOptions.tarExecutable,
+      [
+        CompileOptions.tarOption,
+        resultPackageRoot.parent.path + slash + projectName + dot + FileExtensions.tarGz,
+        star,
+      ],
+      runInShell: true,
+      workingDirectory: resultPackageRoot.path);
   if (compile.exitCode != 0) {
     print(compile.stderr.toString());
     exit(compile.exitCode);
