@@ -31,3 +31,14 @@ jobs:
 
       - name: Run tests
         run: cd binding/dart && dart compile exe test/test.dart && ./test/test.exe
+
+      - name: Commit files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Updated library"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
