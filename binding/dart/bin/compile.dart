@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:tarantool_storage/storage/constants.dart';
-import 'package:tarantool_storage/storage/lookup.dart';
+import '../lib/storage/constants.dart';
+import '../lib/storage/lookup.dart';
 
 Future<void> main(List<String> args) async {
   final root = Directory.current.uri;

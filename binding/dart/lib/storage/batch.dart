@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:ffi';
 
+import 'extensions.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'tuple.dart';
@@ -44,7 +45,7 @@ class StorageBatchSpaceBuilder {
     _batches.add(message);
   }
 
-  void update(List<dynamic> key, List<UpdateOperation> operations) {
+  void update(List<dynamic> key, List<StorageUpdateOperation> operations) {
     Pointer<tarantool_message_batch_element_t> message = _allocator<tarantool_message_batch_element_t>();
     message.ref.function = _bindings.addresses.tarantool_space_update.cast();
     final request = _allocator<tarantool_space_update_request_t>();
@@ -63,7 +64,7 @@ class StorageBatchSpaceBuilder {
     _batches.add(message);
   }
 
-  void upsert(List<dynamic> tuple, List<UpdateOperation> operations) {
+  void upsert(List<dynamic> tuple, List<StorageUpdateOperation> operations) {
     Pointer<tarantool_message_batch_element_t> message = _allocator<tarantool_message_batch_element_t>();
     message.ref.function = _bindings.addresses.tarantool_space_upsert.cast();
     final request = _allocator<tarantool_space_upsert_request_t>();
@@ -112,7 +113,7 @@ class StorageBatchIndexBuilder {
 
   StorageBatchIndexBuilder(this._bindings, this._spaceId, this._indexId, this._allocator);
 
-  void update(List<dynamic> key, List<UpdateOperation> operations) {
+  void update(List<dynamic> key, List<StorageUpdateOperation> operations) {
     Pointer<tarantool_message_batch_element_t> message = _allocator<tarantool_message_batch_element_t>();
     message.ref.function = _bindings.addresses.tarantool_index_update.cast();
     final request = _allocator<tarantool_index_update_request_t>();

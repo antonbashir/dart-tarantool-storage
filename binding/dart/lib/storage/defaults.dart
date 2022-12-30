@@ -3,7 +3,7 @@ import 'configuration.dart';
 class StorageDefaults {
   const StorageDefaults._();
 
-  static MessageLoopConfiguration loop() => MessageLoopConfiguration(
+  static StorageMessageLoopConfiguration loop() => StorageMessageLoopConfiguration(
         boxOutputBufferCapacity: 16536,
         messageLoopMaxSleepSeconds: 0.0001,
         messageLoopRegularSleepSeconds: 0.0,

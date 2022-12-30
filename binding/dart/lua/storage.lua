@@ -5,6 +5,7 @@ require("search")
 require("time")
 require("user")
 require("version")
+require("reloader")
 
 getVersion = function()
     return box.space.version:get("current").value

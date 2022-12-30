@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:tar/tar.dart';
-import 'package:tarantool_storage/storage/constants.dart';
-import 'package:tarantool_storage/storage/lookup.dart';
+import '../lib/storage/constants.dart';
+import '../lib/storage/lookup.dart';
 
 import 'compile.dart';
 
@@ -66,7 +65,6 @@ void compileDart(Directory resultPackageRoot, File entryPoint) {
       entryPoint.path,
       CompileOptions.outputOption,
       resultPackageRoot.path + slash + basenameWithoutExtension(entryPoint.path) + dot + FileExtensions.exe,
-      
     ],
     runInShell: true,
   );

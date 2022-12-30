@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
+import 'extensions.dart';
 import 'batch.dart';
 import 'bindings.dart';
 import 'constants.dart';
@@ -128,7 +129,7 @@ class StorageSpace {
         return _executor.sendSingle(message);
       });
 
-  Future<List<dynamic>> update(List<dynamic> key, List<UpdateOperation> operations) => using((Arena arena) {
+  Future<List<dynamic>> update(List<dynamic> key, List<StorageUpdateOperation> operations) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_space_update.cast();
@@ -148,7 +149,7 @@ class StorageSpace {
         return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
-  Future<List<dynamic>> upsert(List<dynamic> tuple, List<UpdateOperation> operations) => using((Arena arena) {
+  Future<List<dynamic>> upsert(List<dynamic> tuple, List<StorageUpdateOperation> operations) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_space_upsert.cast();

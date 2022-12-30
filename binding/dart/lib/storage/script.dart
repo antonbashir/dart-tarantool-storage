@@ -3,11 +3,11 @@ import 'dart:io';
 import 'configuration.dart';
 import 'constants.dart';
 
-class BootstrapScript {
+class StorageBootstrapScript {
   final StorageConfiguration _configuration;
   String _content = empty;
 
-  BootstrapScript(this._configuration);
+  StorageBootstrapScript(this._configuration);
 
   void code(String expression) => _content += (expression + newLine);
 

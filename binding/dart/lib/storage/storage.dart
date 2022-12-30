@@ -28,7 +28,7 @@ class Storage {
     _shutdownPort = RawReceivePort((_) => close());
   }
 
-  void boot(BootstrapScript script, MessageLoopConfiguration loopConfiguration) {
+  void boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration) {
     if (initialized()) return;
     final nativeConfiguration = loopConfiguration.native();
     nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;

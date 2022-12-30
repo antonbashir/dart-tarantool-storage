@@ -9,27 +9,27 @@ import 'executor.dart';
 import 'index.dart';
 import 'space.dart';
 
-class SpaceField {
+class StorageSpaceField {
   final String _name;
   final String _type;
   final bool nullable;
 
-  SpaceField._(this._name, this._type, this.nullable);
+  StorageSpaceField._(this._name, this._type, this.nullable);
 
-  factory SpaceField.any(String name, {bool nullable = false}) => SpaceField._(name, FieldType.any.name, nullable);
-  factory SpaceField.unsigned(String name, {bool nullable = false}) => SpaceField._(name, FieldType.unsigned.name, nullable);
-  factory SpaceField.string(String name, {bool nullable = false}) => SpaceField._(name, FieldType.string.name, nullable);
-  factory SpaceField.number(String name, {bool nullable = false}) => SpaceField._(name, FieldType.number.name, nullable);
-  factory SpaceField.double(String name, {bool nullable = false}) => SpaceField._(name, FieldType.double.name, nullable);
-  factory SpaceField.integer(String name, {bool nullable = false}) => SpaceField._(name, FieldType.integer.name, nullable);
-  factory SpaceField.boolean(String name, {bool nullable = false}) => SpaceField._(name, FieldType.boolean.name, nullable);
-  factory SpaceField.decimal(String name, {bool nullable = false}) => SpaceField._(name, FieldType.decimal.name, nullable);
-  factory SpaceField.uuid(String name, {bool nullable = false}) => SpaceField._(name, FieldType.uuid.name, nullable);
-  factory SpaceField.scalar(String name, {bool nullable = false}) => SpaceField._(name, FieldType.scalar.name, nullable);
-  factory SpaceField.array(String name, {bool nullable = false}) => SpaceField._(name, FieldType.array.name, nullable);
-  factory SpaceField.map(String name, {bool nullable = false}) => SpaceField._(name, FieldType.map.name, nullable);
-  factory SpaceField.datetime(String name, {bool nullable = false}) => SpaceField._(name, FieldType.datetime.name, nullable);
-  factory SpaceField.varbinary(String name, {bool nullable = false}) => SpaceField._(name, FieldType.varbinary.name, nullable);
+  factory StorageSpaceField.any(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.any.name, nullable);
+  factory StorageSpaceField.unsigned(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.unsigned.name, nullable);
+  factory StorageSpaceField.string(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.string.name, nullable);
+  factory StorageSpaceField.number(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.number.name, nullable);
+  factory StorageSpaceField.double(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.double.name, nullable);
+  factory StorageSpaceField.integer(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.integer.name, nullable);
+  factory StorageSpaceField.boolean(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.boolean.name, nullable);
+  factory StorageSpaceField.decimal(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.decimal.name, nullable);
+  factory StorageSpaceField.uuid(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.uuid.name, nullable);
+  factory StorageSpaceField.scalar(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.scalar.name, nullable);
+  factory StorageSpaceField.array(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.array.name, nullable);
+  factory StorageSpaceField.map(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.map.name, nullable);
+  factory StorageSpaceField.datetime(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.datetime.name, nullable);
+  factory StorageSpaceField.varbinary(String name, {bool nullable = false}) => StorageSpaceField._(name, FieldType.varbinary.name, nullable);
 
   String format() => LuaArgument.singleTableArgument(
         [
@@ -40,26 +40,26 @@ class SpaceField {
       );
 }
 
-class IndexPart {
+class StorageIndexPart {
   final int? fieldIndex;
   final String? fieldName;
   final String? type;
   final bool? nullable;
 
-  IndexPart._({this.fieldIndex, this.type, this.nullable, this.fieldName});
+  StorageIndexPart._({this.fieldIndex, this.type, this.nullable, this.fieldName});
 
-  factory IndexPart.unsigned(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.unsigned.name, nullable: nullable);
-  factory IndexPart.string(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.string.name, nullable: nullable);
-  factory IndexPart.number(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.number.name, nullable: nullable);
-  factory IndexPart.double(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.double.name, nullable: nullable);
-  factory IndexPart.integer(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.integer.name, nullable: nullable);
-  factory IndexPart.boolean(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.boolean.name, nullable: nullable);
-  factory IndexPart.decimal(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.decimal.name, nullable: nullable);
-  factory IndexPart.uuid(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.uuid.name, nullable: nullable);
-  factory IndexPart.scalar(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.scalar.name, nullable: nullable);
-  factory IndexPart.datetime(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.datetime.name, nullable: nullable);
-  factory IndexPart.varbinary(int field, {bool nullable = false}) => IndexPart._(fieldIndex: field, type: IndexPartType.varbinary.name, nullable: nullable);
-  factory IndexPart.byName(String field) => IndexPart._(fieldName: field);
+  factory StorageIndexPart.unsigned(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.unsigned.name, nullable: nullable);
+  factory StorageIndexPart.string(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.string.name, nullable: nullable);
+  factory StorageIndexPart.number(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.number.name, nullable: nullable);
+  factory StorageIndexPart.double(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.double.name, nullable: nullable);
+  factory StorageIndexPart.integer(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.integer.name, nullable: nullable);
+  factory StorageIndexPart.boolean(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.boolean.name, nullable: nullable);
+  factory StorageIndexPart.decimal(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.decimal.name, nullable: nullable);
+  factory StorageIndexPart.uuid(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.uuid.name, nullable: nullable);
+  factory StorageIndexPart.scalar(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.scalar.name, nullable: nullable);
+  factory StorageIndexPart.datetime(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.datetime.name, nullable: nullable);
+  factory StorageIndexPart.varbinary(int field, {bool nullable = false}) => StorageIndexPart._(fieldIndex: field, type: IndexPartType.varbinary.name, nullable: nullable);
+  factory StorageIndexPart.byName(String field) => StorageIndexPart._(fieldName: field);
 
   String format() => fieldName != null && fieldName!.isNotEmpty
       ? LuaArgument.singleTableArgument(fieldName!.quotted)
@@ -138,7 +138,7 @@ class StorageSchema {
     String name, {
     StorageEngine? engine,
     int? fieldCount,
-    List<SpaceField>? format,
+    List<StorageSpaceField>? format,
     int? id,
     bool? ifNotExists,
     bool? local,
@@ -162,7 +162,7 @@ class StorageSchema {
   Future<void> alterSpace(
     String name, {
     int? fieldCount,
-    List<SpaceField>? format,
+    List<StorageSpaceField>? format,
     bool? synchronous,
     bool? temporary,
     String? user,
@@ -187,7 +187,7 @@ class StorageSchema {
     int? id,
     bool? unique,
     bool? ifNotExists,
-    List<IndexPart>? parts,
+    List<StorageIndexPart>? parts,
   }) {
     List<String> arguments = [];
     if (type != null) arguments.add(LuaField.quottedField(SchemaFields.type, type.name));
@@ -198,7 +198,7 @@ class StorageSchema {
     return _executor.evaluateLua(LuaExpressions.createIndex(spaceName) + LuaArgument.singleQuottedArgument(indexName, options: arguments.join(comma)));
   }
 
-  Future<void> alterIndex(String spaceName, String indexName, {List<IndexPart>? parts}) {
+  Future<void> alterIndex(String spaceName, String indexName, {List<StorageIndexPart>? parts}) {
     List<String> arguments = [if (parts != null) LuaField.tableField(SchemaFields.parts, parts.map((part) => part.format()).join(comma))];
     return _executor.evaluateLua(LuaExpressions.alterIndex(spaceName, indexName) + LuaArgument.singleTableArgument(arguments.join(comma)));
   }

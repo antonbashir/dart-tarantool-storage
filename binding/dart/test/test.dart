@@ -7,7 +7,6 @@ import 'dart:isolate';
 
 import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/constants.dart';
-import 'package:tarantool_storage/storage/schema.dart';
 import 'package:tarantool_storage/tarantool_storage.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -25,7 +24,8 @@ void main() {
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });
-    _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")..boot(BootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
+    _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
+      ..boot(StorageBootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
     _executor = _storage.executor();
     final spaceId = await _executor.schema().spaceId("test");
     _space = _executor.schema().spaceById(spaceId);
@@ -59,7 +59,7 @@ void main() {
       final data = [...testSingleData];
       _space.insert(data);
       data[2] = "updated";
-      expect(await _space.update([1], [UpdateOperation.assign(2, "updated")]), equals(data));
+      expect(await _space.update([1], [StorageUpdateOperation.assign(2, "updated")]), equals(data));
     });
     test("delete", () async {
       _space.insert(testSingleData);
@@ -92,7 +92,7 @@ void main() {
       final data = [...testSingleData];
       _space.insert(data);
       data[2] = "updated by index";
-      expect(await _index.update(["key"], [UpdateOperation.assign(2, "updated by index")]), equals(data));
+      expect(await _index.update(["key"], [StorageUpdateOperation.assign(2, "updated by index")]), equals(data));
     });
 
     test("batch insert", () async {
@@ -110,8 +110,8 @@ void main() {
       data[1][2] = "updated";
       expect(
           await _space.batch((builder) => builder
-            ..update([1], [UpdateOperation.assign(2, "updated")])
-            ..update([2], [UpdateOperation.assign(2, "updated")])),
+            ..update([1], [StorageUpdateOperation.assign(2, "updated")])
+            ..update([2], [StorageUpdateOperation.assign(2, "updated")])),
           equals(data));
     });
     test("batch index update", () async {
@@ -123,8 +123,8 @@ void main() {
       data[1][2] = "updated";
       expect(
           await _index.batch((builder) => builder
-            ..update(["key-0"], [UpdateOperation.assign(2, "updated")])
-            ..update(["key-1"], [UpdateOperation.assign(2, "updated")])),
+            ..update(["key-0"], [StorageUpdateOperation.assign(2, "updated")])
+            ..update(["key-1"], [StorageUpdateOperation.assign(2, "updated")])),
           equals(data));
     });
     test("pairs iterator", testIterator);
@@ -155,9 +155,9 @@ Future<void> testSchema() async {
         engine: StorageEngine.memtx,
         fieldCount: 3,
         format: [
-          SpaceField.string("field-1"),
-          SpaceField.boolean("field-2"),
-          SpaceField.integer("field-3"),
+          StorageSpaceField.string("field-1"),
+          StorageSpaceField.boolean("field-2"),
+          StorageSpaceField.integer("field-3"),
         ],
         id: 3,
         ifNotExists: true,
@@ -173,8 +173,8 @@ Future<void> testSchema() async {
     type: IndexType.hash,
     unique: true,
     parts: [
-      IndexPart.byName("field-1"),
-      IndexPart.integer(3),
+      StorageIndexPart.byName("field-1"),
+      StorageIndexPart.integer(3),
     ],
   );
   expect(await _executor.executeLua("validateCreatedIndex"), equals([true]));
