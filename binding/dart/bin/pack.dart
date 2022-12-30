@@ -32,6 +32,7 @@ Future<void> main(List<String> args) async {
   final packageRoot = findPackageRoot(dotDartTool);
   final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
   final resultPackageRoot = Directory(root.toFilePath() + Directories.package);
+  if (resultPackageRoot.existsSync()) resultPackageRoot.deleteSync(recursive: true);
   final nativeRoot = Directory(root.toFilePath() + Directories.native);
   final luaRoot = Directory(root.toFilePath() + Directories.lua);
   if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
@@ -48,7 +49,7 @@ void copyLibrary(Directory packageNativeRoot, Directory resultPackageRoot) {
 }
 
 void copyNative(Directory nativeRoot, String projectName, Directory resultPackageRoot) {
-   File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).copySync(resultPackageRoot.path + slash + projectName + dot + FileExtensions.so);
+  File(nativeRoot.path + slash + projectName + dot + FileExtensions.so).copySync(resultPackageRoot.path + slash + projectName + dot + FileExtensions.so);
 }
 
 void copyLua(Directory luaRoot, Directory resultPackageRoot) {
