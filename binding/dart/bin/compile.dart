@@ -36,7 +36,7 @@ void compileNative(Directory nativeRoot, String projectName) {
           .map((file) => file.path)
           .toList(),
       CompileOptions.outputOption,
-      nativeRoot.path + slash + projectName + dot + FileExtensions.so
+      nativeRoot.path + projectName + dot + FileExtensions.so
     ],
     runInShell: true,
   );
