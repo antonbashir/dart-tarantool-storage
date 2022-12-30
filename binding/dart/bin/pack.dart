@@ -79,6 +79,7 @@ Future<void> archive(Directory resultPackageRoot, String projectName) async {
     CompileOptions.tarExecutable,
     [
       CompileOptions.tarOption,
+      projectName + FileExtensions.tarGz,
       resultPackageRoot.path,
     ],
     runInShell: true,
