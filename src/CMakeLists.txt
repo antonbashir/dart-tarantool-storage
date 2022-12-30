@@ -276,6 +276,11 @@ endif()
 add_compile_options(-fPIC)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
+if(BUILD_STATIC)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libstdc++")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
+endif()
+
 add_library(tarantool_library STATIC
     main.cc  exports.c
     ${LIBUTIL_FREEBSD_SRC}/flopen.c
