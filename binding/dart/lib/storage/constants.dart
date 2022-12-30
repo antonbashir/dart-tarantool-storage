@@ -33,7 +33,7 @@ const universeObjectType = "universe";
 const nil = "nil";
 
 class Directories {
-  static const native = "/native";
+  static const native = "native";
   static const package = "/package";
   static const lua = "/lua";
   static const dotDartTool = ".dart_tool";

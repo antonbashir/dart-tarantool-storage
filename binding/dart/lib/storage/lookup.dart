@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:ffi';
-import 'package:path/path.dart' as path;
 import 'dart:io' show Platform, Directory, File;
 
 import 'constants.dart';
