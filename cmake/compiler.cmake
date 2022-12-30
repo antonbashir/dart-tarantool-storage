@@ -199,7 +199,7 @@ endif()
 # error: argument unused during compilation: '-static-libstdc++'
 if(BUILD_STATIC AND NOT TARGET_OS_DARWIN)
     # Static linking for c++ routines
-    add_compile_flags("C;CXX" "-static-libstdc++")
+    add_compile_flags("C;CXX" "-static-libstdc++" "-static-libgcc")
 endif()
 
 #

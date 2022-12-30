@@ -86,9 +86,9 @@ extern "C" {
 /** Pathes to C and CXX compilers */
 #define COMPILER_INFO "/usr/bin/cc /usr/bin/c++"
 /** C compile flags used to build Tarantool */
-#define TARANTOOL_C_FLAGS " -static-libstdc++ -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-gnu-alignof-expression -fno-gnu89-inline -Wno-cast-function-type -Werror"
+#define TARANTOOL_C_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-gnu-alignof-expression -fno-gnu89-inline -Wno-cast-function-type -Werror"
 /** CXX compile flags used to build Tarantool */
-#define TARANTOOL_CXX_FLAGS " -static-libstdc++ -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c++11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-invalid-offsetof -Wno-gnu-alignof-expression -Wno-cast-function-type -Werror"
+#define TARANTOOL_CXX_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c++11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-invalid-offsetof -Wno-gnu-alignof-expression -Wno-cast-function-type -Werror"
 
 /** A path to install *.lua module files */
 #define MODULE_LIBDIR "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/lib/tarantool"

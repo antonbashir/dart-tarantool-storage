@@ -257,8 +257,7 @@ if(BUILD_STATIC)
         # against DSO version of libgomp, which implied by -fopenmp
         set (common_libraries ${common_libraries} "libgomp.a")
         set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fno-openmp")
-    endif()
-    
+    endif()    
 endif()
 
 if (ENABLE_LTO)
@@ -291,7 +290,7 @@ add_executable(
     ${LIBUTIL_FREEBSD_SRC}/pidfile.c)
 
 add_dependencies(tarantool build_bundled_libs)
-target_link_libraries(tarantool box ${common_libraries}  -static-libgcc -static-libstdc++)
+target_link_libraries(tarantool box ${common_libraries})
 
 if (TARGET_OS_FREEBSD AND NOT TARGET_OS_DEBIAN_FREEBSD)
     # Without rdynamic FreeBSD does not export some symbols even
