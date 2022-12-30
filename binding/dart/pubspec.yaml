@@ -7,12 +7,12 @@ environment:
 dev_dependencies:
   ffigen: ^7.0.0
   test: ^1.22.0
-  path: ^1.8.3
-  tar: ^0.5.6
-  ffi: ^2.0.1
 
 dependencies:
+  ffi: ^2.0.1
   msgpack_dart : ^1.0.0
+  path: ^1.8.3
+  tar: ^0.5.6
 
 ffigen:
   name: "TarantoolBindings"
