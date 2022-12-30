@@ -28,7 +28,6 @@ void compileNative(Directory nativeRoot, String projectName) {
     [
       CompileOptions.gccSharedOption,
       CompileOptions.gccFpicOption,
-      CompileOptions.outputOption,
       resultLibrary.path,
       ...nativeRoot
           .listSync()
@@ -36,6 +35,8 @@ void compileNative(Directory nativeRoot, String projectName) {
           .where((file) => [dot + FileExtensions.c, dot + FileExtensions.h, dot + FileExtensions.hpp, dot + FileExtensions.cpp].contains(extension(file.path)))
           .map((file) => file.path)
           .toList(),
+      CompileOptions.outputOption,
+      nativeRoot.path + slash + projectName + dot + FileExtensions.so
     ],
     runInShell: true,
   );
