@@ -4,6 +4,7 @@ const empty = "";
 const newLine = "\n";
 const slash = "/";
 const dot = ".";
+const star = "*";
 const equalSpaced = " = ";
 const openingBracket = "{";
 const closingBracket = "}";
