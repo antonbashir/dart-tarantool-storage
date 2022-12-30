@@ -9,23 +9,23 @@ import 'compile.dart';
 
 Future<void> main(List<String> args) async {
   if (args.isEmpty) {
-    print('Specify dart execution entry point');
+    print(Messages.specifyDartEntryPoint);
     exit(1);
   }
   final root = Directory.current.uri;
   final entryPoint = File(args[0]);
   if (!entryPoint.existsSync()) {
-    print('Specify dart execution entry point');
+    print(Messages.specifyDartEntryPoint);
     exit(1);
   }
   final dotDartTool = findDotDartTool();
   if (dotDartTool == null) {
-    print("Run 'dart pub get'");
+    print(Messages.runPubGet);
     exit(1);
   }
   final projectRoot = findProjectRoot();
   if (projectRoot == null) {
-    print("Project root not found (parent of 'pubspec.yaml')");
+    print(Messages.projectRootNotFound);
     exit(1);
   }
   final projectName = basename(projectRoot);

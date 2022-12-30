@@ -16,11 +16,9 @@ set(NCURSES_VERSION 6.2)
 set(NCURSES_HASH e812da327b1c2214ac1aed440ea3ae8d)
 set(READLINE_VERSION 8.0)
 set(READLINE_HASH 7e6c1f16aee3244a69aba6e438295ca3)
-set(UNWIND_VERSION 1.6.2)
+set(UNWIND_VERSION 1.3-rc1)
 set(UNWIND_HASH f09b670de5db6430a3de666e6aed60e3)
 set(BACKUP_STORAGE https://distrib.hb.bizmrg.com)
-
-add_compile_options(-fPIC)
 
 # Pass -isysroot=<SDK_PATH> option on Mac OS to a preprocessor and a C
 # compiler to find header files installed with an SDK.
@@ -33,11 +31,8 @@ add_compile_options(-fPIC)
 # using of corresponding environment variable. It is possible that a
 # linker flag assumes that some compilation flag is set. We don't pass
 # CFLAGS from environment, so we should not do it for LDFLAGS too.
-set(DEPENDENCY_CFLAGS "-fpic")
-set(DEPENDENCY_CPPFLAGS "-fpic")
-set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fPIC" )
-set( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -fPIC" )
-
+set(DEPENDENCY_CFLAGS "")
+set(DEPENDENCY_CPPFLAGS "")
 set(DEPENDENCY_LDFLAGS)
 if (APPLE)
     set(DEPENDENCY_CFLAGS   "${CMAKE_C_SYSROOT_FLAG} ${CMAKE_OSX_SYSROOT}")
@@ -256,6 +251,7 @@ if (APPLE)
 else()
     ExternalProject_Add(unwind
         URL https://download.savannah.nongnu.org/releases/libunwind/libunwind-${UNWIND_VERSION}.tar.gz
+        URL_MD5 ${UNWIND_HASH}
         CONFIGURE_COMMAND <SOURCE_DIR>/configure
             CC=${CMAKE_C_COMPILER}
             CXX=${CMAKE_CXX_COMPILER}
@@ -298,6 +294,29 @@ ExternalProject_Add(tarantool
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         ${CMAKE_TARANTOOL_ARGS}
     STEP_TARGETS build
-    CONFIGURE_COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/.. && bash -c "${CMAKE_COMMAND} ."
-    BUILD_COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/.. -j 
+    BUILD_COMMAND $(MAKE)
+)
+
+enable_testing()
+ExternalProject_Get_Property(tarantool binary_dir)
+SET(TARANTOOL_BINARY_DIR ${binary_dir})
+
+add_test(
+    NAME check-dependencies
+    COMMAND ${CMAKE_COMMAND}
+        -D FILE=${TARANTOOL_BINARY_DIR}/src/tarantool
+        -P CheckDependencies.cmake
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test
+)
+
+add_test(
+    NAME check-exports
+    COMMAND ${TARANTOOL_BINARY_DIR}/src/tarantool
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/static-build/exports.test.lua
+)
+
+add_test(
+    NAME check-traceback
+    COMMAND ${TARANTOOL_BINARY_DIR}/src/tarantool
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/static-build/traceback.test.lua
 )

@@ -8,7 +8,7 @@ Future<void> main(List<String> args) async {
   final root = Directory.current.uri;
   final projectRoot = findProjectRoot();
   if (projectRoot == null) {
-    print("Project root not found (parent of 'pubspec.yaml')");
+    print(Messages.projectRootNotFound);
     exit(1);
   }
   final projectName = basename(projectRoot);

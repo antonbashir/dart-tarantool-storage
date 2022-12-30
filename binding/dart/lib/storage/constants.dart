@@ -40,6 +40,8 @@ class Directories {
 
 class Messages {
   static const runPubGet = "Run 'dart pub get'";
+  static const specifyDartEntryPoint = 'Specify dart execution entry point';
+  static const projectRootNotFound = "Project root not found (parent of 'pubspec.yaml')";
 }
 
 class FileExtensions {
