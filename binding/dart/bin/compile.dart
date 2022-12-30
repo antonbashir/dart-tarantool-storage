@@ -13,7 +13,7 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
   final projectName = basename(projectRoot);
-  final nativeRoot = Directory(root.toFilePath() + "native");
+  final nativeRoot = Directory(root.toFilePath() + Directories.native);
   if (!nativeRoot.existsSync()) {
     exit(1);
   }
@@ -27,16 +27,16 @@ void compileNative(Directory nativeRoot, String projectName) {
     CompileOptions.gccExecutable,
     [
       CompileOptions.gccSharedOption,
-      CompileOptions.gccFpicOption,
       CompileOptions.outputOption,
       nativeRoot.path + projectName + dot + FileExtensions.so,
+      CompileOptions.gccFpicOption,
       resultLibrary.path,
       ...nativeRoot
           .listSync()
           .whereType<File>()
           .where((file) => [dot + FileExtensions.c, dot + FileExtensions.h, dot + FileExtensions.hpp, dot + FileExtensions.cpp].contains(extension(file.path)))
           .map((file) => file.path)
-          .toList(),
+          .toList(),      
     ],
     runInShell: true,
   );
