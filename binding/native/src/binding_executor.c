@@ -155,7 +155,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
       {
         tarantool_message_handle(message);
       }
-
+      free(tarantool_message_buffer);
       break;
     }
 
