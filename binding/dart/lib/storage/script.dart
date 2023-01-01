@@ -12,10 +12,7 @@ class StorageBootstrapScript {
 
   get hasStorageLuaModule => _hasStorageLuaModule;
 
-  void enableLuaStorageModule() {
-    _hasStorageLuaModule = true;
-    code(LuaExpressions.require(storageLuaModule));
-  }
+  void includeStorageLuaModule() => _hasStorageLuaModule = true;
 
   void code(String expression) => _content += (expression + newLine);
 
@@ -28,6 +25,7 @@ class StorageBootstrapScript {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.native))) {
       code(LuaExpressions.extendPackageNativePath(Directory.current.path + Directories.native));
     }
+    if (_hasStorageLuaModule) code(LuaExpressions.require(storageLuaModule));
     return _configuration.format() + newLine + _content;
   }
 }

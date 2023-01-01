@@ -18,11 +18,12 @@ class Storage {
   late DynamicLibrary _library;
   late StorageExecutor _executor;
   late RawReceivePort _shutdownPort;
-  late StreamSubscription<ProcessSignal>? _reloadListener;
-  bool _hasStorageLuaModule = false;
-  final bool activateReloadSignalListener;
+  final bool activateReloader;
 
-  Storage({String? libraryPath, this.activateReloadSignalListener = false}) {
+  StreamSubscription<ProcessSignal>? _reloadListener = null;
+  bool _hasStorageLuaModule = false;
+
+  Storage({String? libraryPath, this.activateReloader = false}) {
     _library = libraryPath != null
         ? File(libraryPath).existsSync()
             ? DynamicLibrary.open(libraryPath)
@@ -44,7 +45,7 @@ class Storage {
       nativeConfiguration,
     );
     malloc.free(nativeConfiguration);
-    if (activateReloadSignalListener) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
+    if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
   }
 
   bool mutable() => _bindings.tarantool_is_read_only() == 0;

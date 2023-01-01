@@ -25,7 +25,11 @@ void main() {
       if (element.path.contains("00000")) element.deleteSync();
     });
     _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
-      ..boot(StorageBootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
+      ..boot(
+          StorageBootstrapScript(StorageDefaults.storage())
+            ..includeStorageLuaModule()
+            ..file(File("test/test.lua")),
+          StorageDefaults.loop());
     _executor = _storage.executor();
     final spaceId = await _executor.schema().spaceId("test");
     _space = _executor.schema().spaceById(spaceId);
