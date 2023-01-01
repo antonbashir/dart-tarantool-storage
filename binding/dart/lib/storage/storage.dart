@@ -13,7 +13,7 @@ import 'lookup.dart';
 import 'script.dart';
 
 class Storage {
-  final _loadedModules = <StorageNativeModule>[];
+  List<StorageNativeModule> _loadedModules = [];
 
   late TarantoolBindings _bindings;
   late StorageLibrary _library;
@@ -80,12 +80,22 @@ class Storage {
 
   StorageLibrary library() => _library;
 
-  StorageNativeModule loadModuleByFile(String libraryPath) => StorageNativeModule._loadByFile(libraryPath);
+  StorageNativeModule loadModuleByFile(String libraryPath) {
+    final module = StorageNativeModule._loadByFile(libraryPath);
+    _loadedModules.add(module);
+    return module;
+  }
 
-  StorageNativeModule loadModuleByName(String libraryName) => StorageNativeModule._loadByName(libraryName);
+  StorageNativeModule loadModuleByName(String libraryName) {
+    final module = StorageNativeModule._loadByName(libraryName);
+    _loadedModules.add(module);
+    return module;
+  }
 
   Future<void> reload() async {
-    _loadedModules.forEach((module) => module._reload());
+    final _newLopaded = <StorageNativeModule>[];
+    _loadedModules.forEach((module) => _newLopaded.add(module._reload()));
+    _loadedModules = _newLopaded;
     if (_hasStorageLuaModule) await executor().executeLua(LuaExpressions.reload);
   }
 
