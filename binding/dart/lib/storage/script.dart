@@ -5,9 +5,17 @@ import 'constants.dart';
 
 class StorageBootstrapScript {
   final StorageConfiguration _configuration;
+  bool _hasStorageLuaModule = false;
   String _content = empty;
 
   StorageBootstrapScript(this._configuration);
+
+  get hasStorageLuaModule => _hasStorageLuaModule;
+
+  void enableLuaStorageModule() {
+    _hasStorageLuaModule = true;
+    code(LuaExpressions.require(storageLuaModule));
+  }
 
   void code(String expression) => _content += (expression + newLine);
 

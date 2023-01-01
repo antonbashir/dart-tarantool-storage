@@ -14,6 +14,7 @@ const currentDirectorySymbol = './';
 
 const storageLibraryName = "libstorage.so";
 const storagePackageName = "tarantool_storage";
+const storageLuaModule = "storage";
 
 const boxCfgPrefix = "box.cfg{";
 
@@ -61,15 +62,52 @@ enum StorageIteratorType {
   neighbor,
 }
 
-enum StorageEngine { memtx, vinly }
+enum StorageEngine {
+  memtx,
+  vinly,
+}
 
-enum IndexType { hash, tree, bitset, rtree }
+enum IndexType {
+  hash,
+  tree,
+  bitset,
+  rtree,
+}
 
-enum FieldType { any, unsigned, string, number, double, integer, boolean, decimal, uuid, scalar, array, map, datetime, varbinary }
+enum FieldType {
+  any,
+  unsigned,
+  string,
+  number,
+  double,
+  integer,
+  boolean,
+  decimal,
+  uuid,
+  scalar,
+  array,
+  map,
+  datetime,
+  varbinary,
+}
 
-enum IndexPartType { unsigned, string, number, double, integer, boolean, decimal, uuid, scalar, datetime, varbinary }
+enum IndexPartType {
+  unsigned,
+  string,
+  number,
+  double,
+  integer,
+  boolean,
+  decimal,
+  uuid,
+  scalar,
+  datetime,
+  varbinary,
+}
 
 class Directories {
+  const Directories._();
+
   static const native = "/native";
   static const package = "/package";
   static const lua = "/lua";
@@ -77,6 +115,8 @@ class Directories {
 }
 
 class Messages {
+  const Messages._();
+
   static const runPubGet = "Run 'dart pub get'";
   static const specifyDartEntryPoint = 'Specify dart execution entry point';
   static const projectRootNotFound = "Project root not found (parent of 'pubspec.yaml')";
@@ -85,6 +125,8 @@ class Messages {
 }
 
 class FileExtensions {
+  const FileExtensions._();
+
   static const exe = "exe";
   static const lua = "lua";
   static const so = "so";
@@ -96,6 +138,8 @@ class FileExtensions {
 }
 
 class CompileOptions {
+  const CompileOptions._();
+
   static const dartExecutable = "dart";
   static const tarExecutable = "tar";
   static const tarOption = "-czf";
@@ -115,6 +159,10 @@ class PackageConfigFields {
 }
 
 class LuaExpressions {
+  const LuaExpressions._();
+
+  static const reload = """reload()""";
+
   static String require(String module) => """require '$module'""";
   static String extendPackagePath(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";
   static String extendPackageNativePath(String extension) => """package.cpath = package.cpath .. ';${extension + "/?.so"}'""";
@@ -142,6 +190,8 @@ class LuaExpressions {
 }
 
 class LuaField {
+  const LuaField._();
+
   static String stringField(String name, String value) => '$name = $value';
   static String tableField(String name, String value) => '$name = {$value}';
   static String quottedField(String name, String value) => "$name = '$value'";
@@ -150,6 +200,8 @@ class LuaField {
 }
 
 class LuaArgument {
+  const LuaArgument._();
+
   static String singleQuottedArgument(String argument, {String? options}) => options != null ? "('$argument', {$options})" : "('$argument')";
   static String singleStringArgument(String argument, {String? options}) => options != null ? "($argument, {$options})" : "($argument)";
   static String singleTableArgument(String table) => "{$table}";
@@ -157,6 +209,8 @@ class LuaArgument {
 }
 
 class SchemaFields {
+  const SchemaFields._();
+
   static const name = "name";
   static const engine = "engine";
   static const fieldCount = "field_count";
@@ -176,6 +230,8 @@ class SchemaFields {
 }
 
 class ConfigurationKeys {
+  const ConfigurationKeys._();
+
   static const listen = "listen";
   static const memtxMemory = "memtx_memory";
   static const stripCore = "strip_core";

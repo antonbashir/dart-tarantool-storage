@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
+import 'package:tarantool_storage/storage/native_module.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
@@ -16,8 +18,11 @@ class Storage {
   late DynamicLibrary _library;
   late StorageExecutor _executor;
   late RawReceivePort _shutdownPort;
+  late StreamSubscription<ProcessSignal>? _reloadListener;
+  bool _hasStorageLuaModule = false;
+  final bool activateReloadSignalListener;
 
-  Storage({String? libraryPath}) {
+  Storage({String? libraryPath, this.activateReloadSignalListener = false}) {
     _library = libraryPath != null
         ? File(libraryPath).existsSync()
             ? DynamicLibrary.open(libraryPath)
@@ -30,6 +35,7 @@ class Storage {
 
   void boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration) {
     if (initialized()) return;
+    _hasStorageLuaModule = script.hasStorageLuaModule;
     final nativeConfiguration = loopConfiguration.native();
     nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;
     _bindings.tarantool_initialize(
@@ -38,6 +44,7 @@ class Storage {
       nativeConfiguration,
     );
     malloc.free(nativeConfiguration);
+    if (activateReloadSignalListener) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
   }
 
   bool mutable() => _bindings.tarantool_is_read_only() == 0;
@@ -57,11 +64,17 @@ class Storage {
   void close() {
     _executor.close();
     _shutdownPort.close();
+    _reloadListener?.cancel();
   }
 
   StorageExecutor executor() => _executor;
 
   DynamicLibrary library() => _library;
+
+  Future<void> reload() async {
+    StorageNativeModule.reloadAll();
+    if (_hasStorageLuaModule) await executor().executeLua(LuaExpressions.reload);
+  }
 
   void execute(void Function(StorageExecutor executor) executor) => executor(_executor);
 }
