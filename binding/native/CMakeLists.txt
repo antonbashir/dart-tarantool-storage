@@ -13,8 +13,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ck)
 include_directories(${ck_SOURCE_DIR}/include)
-set(DEPENDENCY_CFLAGS "-fPIC")
-set(DEPENDENCY_CPPFLAGS "-fPIC")
+set(DEPENDENCY_CFLAGS "-fPIC -O3")
+set(DEPENDENCY_CPPFLAGS "-fPIC -O3")
 set(DEPENDENCY_LDFLAGS)
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
 
