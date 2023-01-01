@@ -13,7 +13,8 @@ import 'lookup.dart';
 import 'script.dart';
 
 class Storage {
-  List<StorageNativeModule> _loadedModules = [];
+  Map<String, StorageNativeModule> _loadedModulesByName = {};
+  Map<String, StorageNativeModule> _loadedModulesByPath = {};
 
   late TarantoolBindings _bindings;
   late StorageLibrary _library;
@@ -80,22 +81,23 @@ class Storage {
 
   StorageLibrary library() => _library;
 
-  StorageNativeModule loadModuleByFile(String libraryPath) {
+  StorageNativeModule loadModuleByPath(String libraryPath) {
+    if (_loadedModulesByPath.containsKey(libraryPath)) return _loadedModulesByPath[libraryPath]!;
     final module = StorageNativeModule._loadByFile(libraryPath);
-    _loadedModules.add(module);
+    _loadedModulesByName[libraryPath] = module;
     return module;
   }
 
   StorageNativeModule loadModuleByName(String libraryName) {
+    if (_loadedModulesByName.containsKey(libraryName)) return _loadedModulesByName[libraryName]!;
     final module = StorageNativeModule._loadByName(libraryName);
-    _loadedModules.add(module);
+    _loadedModulesByName[libraryName] = module;
     return module;
   }
 
   Future<void> reload() async {
-    final _newLopaded = <StorageNativeModule>[];
-    _loadedModules.forEach((module) => _newLopaded.add(module._reload()));
-    _loadedModules = _newLopaded;
+    _loadedModulesByName.entries.forEach((entry) => _loadedModulesByName[entry.key] = entry.value._reload());
+    _loadedModulesByPath.entries.forEach((entry) => _loadedModulesByPath[entry.key] = entry.value._reload());
     if (_hasStorageLuaModule) await executor().executeLua(LuaExpressions.reload);
   }
 
