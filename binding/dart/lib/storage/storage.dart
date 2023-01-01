@@ -111,27 +111,17 @@ class StorageNativeModule {
 
   const StorageNativeModule._(this.libraryName, this.libraryPath, this.library);
 
-  static StorageNativeModule _loadByFile(String library) {
-    try {
-      return StorageNativeModule._(
+  static StorageNativeModule _loadByFile(String library) => StorageNativeModule._(
         library,
-        Directory.current.path + slash + library,
+        library,
         Platform.isLinux ? DynamicLibrary.open(library) : throw UnsupportedError(loadError),
       );
-    } on ArgumentError {
-      final projectRoot = findProjectRoot();
-      if (projectRoot == null) throw UnsupportedError(loadError);
-      final libraryFile = File(projectRoot + Directories.native + slash + library);
-      if (libraryFile.existsSync()) return StorageNativeModule._(library, libraryFile.path, DynamicLibrary.open(libraryFile.path));
-      throw UnsupportedError(loadError);
-    }
-  }
 
   static StorageNativeModule _loadByName(String name) {
     name = name + dot + FileExtensions.so;
     try {
       return StorageNativeModule._(
-        name,
+        Directory.current.path + slash + name,
         Directory.current.path + slash + name,
         Platform.isLinux ? DynamicLibrary.open(name) : throw UnsupportedError(loadError),
       );
