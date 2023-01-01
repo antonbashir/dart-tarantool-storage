@@ -215,7 +215,7 @@ class StorageSchema {
 
   Future<void> changePassword(String name, String password) => _executor.evaluateLua(LuaExpressions.changePassword(name, password));
 
-  Future<bool> userExists(String name) => _executor.executeLua(LuaExpressions.userExists, argument: [name]).then((value) => value.first);
+  Future<bool> userExists(String name) => _executor.executeLua(LuaExpressions.userExists, arguments: [name]).then((value) => value.first);
 
   Future<void> grantUser(
     String name, {

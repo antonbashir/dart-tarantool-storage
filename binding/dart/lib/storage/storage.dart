@@ -34,7 +34,7 @@ class Storage {
     _shutdownPort = RawReceivePort((_) => close());
   }
 
-  void boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration) {
+  Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration, {ReplicationConfiguration? replicationConfiguration}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
     final nativeConfiguration = loopConfiguration.native();
@@ -45,6 +45,13 @@ class Storage {
       nativeConfiguration,
     );
     malloc.free(nativeConfiguration);
+    if (_hasStorageLuaModule && replicationConfiguration != null) {
+      await executor().executeLua(LuaExpressions.boot, arguments: [
+        replicationConfiguration.user,
+        replicationConfiguration.password,
+        replicationConfiguration.delay.inSeconds,
+      ]);
+    }
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
   }
 

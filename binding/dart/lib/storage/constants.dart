@@ -161,7 +161,8 @@ class PackageConfigFields {
 class LuaExpressions {
   const LuaExpressions._();
 
-  static const reload = """reload()""";
+  static const reload = 'reload';
+  static const boot = 'boot';
 
   static String require(String module) => """require '$module'""";
   static String extendPackagePath(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";

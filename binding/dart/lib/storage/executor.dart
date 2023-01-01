@@ -31,11 +31,11 @@ class StorageExecutor {
     return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
   }
 
-  Future<List<dynamic>> evaluateLua(String expression, {List<dynamic> argument = const []}) => using((Arena arena) {
+  Future<List<dynamic>> evaluateLua(String expression, {List<dynamic> arguments = const []}) => using((Arena arena) {
         final request = arena<tarantool_evaluate_request_t>();
         request.ref.expression = expression.toNativeUtf8().cast();
         request.ref.expression_length = expression.length;
-        request.ref.input = TarantoolTuple.write(arena, argument);
+        request.ref.input = TarantoolTuple.write(arena, arguments);
         final message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_evaluate.cast();
@@ -47,11 +47,11 @@ class StorageExecutor {
 
   Future<void> requireLuaModule(String module) => evaluateLua(LuaExpressions.require(module));
 
-  Future<List<dynamic>> executeLua(String function, {List<dynamic> argument = const []}) => using((Arena arena) {
+  Future<List<dynamic>> executeLua(String function, {List<dynamic> arguments = const []}) => using((Arena arena) {
         final request = arena<tarantool_call_request_t>();
         request.ref.function = function.toNativeUtf8().cast();
         request.ref.function_length = function.length;
-        request.ref.input = TarantoolTuple.write(arena, argument);
+        request.ref.input = TarantoolTuple.write(arena, arguments);
         final message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_call.cast();

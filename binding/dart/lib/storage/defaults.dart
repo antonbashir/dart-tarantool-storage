@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'configuration.dart';
 
 class StorageDefaults {
@@ -84,4 +86,6 @@ class StorageDefaults {
           "log_level": 5,
         }
       });
+
+  static ReplicationConfiguration replication = ReplicationConfiguration("replicator", "replicator", Duration(seconds: 0));
 }

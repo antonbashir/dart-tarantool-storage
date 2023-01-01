@@ -24,12 +24,14 @@ void main() {
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });
-    _storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
+    _storage = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
       ..boot(
-          StorageBootstrapScript(StorageDefaults.storage())
-            ..includeStorageLuaModule()
-            ..file(File("test/test.lua")),
-          StorageDefaults.loop());
+        StorageBootstrapScript(StorageDefaults.storage())
+          ..includeStorageLuaModule()
+          ..file(File("test/test.lua")),
+        StorageDefaults.loop(),
+        replicationConfiguration: StorageDefaults.replication,
+      );
     _executor = _storage.executor();
     final spaceId = await _executor.schema().spaceId("test");
     _space = _executor.schema().spaceById(spaceId);

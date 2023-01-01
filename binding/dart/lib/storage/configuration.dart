@@ -124,3 +124,11 @@ class StorageMessageLoopConfiguration {
     return configuration;
   }
 }
+
+class ReplicationConfiguration {
+  final String user;
+  final String password;
+  final Duration delay;
+
+  ReplicationConfiguration(this.user, this.password, this.delay);
+}
