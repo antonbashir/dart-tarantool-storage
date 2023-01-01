@@ -2,17 +2,15 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
 import 'package:ffi/ffi.dart';
-import 'package:tarantool_storage/storage/native_module.dart';
+
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
+import 'executor.dart';
 import 'lookup.dart';
 import 'script.dart';
-
-import 'executor.dart';
 
 class Storage {
   final _loadedModules = <StorageNativeModule>[];

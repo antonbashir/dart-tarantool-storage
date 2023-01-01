@@ -11,4 +11,3 @@ export "storage/exception.dart" show StorageExecutionException, StorageLimitExce
 export "storage/updater.dart" show StorageUpdateOperation;
 export "storage/batch.dart" show StorageBatchIndexBuilder, StorageBatchSpaceBuilder;
 export "storage/schema.dart" show StorageIndexPart, StorageSpaceField, StorageSchema;
-export "storage/native_module.dart" show StorageNativeModule;
