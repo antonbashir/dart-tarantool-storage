@@ -78,17 +78,17 @@ extern "C" {
 /** Install prefix (e.g. /usr) */
 #define INSTALL_PREFIX "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix"
 /** Build type, e.g. Debug or Release */
-#define BUILD_TYPE "Debug"
+#define BUILD_TYPE "RelWithDebugInfo"
 /** CMake build type signature, e.g. Linux-x86_64-Debug */
-#define BUILD_INFO "Linux-x86_64-Debug"
+#define BUILD_INFO "Linux-x86_64-RelWithDebugInfo"
 /** Command line used to run CMake */
 #define BUILD_OPTIONS "cmake . -DCMAKE_INSTALL_PREFIX=/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix -DENABLE_BACKTRACE=TRUE"
 /** Pathes to C and CXX compilers */
 #define COMPILER_INFO "/usr/bin/cc /usr/bin/c++"
 /** C compile flags used to build Tarantool */
-#define TARANTOOL_C_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-gnu-alignof-expression -fno-gnu89-inline -Wno-cast-function-type -Werror"
+#define TARANTOOL_C_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-gnu-alignof-expression -fno-gnu89-inline -Wno-cast-function-type"
 /** CXX compile flags used to build Tarantool */
-#define TARANTOOL_CXX_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c++11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-invalid-offsetof -Wno-gnu-alignof-expression -Wno-cast-function-type -Werror"
+#define TARANTOOL_CXX_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c++11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-invalid-offsetof -Wno-gnu-alignof-expression -Wno-cast-function-type"
 
 /** A path to install *.lua module files */
 #define MODULE_LIBDIR "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/lib/tarantool"
