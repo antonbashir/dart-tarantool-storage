@@ -19,7 +19,7 @@ class StorageDefaults {
   static StorageConfiguration storage() => StorageConfiguration({
         ...{
           "listen": null,
-          "memtx_memory": 1 * 1024 * 1024 * 1024,
+          "memtx_memory": 512 * 1024 * 1024,
           "strip_core": true,
           "memtx_min_tuple_size": 16,
           "memtx_max_tuple_size": 1024 * 1024,
