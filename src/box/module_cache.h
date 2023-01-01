@@ -200,6 +200,8 @@ module_init(void);
 void
 module_free(void);
 
+struct module * module_find(const char *str, size_t len);
+
 #if defined(__cplusplus)
 }
 #endif /* defined(__plusplus) */

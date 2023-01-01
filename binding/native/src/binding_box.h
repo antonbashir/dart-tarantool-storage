@@ -128,6 +128,20 @@ extern "C"
     uint32_t index_id;
   } tarantool_index_id_t;
 
+  typedef struct tarantool_native_module_request_t
+  {
+    char *module_name;
+    size_t module_name_length;
+  } tarantool_native_module_request_t;
+
+  typedef struct tarantool_native_function_request_t
+  {
+    char *module_name;
+    char *function_name;
+    size_t module_name_length;
+  } tarantool_native_function_request_t;
+
+
   void tarantool_initialize_box(size_t output_buffer_capacity);
   void tarantool_destroy_box();
 

@@ -15,7 +15,7 @@ import 'executor.dart';
 
 class Storage {
   late TarantoolBindings _bindings;
-  late DynamicLibrary _library;
+  late StorageLibrary _library;
   late StorageExecutor _executor;
   late RawReceivePort _shutdownPort;
   final bool activateReloader;
@@ -26,10 +26,10 @@ class Storage {
   Storage({String? libraryPath, this.activateReloader = false}) {
     _library = libraryPath != null
         ? File(libraryPath).existsSync()
-            ? DynamicLibrary.open(libraryPath)
+            ? StorageLibrary(DynamicLibrary.open(libraryPath), libraryPath)
             : loadBindingLibrary()
         : loadBindingLibrary();
-    _bindings = TarantoolBindings(_library);
+    _bindings = TarantoolBindings(_library.library);
     _executor = StorageExecutor(_bindings, _bindings.tarantool_generate_owner_id());
     _shutdownPort = RawReceivePort((_) => close());
   }
@@ -37,7 +37,7 @@ class Storage {
   Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration, {ReplicationConfiguration? replicationConfiguration}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
-    final nativeConfiguration = loopConfiguration.native();
+    final nativeConfiguration = loopConfiguration.native(_library.path);
     nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
@@ -77,7 +77,7 @@ class Storage {
 
   StorageExecutor executor() => _executor;
 
-  DynamicLibrary library() => _library;
+  StorageLibrary library() => _library;
 
   Future<void> reload() async {
     StorageNativeModule.reloadAll();

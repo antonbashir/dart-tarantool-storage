@@ -111,7 +111,7 @@ class StorageMessageLoopConfiguration {
     required this.messageLoopRingRetryMaxCount,
   });
 
-  Pointer<tarantool_configuration_t> native() {
+  Pointer<tarantool_configuration_t> native(String libraryPath) {
     Pointer<tarantool_configuration_t> configuration = malloc<tarantool_configuration_t>();
     configuration.ref.box_output_buffer_capacity = boxOutputBufferCapacity;
     configuration.ref.message_loop_empty_cycles_multiplier = messageLoopEmptyCyclesMultiplier;
@@ -121,6 +121,7 @@ class StorageMessageLoopConfiguration {
     configuration.ref.message_loop_max_sleep_seconds = messageLoopMaxSleepSeconds;
     configuration.ref.message_loop_ring_size = messageLoopRingSize;
     configuration.ref.message_loop_ring_retry_max_count = messageLoopRingRetryMaxCount;
+    configuration.ref.library_path = libraryPath.toNativeUtf8().cast();
     return configuration;
   }
 }

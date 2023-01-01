@@ -10,6 +10,7 @@ extern "C"
 #endif
 	typedef struct tarantool_configuration
 	{
+		const char* library_path;
 		size_t box_output_buffer_capacity;
 		double message_loop_max_sleep_seconds;
 		double message_loop_regular_sleep_seconds;

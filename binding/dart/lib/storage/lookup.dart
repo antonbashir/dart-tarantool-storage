@@ -4,16 +4,23 @@ import 'dart:io' show Platform, Directory, File;
 
 import 'constants.dart';
 
-DynamicLibrary loadBindingLibrary() {
+class StorageLibrary {
+  final DynamicLibrary library;
+  final String path;
+
+  StorageLibrary(this.library, this.path);
+}
+
+StorageLibrary loadBindingLibrary() {
   try {
-    return Platform.isLinux ? DynamicLibrary.open(storageLibraryName) : throw UnsupportedError(loadError);
+    return StorageLibrary(Platform.isLinux ? DynamicLibrary.open(storageLibraryName) : throw UnsupportedError(loadError), Directory.current.path + slash + storageLibraryName);
   } on ArgumentError {
     final dotDartTool = findDotDartTool();
     if (dotDartTool != null) {
       final packageNativeRoot = Directory(findPackageRoot(dotDartTool).toFilePath() + Directories.native);
       final libraryFile = File(packageNativeRoot.path + slash + storageLibraryName);
       if (libraryFile.existsSync()) {
-        return DynamicLibrary.open(libraryFile.path);
+        return StorageLibrary(DynamicLibrary.open(libraryFile.path), libraryFile.path);
       }
     }
     throw UnsupportedError(loadError);

@@ -39,6 +39,10 @@ cache_find(const char *str, size_t len)
 	return mh_strnptr_node(module_cache, e)->val;
 }
 
+struct module * module_find(const char *str, size_t len) {
+  return cache_find(str, len);
+}
+
 static void
 cache_update(struct module *m)
 {

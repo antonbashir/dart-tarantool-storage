@@ -12,6 +12,10 @@
 #include "binding_box.h"
 #include "on_shutdown.h"
 #include "dart/dart_api_dl.h"
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <dlfcn.h>
 
 #define TARANTOOL_MESSAGE_LOOP_FIBER "message-loop"
 
@@ -60,6 +64,10 @@ int tarantool_shutdown_trigger(void *ignore)
 void tarantool_initialize(char *binary_path, char *script, tarantool_configuration_t *configuration)
 {
   if (storage.initialized)
+  {
+    return;
+  }
+  if (!dlopen(configuration->library_path, RTLD_NOW | RTLD_GLOBAL))
   {
     return;
   }

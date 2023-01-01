@@ -38,7 +38,7 @@ Future<void> main(List<String> args) async {
   if (luaRoot.existsSync()) copyLua(luaRoot, resultPackageRoot);
   compileDart(resultPackageRoot, entryPoint);
   copyLibrary(packageNativeRoot, resultPackageRoot);
-  compileNative(nativeRoot, projectName);
+  compileNative(nativeRoot, packageNativeRoot, projectName);
   if (nativeRoot.existsSync()) copyNative(nativeRoot, projectName, resultPackageRoot);
   archive(resultPackageRoot, projectName);
   resultPackageRoot.deleteSync(recursive: true);

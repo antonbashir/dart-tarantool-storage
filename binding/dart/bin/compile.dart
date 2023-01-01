@@ -21,19 +21,28 @@ Future<void> main(List<String> args) async {
     print(Messages.nativeSourcesNotFound);
     exit(1);
   }
-  compileNative(nativeRoot, projectName);
+  final dotDartTool = findDotDartTool();
+  if (dotDartTool == null) {
+    print(Messages.runPubGet);
+    exit(1);
+  }
+  final packageRoot = findPackageRoot(dotDartTool);
+  final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
+  compileNative(nativeRoot, packageNativeRoot, projectName);
 }
 
-void compileNative(Directory nativeRoot, String projectName) {
+void compileNative(Directory nativeRoot, Directory packageNativeRoot, String projectName) {
   final resultLibrary = File(nativeRoot.path + slash + projectName + dot + FileExtensions.so);
   if (resultLibrary.existsSync()) resultLibrary.deleteSync();
   final compile = Process.runSync(
     CompileOptions.gccExecutable,
     [
       CompileOptions.gccSharedOption,
+      "-rdynamic",
+      CompileOptions.gccFpicOption,
+      "-L${packageNativeRoot.path}/$storageLibraryName}",
       CompileOptions.outputOption,
       resultLibrary.path,
-      CompileOptions.gccFpicOption,
       ...nativeRoot
           .listSync()
           .whereType<File>()

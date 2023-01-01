@@ -6701,6 +6701,74 @@ class TarantoolBindings {
   late final _tarantool_iterator_destroy =
       _tarantool_iterator_destroyPtr.asFunction<void Function(int)>();
 
+  void tarantool_load_native_module(
+    ffi.Pointer<tarantool_native_module_request_t> request,
+  ) {
+    return _tarantool_load_native_module(
+      request,
+    );
+  }
+
+  late final _tarantool_load_native_modulePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_native_module_request_t>)>>(
+      'tarantool_load_native_module');
+  late final _tarantool_load_native_module =
+      _tarantool_load_native_modulePtr.asFunction<
+          void Function(ffi.Pointer<tarantool_native_module_request_t>)>();
+
+  void tarantool_unload_native_module(
+    ffi.Pointer<tarantool_native_module_request_t> request,
+  ) {
+    return _tarantool_unload_native_module(
+      request,
+    );
+  }
+
+  late final _tarantool_unload_native_modulePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_native_module_request_t>)>>(
+      'tarantool_unload_native_module');
+  late final _tarantool_unload_native_module =
+      _tarantool_unload_native_modulePtr.asFunction<
+          void Function(ffi.Pointer<tarantool_native_module_request_t>)>();
+
+  void tarantool_reload_native_module(
+    ffi.Pointer<tarantool_native_module_request_t> request,
+  ) {
+    return _tarantool_reload_native_module(
+      request,
+    );
+  }
+
+  late final _tarantool_reload_native_modulePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_native_module_request_t>)>>(
+      'tarantool_reload_native_module');
+  late final _tarantool_reload_native_module =
+      _tarantool_reload_native_modulePtr.asFunction<
+          void Function(ffi.Pointer<tarantool_native_module_request_t>)>();
+
+  int tarantool_lookup_native_module_function(
+    ffi.Pointer<tarantool_native_function_request_t> request,
+  ) {
+    return _tarantool_lookup_native_module_function(
+      request,
+    );
+  }
+
+  late final _tarantool_lookup_native_module_functionPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.IntPtr Function(
+                  ffi.Pointer<tarantool_native_function_request_t>)>>(
+      'tarantool_lookup_native_module_function');
+  late final _tarantool_lookup_native_module_function =
+      _tarantool_lookup_native_module_functionPtr.asFunction<
+          int Function(ffi.Pointer<tarantool_native_function_request_t>)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -7827,6 +7895,30 @@ class _SymbolAddresses {
       get tarantool_iterator_next => _library._tarantool_iterator_nextPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>
       get tarantool_iterator_destroy => _library._tarantool_iterator_destroyPtr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_native_module_request_t>)>>
+      get tarantool_load_native_module =>
+          _library._tarantool_load_native_modulePtr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_native_module_request_t>)>>
+      get tarantool_unload_native_module =>
+          _library._tarantool_unload_native_modulePtr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<tarantool_native_module_request_t>)>>
+      get tarantool_reload_native_module =>
+          _library._tarantool_reload_native_modulePtr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.IntPtr Function(
+                  ffi.Pointer<tarantool_native_function_request_t>)>>
+      get tarantool_lookup_native_module_function =>
+          _library._tarantool_lookup_native_module_functionPtr;
 }
 
 class imaxdiv_t extends ffi.Struct {
@@ -8580,6 +8672,8 @@ class tarantool_tuple_t extends ffi.Struct {
 }
 
 class tarantool_configuration extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> library_path;
+
   @ffi.Size()
   external int box_output_buffer_capacity;
 
@@ -8805,6 +8899,22 @@ class tarantool_index_id_t extends ffi.Struct {
 
   @ffi.Uint32()
   external int index_id;
+}
+
+class tarantool_native_module_request_t extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> module_name;
+
+  @ffi.Size()
+  external int module_name_length;
+}
+
+class tarantool_native_function_request_t extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> module_name;
+
+  external ffi.Pointer<ffi.Char> function_name;
+
+  @ffi.Size()
+  external int module_name_length;
 }
 
 const int kNativeArgNumberPos = 0;

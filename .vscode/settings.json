@@ -104,7 +104,8 @@
       "ck_backoff.h": "c",
       "ck_cc.h": "c",
       "ck_spinlock.h": "c",
-      "extension.h": "c"
+      "extension.h": "c",
+      "ck_array.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",
