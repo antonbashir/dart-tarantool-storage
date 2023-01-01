@@ -38,17 +38,6 @@ static inline tarantool_tuple_t *tarantool_tuple_new(char *data, size_t size)
   return return_tuple;
 }
 
-static inline void *tarantool_tuple_allocate(size_t size)
-{
-  return malloc(size);
-}
-
-static inline void tarantool_tuple_free(tarantool_tuple_t *tuple)
-{
-  free(tuple->data);
-  free(tuple);
-}
-
 static inline tarantool_tuple_t *tarantool_tuple_from_box(box_tuple_t *source)
 {
   if (unlikely(source == NULL))
@@ -56,7 +45,7 @@ static inline tarantool_tuple_t *tarantool_tuple_from_box(box_tuple_t *source)
     return NULL;
   }
   size_t size = box_tuple_bsize(source);
-  char *data = (char *)tarantool_tuple_allocate(size);
+  char *data = (char *)malloc(size);
   box_tuple_to_buf(source, data, size);
   return tarantool_tuple_new(data, size);
 }
@@ -71,7 +60,7 @@ static inline tarantool_tuple_t *tarantool_tuple_from_port(struct port_c *source
     return NULL;
   }
   size_t result_size = obuf_size(&output_buffer);
-  void *result_buffer = tarantool_tuple_allocate(result_size);
+  void *result_buffer = malloc(result_size);
   int position = 0;
   int buffer_iov_count = obuf_iovcnt(&output_buffer);
   for (int iov_index = 0; iov_index < buffer_iov_count; iov_index++)
@@ -91,7 +80,7 @@ tarantool_tuple_t *tarantool_evaluate(tarantool_evaluate_request_t *request)
   port_destroy(&in_port);
   uint32_t result_size;
   const char *result = port_get_msgpack(&out_port, &result_size);
-  char *result_buffer = tarantool_tuple_allocate((size_t)result_size);
+  char *result_buffer = malloc((size_t)result_size);
   memcpy(result_buffer, result, result_size);
   tarantool_tuple_t *result_tuple = tarantool_tuple_new(result_buffer, (size_t)result_size);
   port_destroy(&out_port);
@@ -106,7 +95,7 @@ tarantool_tuple_t *tarantool_call(tarantool_call_request_t *request)
   port_destroy(&in_port);
   uint32_t result_size;
   const char *result = port_get_msgpack(&out_port, &result_size);
-  char *result_buffer = tarantool_tuple_allocate((size_t)result_size);
+  char *result_buffer = malloc((size_t)result_size);
   memcpy(result_buffer, result, result_size);
   tarantool_tuple_t *result_tuple = tarantool_tuple_new(result_buffer, (size_t)result_size);
   port_destroy(&out_port);

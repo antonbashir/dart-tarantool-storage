@@ -69,7 +69,6 @@ enum FieldType { any, unsigned, string, number, double, integer, boolean, decima
 
 enum IndexPartType { unsigned, string, number, double, integer, boolean, decimal, uuid, scalar, datetime, varbinary }
 
-
 class Directories {
   static const native = "/native";
   static const package = "/package";

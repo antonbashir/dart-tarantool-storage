@@ -217,7 +217,7 @@ class StorageSchema {
 
   Future<bool> userExists(String name) => _executor.executeLua(LuaExpressions.userExists, argument: [name]).then((value) => value.first);
 
-  Future<void> userGrant(
+  Future<void> grantUser(
     String name, {
     required String privileges,
     String? objectType,
@@ -240,7 +240,7 @@ class StorageSchema {
     return _executor.evaluateLua(LuaExpressions.userGrant + LuaArgument.arrayArgument(arguments));
   }
 
-  Future<void> userRevoke(
+  Future<void> revokeUser(
     String name, {
     required String privileges,
     String? objectType,
