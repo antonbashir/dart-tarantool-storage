@@ -87,5 +87,5 @@ class StorageDefaults {
         }
       });
 
-  static ReplicationConfiguration replication = ReplicationConfiguration("replicator", "replicator", Duration(seconds: 0));
+  static ReplicationConfiguration replication() => ReplicationConfiguration("replicator", "replicator", Duration(seconds: 0));
 }

@@ -30,7 +30,7 @@ void main() {
           ..includeStorageLuaModule()
           ..file(File("test/test.lua")),
         StorageDefaults.loop(),
-        replicationConfiguration: StorageDefaults.replication,
+        replicationConfiguration: StorageDefaults.replication(),
       );
     _executor = _storage.executor();
     final spaceId = await _executor.schema().spaceId("test");
