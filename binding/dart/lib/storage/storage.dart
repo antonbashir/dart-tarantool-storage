@@ -134,12 +134,10 @@ class StorageNativeModule {
     }
   }
 
-  void _unload() {
-    _dlClose(library.handle);
-  }
+  void _unload() => _dlClose(library.handle);
 
   StorageNativeModule _reload() {
-    _dlClose(library.handle);
+    _unload();
     return _loadByFile(libraryPath);
   }
 
