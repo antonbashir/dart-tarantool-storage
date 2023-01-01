@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'configuration.dart';
 
 class StorageDefaults {
