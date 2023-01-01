@@ -12,19 +12,6 @@
       "problemMatcher": [],
     },
     {
-      "type": "cmake",
-      "label": "tarantool-binding-build-static",
-      "command": "build",
-      "targets": [
-        "tarantool_binding"
-      ],
-      "options": {
-        "cwd": "static-build"
-      },
-      "group": "build",
-      "problemMatcher": [],
-    },
-    {
       "type": "shell",
       "label": "dart-benchmark-build",
       "command": "/usr/bin/dart",

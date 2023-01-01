@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 
 import 'package:ffi/ffi.dart';
 import 'package:tarantool_storage/storage/native_module.dart';
@@ -14,6 +15,8 @@ import 'script.dart';
 import 'executor.dart';
 
 class Storage {
+  final _loadedModules = <StorageNativeModule>[];
+
   late TarantoolBindings _bindings;
   late StorageLibrary _library;
   late StorageExecutor _executor;
@@ -79,10 +82,70 @@ class Storage {
 
   StorageLibrary library() => _library;
 
+  StorageNativeModule loadModuleByFile(String libraryPath) => StorageNativeModule._loadByFile(libraryPath);
+
+  StorageNativeModule loadModuleByName(String libraryName) => StorageNativeModule._loadByName(libraryName);
+
   Future<void> reload() async {
-    StorageNativeModule.reloadAll();
+    _loadedModules.forEach((module) => module._reload());
     if (_hasStorageLuaModule) await executor().executeLua(LuaExpressions.reload);
   }
 
   void execute(void Function(StorageExecutor executor) executor) => executor(_executor);
+}
+
+class StorageNativeModule {
+  final String libraryName;
+  final String libraryPath;
+  final DynamicLibrary library;
+
+  const StorageNativeModule._(this.libraryName, this.libraryPath, this.library);
+
+  static StorageNativeModule _loadByFile(String library) {
+    try {
+      return StorageNativeModule._(
+        library,
+        Directory.current.path + slash + library,
+        Platform.isLinux ? DynamicLibrary.open(library) : throw UnsupportedError(loadError),
+      );
+    } on ArgumentError {
+      final projectRoot = findProjectRoot();
+      if (projectRoot == null) throw UnsupportedError(loadError);
+      final libraryFile = File(projectRoot + Directories.native + slash + library);
+      if (libraryFile.existsSync()) return StorageNativeModule._(library, libraryFile.path, DynamicLibrary.open(libraryFile.path));
+      throw UnsupportedError(loadError);
+    }
+  }
+
+  static StorageNativeModule _loadByName(String name) {
+    name = name + dot + FileExtensions.so;
+    try {
+      return StorageNativeModule._(
+        name,
+        Directory.current.path + slash + name,
+        Platform.isLinux ? DynamicLibrary.open(name) : throw UnsupportedError(loadError),
+      );
+    } on ArgumentError {
+      final projectRoot = findProjectRoot();
+      if (projectRoot == null) throw UnsupportedError(loadError);
+      final libraryFile = File(projectRoot + Directories.native + slash + name);
+      if (libraryFile.existsSync()) {
+        return StorageNativeModule._(name, libraryFile.path, DynamicLibrary.open(libraryFile.path));
+      }
+      throw UnsupportedError(loadError);
+    }
+  }
+
+  void _unload() {
+    _dlClose(library.handle);
+  }
+
+  StorageNativeModule _reload() {
+    _dlClose(library.handle);
+    return _loadByFile(libraryPath);
+  }
+
+  int Function(Pointer<Void>) get _dlClose => _standartLibrary.lookup<NativeFunction<Int32 Function(Pointer<Void>)>>(dlCloseFunction).asFunction();
+
+  DynamicLibrary get _standartLibrary => DynamicLibrary.process();
 }

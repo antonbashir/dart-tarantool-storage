@@ -38,9 +38,7 @@ void compileNative(Directory nativeRoot, Directory packageNativeRoot, String pro
     CompileOptions.gccExecutable,
     [
       CompileOptions.gccSharedOption,
-      "-rdynamic",
       CompileOptions.gccFpicOption,
-      "-L${packageNativeRoot.path}/$storageLibraryName}",
       CompileOptions.outputOption,
       resultLibrary.path,
       ...nativeRoot
