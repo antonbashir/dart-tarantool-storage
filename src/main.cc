@@ -645,8 +645,7 @@ int tarantool_initialize_library(char *binary_path)
 		if (!loop())
 			panic("%s", "can't init event loop");
 
-    delete argv[0];
-    delete argv;
+    delete[] argv;
 	}
 	catch (struct error *e)
 	{
