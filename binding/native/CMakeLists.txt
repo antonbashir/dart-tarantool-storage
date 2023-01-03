@@ -13,8 +13,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ck)
 include_directories(${ck_SOURCE_DIR}/include)
-set(DEPENDENCY_CFLAGS "-fPIC")
-set(DEPENDENCY_CPPFLAGS "-fPIC")
+set(DEPENDENCY_CFLAGS "-fPIC -O2")
+set(DEPENDENCY_CPPFLAGS "-fPIC -O2")
 set(DEPENDENCY_LDFLAGS)
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
 
@@ -48,8 +48,9 @@ target_compile_options(tarantool_binding PRIVATE -fPIC)
 target_link_libraries(tarantool_binding PUBLIC tarantool_library ${ck_SOURCE_DIR}/build/lib/libck.a)
 add_dependencies(tarantool_binding ck api)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpic")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
 if(BUILD_STATIC)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libstdc++")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
