@@ -11,6 +11,7 @@ import 'constants.dart';
 import 'executor.dart';
 import 'lookup.dart';
 import 'script.dart';
+import 'extensions.dart';
 
 class Storage {
   Map<String, StorageNativeModule> _loadedModulesByName = {};
@@ -41,19 +42,22 @@ class Storage {
     _hasStorageLuaModule = script.hasStorageLuaModule;
     final nativeConfiguration = loopConfiguration.native(_library.path);
     nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;
+    final conf = script.write(configuration: (script) {
+      if (_hasStorageLuaModule && replicationConfiguration != null)
+        script.code(LuaExpressions.boot +
+            LuaArgument.arrayArgument([
+              replicationConfiguration.user.quotted,
+              replicationConfiguration.password.quotted,
+              replicationConfiguration.delay.inSeconds.toString(),
+            ]));
+    });
+    print(conf);
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
-      script.write().toNativeUtf8().cast(),
+      conf.toNativeUtf8().cast(),
       nativeConfiguration,
     );
     malloc.free(nativeConfiguration);
-    if (_hasStorageLuaModule && replicationConfiguration != null) {
-      await executor().executeLua(LuaExpressions.boot, arguments: [
-        replicationConfiguration.user,
-        replicationConfiguration.password,
-        replicationConfiguration.delay.inSeconds,
-      ]);
-    }
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
   }
 
