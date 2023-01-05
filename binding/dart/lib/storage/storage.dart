@@ -51,7 +51,6 @@ class Storage {
               replicationConfiguration.delay.inSeconds.toString(),
             ]));
     });
-    print(conf);
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
       conf.toNativeUtf8().cast(),
