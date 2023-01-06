@@ -296,38 +296,38 @@ Future<void> testMultiIsolateTransactionalInsert() async {
 
 Future<void> testReplication() async {
   final first = Process.run(
-    "dart",
-    [
-      "run",
-      "${Directory.current.path}/test/replica.dart",
-      "3302",
-      "3302",
-      "3303",
-      "3304",
-    ],
-  );
+      "dart",
+      [
+        "run",
+        "${Directory.current.path}/test/replica.dart",
+        "3302",
+        "3302",
+        "3303",
+        "3304",
+      ],
+      runInShell: true);
   final second = Process.run(
-    "dart",
-    [
-      "run",
-      "${Directory.current.path}/test/replica.dart",
-      "3303",
-      "3302",
-      "3303",
-      "3304",
-    ],
-  );
+      "dart",
+      [
+        "run",
+        "${Directory.current.path}/test/replica.dart",
+        "3303",
+        "3302",
+        "3303",
+        "3304",
+      ],
+      runInShell: true);
   final third = Process.run(
-    "dart",
-    [
-      "run",
-      "${Directory.current.path}/test/replica.dart",
-      "3304",
-      "3302",
-      "3303",
-      "3304",
-    ],
-  );
+      "dart",
+      [
+        "run",
+        "${Directory.current.path}/test/replica.dart",
+        "3304",
+        "3302",
+        "3303",
+        "3304",
+      ],
+      runInShell: true);
   (await Future.wait([first, second, third])).forEach((process) {
     print(process.stdout);
     print(process.stderr);
