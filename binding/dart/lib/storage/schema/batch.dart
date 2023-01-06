@@ -1,10 +1,11 @@
 import 'dart:collection';
 import 'dart:ffi';
 
-import 'extensions.dart';
-import 'bindings.dart';
-import 'constants.dart';
-import 'tuple.dart';
+import '../extensions.dart';
+import '../bindings.dart';
+import '../constants.dart';
+import '../tuple.dart';
+
 import 'updater.dart';
 
 class StorageBatchSpaceBuilder {

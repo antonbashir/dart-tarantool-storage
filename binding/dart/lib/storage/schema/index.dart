@@ -3,14 +3,15 @@ import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-import 'extensions.dart';
+import '../executor/executor.dart';
+import '../extensions.dart';
+import '../bindings.dart';
+import '../constants.dart';
+import '../tuple.dart';
+
 import 'batch.dart';
-import 'bindings.dart';
-import 'constants.dart';
-import 'executor.dart';
-import 'iterator.dart';
-import 'tuple.dart';
 import 'updater.dart';
+import 'iterator.dart';
 
 class StorageIndex {
   final TarantoolBindings _bindings;

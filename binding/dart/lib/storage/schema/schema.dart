@@ -1,11 +1,11 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-import 'package:tarantool_storage/storage/bindings.dart';
-import 'package:tarantool_storage/storage/extensions.dart';
 
-import 'constants.dart';
-import 'executor.dart';
+import '../extensions.dart';
+import '../bindings.dart';
+import '../constants.dart';
+import '../executor/executor.dart';
 import 'index.dart';
 import 'space.dart';
 
@@ -156,7 +156,7 @@ class StorageSchema {
     if (synchronous != null) arguments.add(LuaField.boolField(SchemaFields.isSync, synchronous));
     if (temporary != null) arguments.add(LuaField.boolField(SchemaFields.temporary, temporary));
     if (user != null && user.isNotEmpty) arguments.add(LuaField.quottedField(SchemaFields.user, user));
-    return _executor.evaluateLua(LuaExpressions.createSpace + LuaArgument.singleQuottedArgument(name, options: arguments.join(comma)));
+    return _executor.lua.script(LuaExpressions.createSpace + LuaArgument.singleQuottedArgument(name, options: arguments.join(comma)));
   }
 
   Future<void> alterSpace(
@@ -173,12 +173,12 @@ class StorageSchema {
     if (synchronous != null) arguments.add(LuaField.boolField(SchemaFields.isSync, synchronous));
     if (temporary != null) arguments.add(LuaField.boolField(SchemaFields.temporary, temporary));
     if (temporary != null) arguments.add(LuaField.boolField(SchemaFields.temporary, temporary));
-    return _executor.evaluateLua(LuaExpressions.alterSpace(name) + LuaArgument.singleTableArgument(arguments.join(comma)));
+    return _executor.lua.script(LuaExpressions.alterSpace(name) + LuaArgument.singleTableArgument(arguments.join(comma)));
   }
 
-  Future<void> renameSpace(String from, String to) => _executor.evaluateLua(LuaExpressions.renameSpace(from) + LuaArgument.singleQuottedArgument(to));
+  Future<void> renameSpace(String from, String to) => _executor.lua.script(LuaExpressions.renameSpace(from) + LuaArgument.singleQuottedArgument(to));
 
-  Future<void> dropSpace(String name) => _executor.evaluateLua(LuaExpressions.dropSpace(name));
+  Future<void> dropSpace(String name) => _executor.lua.script(LuaExpressions.dropSpace(name));
 
   Future<void> createIndex(
     String spaceName,
@@ -195,27 +195,27 @@ class StorageSchema {
     if (ifNotExists != null) arguments.add(LuaField.boolField(SchemaFields.ifNotExists, ifNotExists));
     if (unique != null) arguments.add(LuaField.boolField(SchemaFields.unique, unique));
     if (parts != null) arguments.add(LuaField.tableField(SchemaFields.parts, parts.map((part) => part.format()).join(comma)));
-    return _executor.evaluateLua(LuaExpressions.createIndex(spaceName) + LuaArgument.singleQuottedArgument(indexName, options: arguments.join(comma)));
+    return _executor.lua.script(LuaExpressions.createIndex(spaceName) + LuaArgument.singleQuottedArgument(indexName, options: arguments.join(comma)));
   }
 
   Future<void> alterIndex(String spaceName, String indexName, {List<StorageIndexPart>? parts}) {
     List<String> arguments = [if (parts != null) LuaField.tableField(SchemaFields.parts, parts.map((part) => part.format()).join(comma))];
-    return _executor.evaluateLua(LuaExpressions.alterIndex(spaceName, indexName) + LuaArgument.singleTableArgument(arguments.join(comma)));
+    return _executor.lua.script(LuaExpressions.alterIndex(spaceName, indexName) + LuaArgument.singleTableArgument(arguments.join(comma)));
   }
 
-  Future<void> dropIndex(String spaceName, String indexName) => _executor.evaluateLua(LuaExpressions.dropIndex(spaceName, indexName));
+  Future<void> dropIndex(String spaceName, String indexName) => _executor.lua.script(LuaExpressions.dropIndex(spaceName, indexName));
 
   Future<void> createUser(String name, String password, {bool? ifNotExists}) {
     List<String> arguments = [LuaField.quottedField(SchemaFields.password, password)];
     if (ifNotExists != null) arguments.add(LuaField.boolField(SchemaFields.ifNotExists, ifNotExists));
-    return _executor.evaluateLua(LuaExpressions.createUser + LuaArgument.singleQuottedArgument(name, options: arguments.join(comma)));
+    return _executor.lua.script(LuaExpressions.createUser + LuaArgument.singleQuottedArgument(name, options: arguments.join(comma)));
   }
 
-  Future<void> dropUser(String name) => _executor.evaluateLua(LuaExpressions.dropUser(name));
+  Future<void> dropUser(String name) => _executor.lua.script(LuaExpressions.dropUser(name));
 
-  Future<void> changePassword(String name, String password) => _executor.evaluateLua(LuaExpressions.changePassword(name, password));
+  Future<void> changePassword(String name, String password) => _executor.lua.script(LuaExpressions.changePassword(name, password));
 
-  Future<bool> userExists(String name) => _executor.executeLua(LuaExpressions.userExists, arguments: [name]).then((value) => value.first);
+  Future<bool> userExists(String name) => _executor.lua.call(LuaExpressions.userExists, arguments: [name]).then((value) => value.first);
 
   Future<void> grantUser(
     String name, {
@@ -231,13 +231,13 @@ class StorageSchema {
       arguments.add(nil);
       arguments.add(nil);
       if (ifNotExists != null) arguments.add(LuaArgument.singleTableArgument(LuaField.boolField(SchemaFields.ifNotExists, ifNotExists)));
-      return _executor.evaluateLua(LuaExpressions.userGrant + LuaArgument.arrayArgument(arguments));
+      return _executor.lua.script(LuaExpressions.userGrant + LuaArgument.arrayArgument(arguments));
     }
     arguments.add(privileges.quotted);
     arguments.add(objectType?.quotted ?? universeObjectType.quotted);
     arguments.add(objectName?.quotted ?? nil);
     if (ifNotExists != null) arguments.add(LuaArgument.singleTableArgument(LuaField.boolField(SchemaFields.ifNotExists, ifNotExists)));
-    return _executor.evaluateLua(LuaExpressions.userGrant + LuaArgument.arrayArgument(arguments));
+    return _executor.lua.script(LuaExpressions.userGrant + LuaArgument.arrayArgument(arguments));
   }
 
   Future<void> revokeUser(
@@ -255,14 +255,14 @@ class StorageSchema {
       arguments.add(nil);
       arguments.add(nil);
       if (ifNotExists != null) arguments.add(LuaArgument.singleTableArgument(LuaField.boolField(SchemaFields.ifNotExists, ifNotExists)));
-      return _executor.evaluateLua(LuaExpressions.userRevoke + LuaArgument.arrayArgument(arguments));
+      return _executor.lua.script(LuaExpressions.userRevoke + LuaArgument.arrayArgument(arguments));
     }
     arguments.add(privileges.quotted);
     arguments.add(objectType?.quotted ?? universeObjectType.quotted);
     arguments.add(objectName?.quotted ?? nil);
     if (ifNotExists != null) arguments.add(LuaArgument.singleTableArgument(LuaField.boolField(SchemaFields.ifNotExists, ifNotExists)));
-    return _executor.evaluateLua(LuaExpressions.userRevoke + LuaArgument.arrayArgument(arguments));
+    return _executor.lua.script(LuaExpressions.userRevoke + LuaArgument.arrayArgument(arguments));
   }
 
-  Future<void> upgrade() => _executor.evaluateLua(LuaExpressions.schemaUpgrade);
+  Future<void> upgrade() => _executor.lua.script(LuaExpressions.schemaUpgrade);
 }

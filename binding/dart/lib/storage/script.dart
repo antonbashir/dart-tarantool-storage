@@ -24,10 +24,10 @@ class StorageBootstrapScript {
 
   String write() {
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.lua))) {
-      code(LuaExpressions.extendPackagePath(Directory.current.path + Directories.lua));
+      includeLuaModulePath(Directory.current.path + Directories.lua);
     }
     if (Directory.current.listSync().whereType<Directory>().any((element) => element.path.endsWith(Directories.native))) {
-      code(LuaExpressions.extendPackageNativePath(Directory.current.path + Directories.native));
+      includeNativeModulePath(Directory.current.path + Directories.native);
     }
     if (_hasStorageLuaModule) code(LuaExpressions.require(storageLuaModule));
     return _configuration.format() + newLine + _content;

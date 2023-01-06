@@ -157,18 +157,18 @@ void main() {
 
 Future<void> testSchema() async {
   await _executor.schema.createSpace(
-        "test-space",
-        engine: StorageEngine.memtx,
-        fieldCount: 3,
-        format: [
-          StorageSpaceField.string("field-1"),
-          StorageSpaceField.boolean("field-2"),
-          StorageSpaceField.integer("field-3"),
-        ],
-        id: 3,
-        ifNotExists: true,
-      );
-  expect(await _executor.executeLua("validateCreatedSpace"), equals([true]));
+    "test-space",
+    engine: StorageEngine.memtx,
+    fieldCount: 3,
+    format: [
+      StorageSpaceField.string("field-1"),
+      StorageSpaceField.boolean("field-2"),
+      StorageSpaceField.integer("field-3"),
+    ],
+    id: 3,
+    ifNotExists: true,
+  );
+  expect(await _executor.lua.call("validateCreatedSpace"), equals([true]));
   expect(await _executor.schema.spaceExists("test-space"), isTrue);
 
   await _executor.schema.createIndex(
@@ -183,7 +183,7 @@ Future<void> testSchema() async {
       StorageIndexPart.integer(3),
     ],
   );
-  expect(await _executor.executeLua("validateCreatedIndex"), equals([true]));
+  expect(await _executor.lua.call("validateCreatedIndex"), equals([true]));
   expect(await _executor.schema.indexExists(3, "test-index"), isTrue);
 
   await _executor.schema.createUser("test-user", "test-password", ifNotExists: true);
@@ -210,17 +210,17 @@ Future<void> testSchema() async {
 }
 
 Future<void> testExecuteLua() async {
-  await _executor.evaluateLua("function test() return {'test'} end");
+  await _executor.lua.script("function test() return {'test'} end");
   File("test.lua").writeAsStringSync("function testFile() return {'testFile'} end");
-  await _executor.evaluateLuaFile(File("test.lua"));
+  await _executor.lua.file(File("test.lua"));
   File("test.lua").deleteSync();
   expect(
-      await _executor.executeLua("test"),
+      await _executor.lua.call("test"),
       equals([
         ["test"]
       ]));
   expect(
-      await _executor.executeLua("testFile"),
+      await _executor.lua.call("testFile"),
       equals([
         ["testFile"]
       ]));
@@ -228,7 +228,7 @@ Future<void> testExecuteLua() async {
 
 Future<void> testExecuteNative() async {
   expect(
-      (await _executor.executeNative(
+      (await _executor.native.call(
         TarantoolBindings(DynamicLibrary.open("${Directory.current.path}/native/$storageLibraryName")).addresses.tarantool_is_read_only.cast(),
       ))
           .address,

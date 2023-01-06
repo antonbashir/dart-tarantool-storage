@@ -8,7 +8,7 @@ import 'package:ffi/ffi.dart';
 import 'bindings.dart';
 import 'configuration.dart';
 import 'constants.dart';
-import 'executor.dart';
+import 'executor/executor.dart';
 import 'lookup.dart';
 import 'script.dart';
 
@@ -52,7 +52,7 @@ class Storage {
     );
     malloc.free(nativeConfiguration);
     if (_hasStorageLuaModule && replicationConfiguration != null) {
-      await executor.executeLua(LuaExpressions.boot, arguments: [
+      await executor.lua.call(LuaExpressions.boot, arguments: [
         replicationConfiguration.user,
         replicationConfiguration.password,
         replicationConfiguration.delay.inSeconds,
@@ -98,7 +98,7 @@ class Storage {
   Future<void> reload() async {
     _loadedModulesByName.entries.forEach((entry) => _loadedModulesByName[entry.key] = entry.value._reload());
     _loadedModulesByPath.entries.forEach((entry) => _loadedModulesByPath[entry.key] = entry.value._reload());
-    if (_hasStorageLuaModule) await executor.executeLua(LuaExpressions.reload);
+    if (_hasStorageLuaModule) await executor.lua.call(LuaExpressions.reload);
   }
 
   void execute(void Function(StorageExecutor executor) executor) => executor(_executor);

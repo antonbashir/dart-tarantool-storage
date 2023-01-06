@@ -82,13 +82,13 @@ Future<void> benchIsolatedGet() async {
 }
 
 Future<void> benchExecute() async {
-  await _executor.evaluateLua("function test() return {'test'} end");
+  await _executor.lua.script("function test() return {'test'} end");
   int counter = 0;
   final completer = Completer();
   final stopwatch = Stopwatch();
   stopwatch.start();
   for (var i = 0; i < benchmarkDataCount; i++) {
-    _executor.executeLua("test").then((value) {
+    _executor.lua.call("test").then((value) {
       if (++counter >= benchmarkDataCount) {
         completer.complete(null);
       }
