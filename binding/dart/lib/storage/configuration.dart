@@ -263,7 +263,7 @@ class StorageMessageLoopConfiguration {
       );
 
   Pointer<tarantool_configuration_t> native(String libraryPath) {
-    Pointer<tarantool_configuration_t> configuration = malloc<tarantool_configuration_t>();
+    Pointer<tarantool_configuration_t> configuration = calloc<tarantool_configuration_t>();
     configuration.ref.box_output_buffer_capacity = boxOutputBufferCapacity;
     configuration.ref.message_loop_empty_cycles_multiplier = messageLoopEmptyCyclesMultiplier;
     configuration.ref.message_loop_max_empty_cycles = messageLoopMaxEmptyCycles;

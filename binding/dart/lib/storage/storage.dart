@@ -52,7 +52,7 @@ class Storage {
       script.write().toNativeUtf8().cast(),
       nativeConfiguration,
     );
-    malloc.free(nativeConfiguration);
+    calloc.free(nativeConfiguration);
     if (_hasStorageLuaModule && boot != null) {
       await executor.lua.call(LuaExpressions.boot, arguments: [boot.user, boot.password]);
     }

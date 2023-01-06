@@ -38,6 +38,10 @@ static inline void tarantool_message_handle_call(tarantool_message_t *message)
   {
     message->error = strdup(error->errmsg);
     message->error_type = TARANTOOL_ERROR_INTERNAL;
+    if (message->output)
+    {
+      free(message->output);
+    }
     message->output = NULL;
     diag_clear(diag_get());
   }
@@ -53,6 +57,10 @@ static inline void tarantool_message_handle_batch(tarantool_message_t *message)
     if (unlikely(error))
     {
       message->error = strdup(BATCH_ERROR_MESSAGE);
+      if (message->output)
+      {
+        free(message->output);
+      }
       element->output = NULL;
       element->error = strdup(error->errmsg);
       element->error_type = TARANTOOL_ERROR_INTERNAL;
