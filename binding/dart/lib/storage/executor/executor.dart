@@ -5,7 +5,6 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 
 import '../bindings.dart';
-import '../constants.dart';
 import '../exception.dart';
 import '../schema/iterator.dart';
 import '../schema/schema.dart';
@@ -35,10 +34,6 @@ class StorageExecutor {
   StorageNativeExecutor get native => _native;
 
   StorageLuaExecutor get lua => _lua;
-
-  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
-    return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
-  }
 
   Future<List<dynamic>?> next(StorageIterator iterator) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
@@ -74,18 +69,16 @@ class StorageExecutor {
         return sendSingle(message);
       });
 
+  Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
+    return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());
+  }
+
   Future<bool> hasTransaction() => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_in_transaction.cast();
         return sendSingle(message).then((pointer) => pointer.address != 0);
       });
-
-  Future<void> startBackup() => _lua.script(LuaExpressions.startBackup);
-
-  Future<void> stopBackup() => _lua.script(LuaExpressions.stopBackup);
-
-  Future<void> promote() => _lua.script(LuaExpressions.promote);
 
   Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
     if (_bindings.tarantool_initialized() == 0) return Future.error(StorageShutdownException());

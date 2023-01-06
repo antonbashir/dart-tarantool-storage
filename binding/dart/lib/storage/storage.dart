@@ -40,10 +40,12 @@ class Storage {
 
   StorageLibrary get library => _library;
 
-  Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration, {ReplicationConfiguration? replicationConfiguration}) async {
+  TarantoolBindings get bindings => _bindings;
+
+  Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loop, {StorageBootConfiguration? boot}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
-    final nativeConfiguration = loopConfiguration.native(_library.path);
+    final nativeConfiguration = loop.native(_library.path);
     nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
@@ -51,13 +53,13 @@ class Storage {
       nativeConfiguration,
     );
     malloc.free(nativeConfiguration);
-    if (_hasStorageLuaModule && replicationConfiguration != null) {
-      await executor.lua.call(LuaExpressions.boot, arguments: [
-        replicationConfiguration.user,
-        replicationConfiguration.password,
-        replicationConfiguration.delay.inSeconds,
-      ]);
+    if (_hasStorageLuaModule && boot != null) {
+      await executor.lua.call(LuaExpressions.boot, arguments: [boot.user, boot.password]);
     }
+    if (boot != null) {
+      await Future.delayed(boot.delay);
+    }
+    await executor.lua.promote();
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
   }
 
@@ -71,7 +73,7 @@ class Storage {
 
   Future<void> awaitImmutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !immutable()));
 
-  Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => mutable()));
+  Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !mutable()));
 
   void shutdown() => _bindings.tarantool_shutdown(0);
 

@@ -67,10 +67,7 @@ void tarantool_initialize(char *binary_path, char *script, tarantool_configurati
   {
     return;
   }
-  if (!dlopen(configuration->library_path, RTLD_NOW | RTLD_GLOBAL))
-  {
-    return;
-  }
+  dlopen(configuration->library_path, RTLD_NOW | RTLD_GLOBAL);
   storage.configuration = *configuration;
   struct initialization_args *args = malloc(sizeof(struct initialization_args));
   args->binary_path = binary_path;

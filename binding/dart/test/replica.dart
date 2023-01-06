@@ -1,20 +1,36 @@
 import 'dart:io';
 
 import 'package:tarantool_storage/tarantool_storage.dart';
+import 'package:test/expect.dart';
+import 'package:test/scaffolding.dart';
 
-void main(List<String> args) {
-  final storage = Storage();
-  final configuration = StorageDefaults.storage();
-  configuration.listen = int.parse(args[0].toString());
-  configuration.replication = "{'replicator:replicator@127.0.0.1:3301', 'replicator:replicator@127.0.0.1:3302', 'replicator:replicator@127.0.0.1:3303'}";
-  configuration.workDir = "tarantool_${configuration.listen.toString()}";
-  Directory(configuration.workDir = Directory.current.path + "/tarantool_" + configuration.listen.toString()).createSync();
-  storage.boot(
-      StorageBootstrapScript(configuration)
-        ..includeStorageLuaModule()
-        ..includeLuaModulePath(Directory.current.parent.path + "/" + "lua"),
-      StorageDefaults.loop(),
-      replicationConfiguration: StorageDefaults.replication());
-  print(storage.mutable());
-  storage.shutdown();
-}
+void main(List<String> args) => test("test replica ${args[0]}", () async {
+      final storage = Storage();
+      final workDirectory = Directory(Directory.current.path + "/test/tarantool_${int.parse(args[0].toString())}");
+      final bootConfiguration = StorageDefaults.boot();
+      final configuration = StorageDefaults.storage().copyWith(
+        listen: int.parse(args[0].toString()),
+        replication: StorageReplicationConfiguration()
+            .addAddressReplica("127.0.0.1", args[1], user: bootConfiguration.user, password: bootConfiguration.password)
+            .addAddressReplica("127.0.0.1", args[2], user: bootConfiguration.user, password: bootConfiguration.password)
+            .addAddressReplica("127.0.0.1", args[3], user: bootConfiguration.user, password: bootConfiguration.password)
+            .format(),
+        workDir: workDirectory.path,
+      );
+      if (workDirectory.existsSync()) {
+        workDirectory.deleteSync(recursive: true);
+      }
+      workDirectory.createSync();
+      storage.boot(
+        StorageBootstrapScript(configuration)
+          ..includeStorageLuaModule()
+          ..includeLuaModulePath(Directory.current.parent.path + "/" + "lua"),
+        StorageDefaults.loop(),
+        boot: StorageDefaults.boot(),
+      );
+      await storage.awaitInitialized();
+      expect(storage.initialized(), equals(true));
+      await Future.delayed(Duration(seconds: 1));
+      storage.shutdown();
+      workDirectory.deleteSync(recursive: true);
+    });

@@ -258,7 +258,8 @@ signal_init(void)
 	for (int i = 0; i < ev_sig_count; i++)
 		ev_signal_start(loop(), &ev_sigs[i]);
 
-	(void)tt_pthread_atfork(NULL, NULL, tarantool_atfork);
+	(void)tarantool_atfork;
+  //(void)tt_pthread_atfork(NULL, NULL, tarantool_atfork);
 }
 
 /** Run in the background. */

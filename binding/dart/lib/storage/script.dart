@@ -10,7 +10,9 @@ class StorageBootstrapScript {
 
   StorageBootstrapScript(this._configuration);
 
-  get hasStorageLuaModule => _hasStorageLuaModule;
+  bool get hasStorageLuaModule => _hasStorageLuaModule;
+
+  StorageConfiguration get configuration => _configuration;
 
   void code(String expression) => _content += (expression + newLine);
 

@@ -1,11 +1,7 @@
-@Timeout(Duration(seconds: 60))
-
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/constants.dart';
 import 'package:tarantool_storage/tarantool_storage.dart';
 import 'package:test/expect.dart';
@@ -30,7 +26,7 @@ void main() {
           ..includeStorageLuaModule()
           ..file(File("test/test.lua")),
         StorageDefaults.loop(),
-        replicationConfiguration: StorageDefaults.replication(),
+        boot: StorageDefaults.boot(),
       );
     _executor = _storage.executor;
     final spaceId = await _executor.schema.spaceId("test");
@@ -40,7 +36,16 @@ void main() {
 
   setUp(() async => await _space.truncate());
 
-  tearDownAll(() => _storage.shutdown());
+  tearDownAll(() {
+    _storage.shutdown();
+    Directory.current.listSync().forEach((element) {
+      if (element.path.contains("00000")) element.deleteSync();
+    });
+  });
+
+  group(["replication"], () {
+    test("three replicas initialized", testReplication);
+  });
 
   group(["schema"], () {
     test("schema operations", testSchema);
@@ -226,14 +231,7 @@ Future<void> testExecuteLua() async {
       ]));
 }
 
-Future<void> testExecuteNative() async {
-  expect(
-      (await _executor.native.call(
-        TarantoolBindings(DynamicLibrary.open("${Directory.current.path}/native/$storageLibraryName")).addresses.tarantool_is_read_only.cast(),
-      ))
-          .address,
-      equals(0));
-}
+Future<void> testExecuteNative() async => expect((await _executor.native.call(_storage.bindings.addresses.tarantool_is_read_only.cast())).address, equals(0));
 
 Future<void> testIterator() async {
   await Future.wait(testMultipleData.map(_space.insert));
@@ -294,4 +292,44 @@ Future<void> testMultiIsolateTransactionalInsert() async {
   ports.forEach((port) => port.close());
   expect(await _space.length(), equals(data.length));
   expect(await _space.select(), containsAll(data));
+}
+
+Future<void> testReplication() async {
+  final first = Process.run(
+    "dart",
+    [
+      "run",
+      "${Directory.current.path}/test/replica.dart",
+      "3302",
+      "3302",
+      "3303",
+      "3304",
+    ],
+  );
+  final second = Process.run(
+    "dart",
+    [
+      "run",
+      "${Directory.current.path}/test/replica.dart",
+      "3303",
+      "3302",
+      "3303",
+      "3304",
+    ],
+  );
+  final third = Process.run(
+    "dart",
+    [
+      "run",
+      "${Directory.current.path}/test/replica.dart",
+      "3304",
+      "3302",
+      "3303",
+      "3304",
+    ],
+  );
+  (await Future.wait([first, second, third])).forEach((process) {
+    print(process.stdout);
+    print(process.stderr);
+  });
 }

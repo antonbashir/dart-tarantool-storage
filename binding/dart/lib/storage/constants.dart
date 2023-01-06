@@ -16,8 +16,6 @@ const storageLibraryName = "libstorage.so";
 const storagePackageName = "tarantool_storage";
 const storageLuaModule = "storage";
 
-const boxCfgPrefix = "box.cfg{";
-
 const int32Max = 4294967295;
 const batchInitiaSize = 512;
 const awaitStateDuration = Duration(seconds: 1);
@@ -163,6 +161,7 @@ class LuaExpressions {
 
   static const reload = 'reload';
   static const boot = 'boot';
+  static const boxCfg = "box.cfg";
 
   static String require(String module) => """require '$module'""";
   static String extendPackagePath(String extension) => """package.path = package.path .. ';${extension + "/?.lua"}'""";

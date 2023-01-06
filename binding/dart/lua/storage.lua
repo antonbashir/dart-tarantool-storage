@@ -7,13 +7,9 @@ require("reloader")
 require("user")
 require("migration")
 
-boot = function(replicationUser, replicationPassword, delay)
-  if (replicationUser ~= nil and replicationPassword ~= nil) then 
-      initializeUser(replicationUser, replicationPassword)
-      if (delay ~= nil) then 
-        require("fiber").sleep(delay)
-      end
-    box.ctl.promote()  
+boot = function(user, password)
+  if (user ~= nil and password ~= nil) then 
+      initializeUser(user, password)
   end
   initializeVersion()
 end

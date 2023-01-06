@@ -10,74 +10,6 @@ class StorageConfiguration {
 
   const StorageConfiguration(this._configurationMap);
 
-  set listen(int? value) => _configurationMap[ConfigurationKeys.listen] = value;
-  set memtxMemory(int value) => _configurationMap[ConfigurationKeys.memtxMemory] = value;
-  set stripCore(bool value) => _configurationMap[ConfigurationKeys.stripCore] = value;
-  set memtxMinTupleSize(int value) => _configurationMap[ConfigurationKeys.memtxMinTupleSize] = value;
-  set memtxMaxTupleSize(int value) => _configurationMap[ConfigurationKeys.memtxMaxTupleSize] = value;
-  set slabAllocGranularity(int value) => _configurationMap[ConfigurationKeys.slabAllocGranularity] = value;
-  set slabAllocFactor(double value) => _configurationMap[ConfigurationKeys.slabAllocFactor] = value;
-  set iprotoThreads(int value) => _configurationMap[ConfigurationKeys.iprotoThreads] = value;
-  set workDir(String? value) => _configurationMap[ConfigurationKeys.workDir] = value?.quotted;
-  set memtxDir(String value) => _configurationMap[ConfigurationKeys.memtxDir] = value.quotted;
-  set walDir(String value) => _configurationMap[ConfigurationKeys.walDir] = value.quotted;
-  set vinylDir(String value) => _configurationMap[ConfigurationKeys.vinylDir] = value.quotted;
-  set vinylMemory(int value) => _configurationMap[ConfigurationKeys.vinylMemory] = value;
-  set vinylCache(int value) => _configurationMap[ConfigurationKeys.vinylCache] = value;
-  set vinylMaxTupleSize(int value) => _configurationMap[ConfigurationKeys.vinylMaxTupleSize] = value;
-  set vinylReadThreads(int value) => _configurationMap[ConfigurationKeys.vinylReadThreads] = value;
-  set vinylWriteThreads(int value) => _configurationMap[ConfigurationKeys.vinylWriteThreads] = value;
-  set vinylTimeout(int value) => _configurationMap[ConfigurationKeys.vinylTimeout] = value;
-  set vinylRunCountPerLevel(int value) => _configurationMap[ConfigurationKeys.vinylRunCountPerLevel] = value;
-  set vinylRunSizeRatio(double value) => _configurationMap[ConfigurationKeys.vinylRunSizeRatio] = value;
-  set vinylRangeSize(int? value) => _configurationMap[ConfigurationKeys.vinylRangeSize] = value;
-  set vinylPageSize(int value) => _configurationMap[ConfigurationKeys.vinylPageSize] = value;
-  set vinylBloomFpr(double value) => _configurationMap[ConfigurationKeys.vinylBloomFpr] = value;
-  set ioCollectInterval(int? value) => _configurationMap[ConfigurationKeys.ioCollectInterval] = value;
-  set readahead(int value) => _configurationMap[ConfigurationKeys.readahead] = value;
-  set snapIoRateLimit(int? value) => _configurationMap[ConfigurationKeys.snapIoRateLimit] = value;
-  set tooLongThreshold(double value) => _configurationMap[ConfigurationKeys.tooLongThreshold] = value;
-  set walMode(String value) => _configurationMap[ConfigurationKeys.walMode] = value.quotted;
-  set walMaxSize(int value) => _configurationMap[ConfigurationKeys.walMaxSize] = value;
-  set walDirRescanDelay(int value) => _configurationMap[ConfigurationKeys.walDirRescanDelay] = value;
-  set walQueueMaxSize(int value) => _configurationMap[ConfigurationKeys.walQueueMaxSize] = value;
-  set walCleanupDelay(int value) => _configurationMap[ConfigurationKeys.walCleanupDelay] = value;
-  set forceRecovery(bool value) => _configurationMap[ConfigurationKeys.forceRecovery] = value;
-  set replication(String? value) => _configurationMap[ConfigurationKeys.replication] = value;
-  set instanceUuid(String? value) => _configurationMap[ConfigurationKeys.instanceUuid] = value?.quotted;
-  set replicasetUuid(String? value) => _configurationMap[ConfigurationKeys.replicasetUuid] = value?.quotted;
-  set customProcTitle(String? value) => _configurationMap[ConfigurationKeys.customProcTitle] = value?.quotted;
-  set pidFile(String? value) => _configurationMap[ConfigurationKeys.pidFile] = value?.quotted;
-  set background(bool value) => _configurationMap[ConfigurationKeys.background] = value;
-  set username(String? value) => _configurationMap[ConfigurationKeys.username] = value?.quotted;
-  set coredump(bool value) => _configurationMap[ConfigurationKeys.coredump] = value;
-  set readOnly(bool value) => _configurationMap[ConfigurationKeys.readOnly] = value;
-  set hotStandby(bool value) => _configurationMap[ConfigurationKeys.hotStandby] = value;
-  set memtxUseMvccEngine(bool value) => _configurationMap[ConfigurationKeys.memtxUseMvccEngine] = value;
-  set checkpointInterval(int value) => _configurationMap[ConfigurationKeys.checkpointInterval] = value;
-  set checkpointWalThreshold(double value) => _configurationMap[ConfigurationKeys.checkpointWalThreshold] = value;
-  set checkpointCount(int value) => _configurationMap[ConfigurationKeys.checkpointCount] = value;
-  set workerPoolThreads(int value) => _configurationMap[ConfigurationKeys.workerPoolThreads] = value;
-  set electionMode(String value) => _configurationMap[ConfigurationKeys.electionMode] = value.quotted;
-  set electionTimeout(int value) => _configurationMap[ConfigurationKeys.electionTimeout] = value;
-  set replicationTimeout(int value) => _configurationMap[ConfigurationKeys.replicationTimeout] = value;
-  set replicationSyncLag(int value) => _configurationMap[ConfigurationKeys.replicationSyncLag] = value;
-  set replicationSyncTimeout(int value) => _configurationMap[ConfigurationKeys.replicationSyncTimeout] = value;
-  set replicationSynchroQuorum(int value) => _configurationMap[ConfigurationKeys.replicationSynchroQuorum] = value;
-  set replicationSynchroTimeout(int value) => _configurationMap[ConfigurationKeys.replicationSynchroTimeout] = value;
-  set replicationConnectTimeout(double value) => _configurationMap[ConfigurationKeys.replicationConnectTimeout] = value;
-  set replicationConnectQuorum(int? value) => _configurationMap[ConfigurationKeys.replicationConnectQuorum] = value;
-  set replicationSkipConflict(bool value) => _configurationMap[ConfigurationKeys.replicationSkipConflict] = value;
-  set replicationAnon(bool value) => _configurationMap[ConfigurationKeys.replicationAnon] = value;
-  set feedbackEnabled(bool value) => _configurationMap[ConfigurationKeys.feedbackEnabled] = value;
-  set feedbackCrashinfo(bool value) => _configurationMap[ConfigurationKeys.feedbackCrashinfo] = value;
-  set feedbackHost(String value) => _configurationMap[ConfigurationKeys.feedbackHost] = value.quotted;
-  set feedbackInterval(int value) => _configurationMap[ConfigurationKeys.feedbackInterval] = value;
-  set netMsgMax(int value) => _configurationMap[ConfigurationKeys.netMsgMax] = value;
-  set sqlCacheSize(int value) => _configurationMap[ConfigurationKeys.sqlCacheSize] = value;
-  set logLevel(int value) => _configurationMap[ConfigurationKeys.logLevel] = value;
-  set log(String value) => _configurationMap[ConfigurationKeys.log] = value.quotted;
-
   int? get listen => _configurationMap[ConfigurationKeys.listen];
   int get memtxMemory => _configurationMap[ConfigurationKeys.memtxMemory];
   bool get stripCore => _configurationMap[ConfigurationKeys.stripCore];
@@ -146,17 +78,146 @@ class StorageConfiguration {
   int get logLevel => _configurationMap[ConfigurationKeys.logLevel];
   String get log => _configurationMap[ConfigurationKeys.log] ?? empty;
 
-  String format() {
-    StringBuffer buffer = StringBuffer();
-    buffer.writeln(boxCfgPrefix);
-    _configurationMap.forEach((key, value) {
-      if (value != null) {
-        buffer.writeln(key + equalSpaced + value.toString() + comma);
-      }
-    });
-    buffer.writeln(closingBracket);
-    return buffer.toString();
+  StorageConfiguration copyWith(
+      {int? listen,
+      int? memtxMemory,
+      bool? stripCore,
+      int? memtxMinTupleSize,
+      int? memtxMaxTupleSize,
+      int? slabAllocGranularity,
+      double? slabAllocFactor,
+      int? iprotoThreads,
+      String? workDir,
+      String? memtxDir,
+      String? walDir,
+      String? vinylDir,
+      int? vinylMemory,
+      int? vinylCache,
+      int? vinylMaxTupleSize,
+      int? vinylReadThreads,
+      int? vinylWriteThreads,
+      int? vinylTimeout,
+      int? vinylRunCountPerLevel,
+      double? vinylRunSizeRatio,
+      int? vinylRangeSize,
+      int? vinylPageSize,
+      double? vinylBloomFpr,
+      int? ioCollectInterval,
+      int? readahead,
+      int? snapIoRateLimit,
+      double? tooLongThreshold,
+      String? walMode,
+      int? walMaxSize,
+      int? walDirRescanDelay,
+      int? walQueueMaxSize,
+      int? walCleanupDelay,
+      bool? forceRecovery,
+      String? replication,
+      String? instanceUuid,
+      String? replicasetUuid,
+      String? customProcTitle,
+      String? pidFile,
+      bool? background,
+      String? username,
+      bool? coredump,
+      bool? readOnly,
+      bool? hotStandby,
+      bool? memtxUseMvccEngine,
+      int? checkpointInterval,
+      double? checkpointWalThreshold,
+      int? checkpointCount,
+      int? workerPoolThreads,
+      String? electionMode,
+      int? electionTimeout,
+      int? replicationTimeout,
+      int? replicationSyncLag,
+      int? replicationSyncTimeout,
+      int? replicationSynchroQuorum,
+      int? replicationSynchroTimeout,
+      double? replicationConnectTimeout,
+      int? replicationConnectQuorum,
+      bool? replicationSkipConflict,
+      bool? replicationAnon,
+      bool? feedbackEnabled,
+      bool? feedbackCrashinfo,
+      String? feedbackHost,
+      int? feedbackInterval,
+      int? netMsgMax,
+      int? sqlCacheSize,
+      int? logLevel,
+      String? log}) {
+    final copy = {..._configurationMap};
+    copy[ConfigurationKeys.listen] = listen ?? _configurationMap[ConfigurationKeys.listen];
+    copy[ConfigurationKeys.memtxMemory] = memtxMemory ?? _configurationMap[ConfigurationKeys.memtxMemory];
+    copy[ConfigurationKeys.stripCore] = stripCore ?? _configurationMap[ConfigurationKeys.stripCore];
+    copy[ConfigurationKeys.memtxMinTupleSize] = memtxMinTupleSize ?? _configurationMap[ConfigurationKeys.memtxMinTupleSize];
+    copy[ConfigurationKeys.memtxMaxTupleSize] = memtxMaxTupleSize ?? _configurationMap[ConfigurationKeys.memtxMaxTupleSize];
+    copy[ConfigurationKeys.slabAllocGranularity] = slabAllocGranularity ?? _configurationMap[ConfigurationKeys.slabAllocGranularity];
+    copy[ConfigurationKeys.slabAllocFactor] = slabAllocFactor ?? _configurationMap[ConfigurationKeys.slabAllocFactor];
+    copy[ConfigurationKeys.iprotoThreads] = iprotoThreads ?? _configurationMap[ConfigurationKeys.iprotoThreads];
+    copy[ConfigurationKeys.workDir] = workDir?.quotted ?? _configurationMap[ConfigurationKeys.workDir];
+    copy[ConfigurationKeys.memtxDir] = memtxDir?.quotted ?? _configurationMap[ConfigurationKeys.memtxDir];
+    copy[ConfigurationKeys.walDir] = walDir?.quotted ?? _configurationMap[ConfigurationKeys.walDir];
+    copy[ConfigurationKeys.vinylDir] = vinylDir?.quotted ?? _configurationMap[ConfigurationKeys.vinylDir];
+    copy[ConfigurationKeys.vinylMemory] = vinylMemory ?? _configurationMap[ConfigurationKeys.vinylMemory];
+    copy[ConfigurationKeys.vinylCache] = vinylCache ?? _configurationMap[ConfigurationKeys.vinylCache];
+    copy[ConfigurationKeys.vinylMaxTupleSize] = vinylMaxTupleSize ?? _configurationMap[ConfigurationKeys.vinylMaxTupleSize];
+    copy[ConfigurationKeys.vinylReadThreads] = vinylReadThreads ?? _configurationMap[ConfigurationKeys.vinylReadThreads];
+    copy[ConfigurationKeys.vinylWriteThreads] = vinylWriteThreads ?? _configurationMap[ConfigurationKeys.vinylWriteThreads];
+    copy[ConfigurationKeys.vinylTimeout] = vinylTimeout ?? _configurationMap[ConfigurationKeys.vinylTimeout];
+    copy[ConfigurationKeys.vinylRunCountPerLevel] = vinylRunCountPerLevel ?? _configurationMap[ConfigurationKeys.vinylRunCountPerLevel];
+    copy[ConfigurationKeys.vinylRunSizeRatio] = vinylRunSizeRatio ?? _configurationMap[ConfigurationKeys.vinylRunSizeRatio];
+    copy[ConfigurationKeys.vinylRangeSize] = vinylRangeSize ?? _configurationMap[ConfigurationKeys.vinylRangeSize];
+    copy[ConfigurationKeys.vinylPageSize] = vinylPageSize ?? _configurationMap[ConfigurationKeys.vinylPageSize];
+    copy[ConfigurationKeys.vinylBloomFpr] = vinylBloomFpr ?? _configurationMap[ConfigurationKeys.vinylBloomFpr];
+    copy[ConfigurationKeys.ioCollectInterval] = ioCollectInterval ?? _configurationMap[ConfigurationKeys.ioCollectInterval];
+    copy[ConfigurationKeys.readahead] = readahead ?? _configurationMap[ConfigurationKeys.readahead];
+    copy[ConfigurationKeys.snapIoRateLimit] = snapIoRateLimit ?? _configurationMap[ConfigurationKeys.snapIoRateLimit];
+    copy[ConfigurationKeys.tooLongThreshold] = tooLongThreshold ?? _configurationMap[ConfigurationKeys.tooLongThreshold];
+    copy[ConfigurationKeys.walMode] = walMode ?? _configurationMap[ConfigurationKeys.walMode];
+    copy[ConfigurationKeys.walMaxSize] = walMaxSize ?? _configurationMap[ConfigurationKeys.walMaxSize];
+    copy[ConfigurationKeys.walDirRescanDelay] = walDirRescanDelay ?? _configurationMap[ConfigurationKeys.walDirRescanDelay];
+    copy[ConfigurationKeys.walQueueMaxSize] = walQueueMaxSize ?? _configurationMap[ConfigurationKeys.walQueueMaxSize];
+    copy[ConfigurationKeys.walCleanupDelay] = walCleanupDelay ?? _configurationMap[ConfigurationKeys.walCleanupDelay];
+    copy[ConfigurationKeys.forceRecovery] = forceRecovery ?? _configurationMap[ConfigurationKeys.forceRecovery];
+    copy[ConfigurationKeys.replication] = replication ?? _configurationMap[ConfigurationKeys.replication];
+    copy[ConfigurationKeys.instanceUuid] = instanceUuid ?? _configurationMap[ConfigurationKeys.instanceUuid];
+    copy[ConfigurationKeys.replicasetUuid] = replicasetUuid ?? _configurationMap[ConfigurationKeys.replicasetUuid];
+    copy[ConfigurationKeys.customProcTitle] = customProcTitle ?? _configurationMap[ConfigurationKeys.customProcTitle];
+    copy[ConfigurationKeys.pidFile] = pidFile ?? _configurationMap[ConfigurationKeys.pidFile];
+    copy[ConfigurationKeys.background] = background ?? _configurationMap[ConfigurationKeys.background];
+    copy[ConfigurationKeys.username] = username?.quotted ?? _configurationMap[ConfigurationKeys.username];
+    copy[ConfigurationKeys.coredump] = coredump ?? _configurationMap[ConfigurationKeys.coredump];
+    copy[ConfigurationKeys.readOnly] = readOnly ?? _configurationMap[ConfigurationKeys.readOnly];
+    copy[ConfigurationKeys.hotStandby] = hotStandby ?? _configurationMap[ConfigurationKeys.hotStandby];
+    copy[ConfigurationKeys.memtxUseMvccEngine] = memtxUseMvccEngine ?? _configurationMap[ConfigurationKeys.memtxUseMvccEngine];
+    copy[ConfigurationKeys.checkpointInterval] = checkpointInterval ?? _configurationMap[ConfigurationKeys.checkpointInterval];
+    copy[ConfigurationKeys.checkpointWalThreshold] = checkpointWalThreshold ?? _configurationMap[ConfigurationKeys.checkpointWalThreshold];
+    copy[ConfigurationKeys.checkpointCount] = checkpointCount ?? _configurationMap[ConfigurationKeys.checkpointCount];
+    copy[ConfigurationKeys.workerPoolThreads] = workerPoolThreads ?? _configurationMap[ConfigurationKeys.workerPoolThreads];
+    copy[ConfigurationKeys.electionMode] = electionMode?.quotted ?? _configurationMap[ConfigurationKeys.electionMode];
+    copy[ConfigurationKeys.electionTimeout] = electionTimeout ?? _configurationMap[ConfigurationKeys.electionTimeout];
+    copy[ConfigurationKeys.replicationTimeout] = replicationTimeout ?? _configurationMap[ConfigurationKeys.replicationTimeout];
+    copy[ConfigurationKeys.replicationSyncLag] = replicationSyncLag ?? _configurationMap[ConfigurationKeys.replicationSyncLag];
+    copy[ConfigurationKeys.replicationSyncTimeout] = replicationSyncTimeout ?? _configurationMap[ConfigurationKeys.replicationSyncTimeout];
+    copy[ConfigurationKeys.replicationSynchroQuorum] = replicationSynchroQuorum ?? _configurationMap[ConfigurationKeys.replicationSynchroQuorum];
+    copy[ConfigurationKeys.replicationSynchroTimeout] = replicationSynchroTimeout ?? _configurationMap[ConfigurationKeys.replicationSynchroTimeout];
+    copy[ConfigurationKeys.replicationConnectTimeout] = replicationConnectTimeout ?? _configurationMap[ConfigurationKeys.replicationConnectTimeout];
+    copy[ConfigurationKeys.replicationConnectQuorum] = replicationConnectQuorum ?? _configurationMap[ConfigurationKeys.replicationConnectQuorum];
+    copy[ConfigurationKeys.replicationSkipConflict] = replicationSkipConflict ?? _configurationMap[ConfigurationKeys.replicationSkipConflict];
+    copy[ConfigurationKeys.replicationAnon] = replicationAnon ?? _configurationMap[ConfigurationKeys.replicationAnon];
+    copy[ConfigurationKeys.feedbackEnabled] = feedbackEnabled ?? _configurationMap[ConfigurationKeys.feedbackEnabled];
+    copy[ConfigurationKeys.feedbackCrashinfo] = feedbackCrashinfo ?? _configurationMap[ConfigurationKeys.feedbackCrashinfo];
+    copy[ConfigurationKeys.feedbackHost] = feedbackHost?.quotted ?? _configurationMap[ConfigurationKeys.feedbackHost];
+    copy[ConfigurationKeys.feedbackInterval] = feedbackInterval ?? _configurationMap[ConfigurationKeys.feedbackInterval];
+    copy[ConfigurationKeys.netMsgMax] = netMsgMax ?? _configurationMap[ConfigurationKeys.netMsgMax];
+    copy[ConfigurationKeys.sqlCacheSize] = sqlCacheSize ?? _configurationMap[ConfigurationKeys.sqlCacheSize];
+    copy[ConfigurationKeys.logLevel] = logLevel ?? _configurationMap[ConfigurationKeys.logLevel];
+    copy[ConfigurationKeys.log] = log ?? _configurationMap[ConfigurationKeys.log];
+    return StorageConfiguration(copy);
   }
+
+  String format() => LuaExpressions.boxCfg + LuaArgument.singleTableArgument(_configurationMap.entries.map((entry) => LuaField.stringField(entry.key, entry.value.toString())).join(comma));
 }
 
 class StorageMessageLoopConfiguration {
@@ -216,16 +277,39 @@ class StorageMessageLoopConfiguration {
   }
 }
 
-class ReplicationConfiguration {
+class StorageBootConfiguration {
   final String user;
   final String password;
   final Duration delay;
 
-  ReplicationConfiguration(this.user, this.password, this.delay);
+  StorageBootConfiguration(this.user, this.password, this.delay);
 
-  ReplicationConfiguration copyWith({String? user, String? password, Duration? delay}) => ReplicationConfiguration(
+  StorageBootConfiguration copyWith({String? user, String? password, Duration? delay}) => StorageBootConfiguration(
         user ?? this.user,
         password ?? this.password,
         delay ?? this.delay,
       );
+}
+
+class StorageReplicationConfiguration {
+  final _replicas = <String>[];
+
+  StorageReplicationConfiguration addAddressReplica(String host, String port, {String? user, String? password}) {
+    if (user != null && user.isNotEmpty) {
+      if (password != null && password.isNotEmpty) {
+        addReplica("$user:$password@$host:$port");
+        return this;
+      }
+      addReplica("$user@$host:$port");
+      return this;
+    }
+    addReplica("$host:$port");
+    return this;
+  }
+
+  StorageReplicationConfiguration addPortReplica(int port) => addReplica(port.toString());
+
+  StorageReplicationConfiguration addReplica(String uri) => this.._replicas.add(uri.quotted);
+
+  String format() => "$openingBracket${_replicas.join(comma)}$closingBracket";
 }

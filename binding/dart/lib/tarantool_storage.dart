@@ -12,6 +12,6 @@ export "storage/schema/batch.dart" show StorageBatchIndexBuilder, StorageBatchSp
 export "storage/schema/schema.dart" show StorageIndexPart, StorageSpaceField, StorageSchema;
 
 export "storage/script.dart" show StorageBootstrapScript;
-export "storage/configuration.dart" show StorageMessageLoopConfiguration, StorageConfiguration;
+export "storage/configuration.dart" show StorageMessageLoopConfiguration, StorageConfiguration, StorageBootConfiguration, StorageReplicationConfiguration;
 export "storage/defaults.dart" show StorageDefaults;
 export "storage/exception.dart" show StorageExecutionException, StorageLimitException, StorageShutdownException;

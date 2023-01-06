@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:tarantool_storage/storage/configuration.dart';
 
 import '../bindings.dart';
 import '../constants.dart';
@@ -13,6 +14,14 @@ class StorageLuaExecutor {
   final StorageExecutor _executor;
 
   const StorageLuaExecutor(this._bindings, this._executor);
+
+  Future<void> startBackup() => script(LuaExpressions.startBackup);
+
+  Future<void> stopBackup() => script(LuaExpressions.stopBackup);
+
+  Future<void> promote() => script(LuaExpressions.promote);
+
+  Future<void> configure(StorageConfiguration configuration) => script(configuration.format());
 
   Future<List<dynamic>> script(String expression, {List<dynamic> arguments = const []}) => using((Arena arena) {
         final request = arena<tarantool_evaluate_request_t>();
