@@ -76,30 +76,30 @@ extern "C" {
 /** System configuration dir (e.g /etc) */
 #define SYSCONF_DIR "etc"
 /** Install prefix (e.g. /usr) */
-#define INSTALL_PREFIX "/usr/local"
+#define INSTALL_PREFIX "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix"
 /** Build type, e.g. Debug or Release */
 #define BUILD_TYPE "RelWithDebInfo"
 /** CMake build type signature, e.g. Linux-x86_64-Debug */
 #define BUILD_INFO "Linux-x86_64-RelWithDebInfo"
 /** Command line used to run CMake */
-#define BUILD_OPTIONS "cmake . -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_BACKTRACE=ON"
+#define BUILD_OPTIONS "cmake . -DCMAKE_INSTALL_PREFIX=/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix -DENABLE_BACKTRACE=TRUE"
 /** Pathes to C and CXX compilers */
 #define COMPILER_INFO "/usr/bin/cc /usr/bin/c++"
 /** C compile flags used to build Tarantool */
-#define TARANTOOL_C_FLAGS " -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -fopenmp -msse2 -fpic -std=c11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-gnu-alignof-expression -fno-gnu89-inline -Wno-cast-function-type"
+#define TARANTOOL_C_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-gnu-alignof-expression -fno-gnu89-inline -Wno-cast-function-type -Werror"
 /** CXX compile flags used to build Tarantool */
-#define TARANTOOL_CXX_FLAGS " -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -fopenmp -msse2 -fpic -std=c++11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-invalid-offsetof -Wno-gnu-alignof-expression -Wno-cast-function-type"
+#define TARANTOOL_CXX_FLAGS " -static-libstdc++ -static-libgcc -fexceptions -funwind-tables -fno-omit-frame-pointer -fno-stack-protector -fno-common -msse2 -fpic -std=c++11 -Wall -Wextra -Wno-strict-aliasing -Wno-char-subscripts -Wno-format-truncation -Wno-invalid-offsetof -Wno-gnu-alignof-expression -Wno-cast-function-type -Werror"
 
 /** A path to install *.lua module files */
-#define MODULE_LIBDIR "/usr/local/lib/tarantool"
+#define MODULE_LIBDIR "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/lib/tarantool"
 /** A path to install *.so / *.dylib module files */
-#define MODULE_LUADIR "/usr/local/share/tarantool"
+#define MODULE_LUADIR "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/share/tarantool"
 /** A path to Lua includes (the same directory where this file is contained) */
-#define MODULE_INCLUDEDIR "/usr/local/include/tarantool"
+#define MODULE_INCLUDEDIR "/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/include/tarantool"
 /** A constant added to package.path in Lua to find *.lua module files */
-#define MODULE_LUAPATH "/usr/local/share/tarantool/?.lua;/usr/local/share/tarantool/?/init.lua;/usr/share/tarantool/?.lua;/usr/share/tarantool/?/init.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua"
+#define MODULE_LUAPATH "/usr/local/share/tarantool/?.lua;/usr/local/share/tarantool/?/init.lua;/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/share/tarantool/?.lua;/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/share/tarantool/?/init.lua;/usr/share/tarantool/?.lua;/usr/share/tarantool/?/init.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/share/lua/5.1/?.lua;/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/share/lua/5.1/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua"
 /** A constant added to package.cpath in Lua to find *.so module files */
-#define MODULE_LIBPATH "/usr/local/lib/x86_64-linux-gnu/tarantool/?.so;/usr/local/lib/tarantool/?.so;/usr/lib/x86_64-linux-gnu/tarantool/?.so;/usr/local/lib/x86_64-linux-gnu/lua/5.1/?.so;/usr/local/lib/lua/5.1/?.so;/usr/lib/x86_64-linux-gnu/lua/5.1/?.so"
+#define MODULE_LIBPATH "/usr/local/lib/x86_64-linux-gnu/tarantool/?.so;/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/lib/tarantool/?.so;/usr/local/lib/tarantool/?.so;/usr/lib/x86_64-linux-gnu/tarantool/?.so;/usr/local/lib/x86_64-linux-gnu/lua/5.1/?.so;/home/anton/development/dart-tarantool-storage/static-build/tarantool-prefix/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/?.so;/usr/lib/x86_64-linux-gnu/lua/5.1/?.so"
 /** Shared library suffix - ".so" on Linux, ".dylib" on Mac */
 #define MODULE_LIBSUFFIX ".so"
 
