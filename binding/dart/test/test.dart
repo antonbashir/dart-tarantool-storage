@@ -20,7 +20,7 @@ void main() {
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });
-    _storage = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
+    _storage = await Storage()
       ..boot(
         StorageBootstrapScript(StorageDefaults.storage())
           ..includeStorageLuaModule()
@@ -256,7 +256,7 @@ Future<void> testMultiIsolateInsert() async {
     element[1] = "key-${i + 1}";
     data.add(element);
     Isolate.spawn<dynamic>((element) async {
-      final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
+      final storage = Storage();
       await storage.executor.schema.spaceByName("test").then((space) => space.insert(element));
       storage.close();
     }, element, onExit: port.sendPort);
@@ -280,7 +280,7 @@ Future<void> testMultiIsolateTransactionalInsert() async {
     element[1] = "key-${i + 1}";
     data.add(element);
     Isolate.spawn<dynamic>((element) async {
-      final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
+      final storage = Storage();
       final executor = storage.executor;
       await executor.schema.spaceByName("test").then((space) => executor.transactional((executor) => space.insert(element)));
       storage.close();
@@ -331,5 +331,6 @@ Future<void> testReplication() async {
   (await Future.wait([first, second, third])).forEach((process) {
     print(process.stdout);
     print(process.stderr);
+    expect(process.exitCode, equals(0));
   });
 }

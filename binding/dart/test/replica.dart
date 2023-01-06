@@ -21,10 +21,8 @@ void main(List<String> args) => test("test replica ${args[0]}", () async {
         workDirectory.deleteSync(recursive: true);
       }
       workDirectory.createSync();
-      storage.boot(
-        StorageBootstrapScript(configuration)
-          ..includeStorageLuaModule()
-          ..includeLuaModulePath(Directory.current.parent.path + "/" + "lua"),
+      await storage.boot(
+        StorageBootstrapScript(configuration)..includeStorageLuaModule(),
         StorageDefaults.loop(),
         boot: StorageDefaults.boot(),
       );
