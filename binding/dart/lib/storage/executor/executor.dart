@@ -91,12 +91,13 @@ class StorageExecutor {
       completer.completeError(StorageLimitException(), StackTrace.current);
     }
     return completer.future.then((value) {
+      if (freeInput) calloc.free(value.ref.input);
       if (value.ref.error != nullptr) {
         return hasTransaction().then((has) => has ? rollback().then((_) => _handleSingleError(value)) : _handleSingleError(value));
       }
-      if (freeInput) calloc.free(value.ref.input);
+      Pointer<Void> output = value.ref.output;
       calloc.free(value);
-      return value.ref.output;
+      return output;
     });
   }
 
@@ -120,7 +121,9 @@ class StorageExecutor {
 
   Future<Pointer<Void>> _handleSingleError(Pointer<tarantool_message_t> message) {
     Future<Pointer<Void>> future = Future.error(
-      StorageExecutionException(message.ref.error.cast<Utf8>().toDartString()),
+      message.ref.error_type == tarantool_error_type.TARANTOOL_ERROR_LIMIT
+          ? Future.error(StorageLimitException(), StackTrace.current)
+          : StorageExecutionException(message.ref.error.cast<Utf8>().toDartString()),
       StackTrace.current,
     );
     calloc.free(message.ref.error);

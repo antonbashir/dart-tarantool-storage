@@ -37,6 +37,7 @@ class TarantoolTupleDescriptor {
     for (var i = 0; i < message.ref.batch_size; i++) {
       Pointer<tarantool_message_batch_element_t> batch = message.ref.batch[i];
       outputs.add(read(batch.ref.output.cast()));
+      calloc.free(batch.ref.input);
       calloc.free(batch);
     }
     calloc.free(message.ref.batch);

@@ -306,6 +306,7 @@ Future<void> testReplication() async {
         "3304",
       ],
       runInShell: true);
+  await Future.delayed(Duration(seconds: 1));
   final second = Process.run(
       "dart",
       [
@@ -317,6 +318,7 @@ Future<void> testReplication() async {
         "3304",
       ],
       runInShell: true);
+  await Future.delayed(Duration(seconds: 1));
   final third = Process.run(
       "dart",
       [
@@ -328,6 +330,7 @@ Future<void> testReplication() async {
         "3304",
       ],
       runInShell: true);
+  await Future.delayed(Duration(seconds: 1));
   (await Future.wait([first, second, third])).forEach((process) {
     print(process.stdout);
     print(process.stderr);
