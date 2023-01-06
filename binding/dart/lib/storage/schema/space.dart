@@ -30,7 +30,7 @@ class StorageSpace {
     request.ref.iterator_type = iteratorType.index;
     request.ref.key = _descriptor.write(key);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address);
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => pointer.address);
   }
 
   Future<bool> isEmpty() => length().then((value) => value == 0);
@@ -42,7 +42,7 @@ class StorageSpace {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_space_length.cast();
     message.ref.input = Pointer.fromAddress(_id).cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address);
+    return _executor.sendSingle(message, freeInput: false).then((pointer) => pointer.address);
   }
 
   Future<StorageIterator> iterator({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq}) {
@@ -54,7 +54,7 @@ class StorageSpace {
     request.ref.type = iteratorType.index;
     request.ref.key = _descriptor.write(key);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address).then((iterator) => StorageIterator(_executor, iterator));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => pointer.address).then((iterator) => StorageIterator(_executor, iterator));
   }
 
   Future<List<dynamic>> insert(List<dynamic> data) {
@@ -65,7 +65,7 @@ class StorageSpace {
     request.ref.space_id = _id;
     request.ref.tuple = _descriptor.write(data);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> put(List<dynamic> data) {
@@ -76,7 +76,7 @@ class StorageSpace {
     request.ref.space_id = _id;
     request.ref.tuple = _descriptor.write(data);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> get(List<dynamic> key) {
@@ -87,7 +87,7 @@ class StorageSpace {
     request.ref.space_id = _id;
     request.ref.tuple = _descriptor.write(key);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> delete(List<dynamic> key) {
@@ -98,7 +98,7 @@ class StorageSpace {
     request.ref.space_id = _id;
     request.ref.tuple = _descriptor.write(key);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> min({List<dynamic> key = const []}) {
@@ -109,7 +109,7 @@ class StorageSpace {
     request.ref.space_id = _id;
     request.ref.tuple = _descriptor.write(key);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> max({List<dynamic> key = const []}) {
@@ -120,7 +120,7 @@ class StorageSpace {
     request.ref.space_id = _id;
     request.ref.tuple = _descriptor.write(key);
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<void> truncate() {
@@ -128,7 +128,7 @@ class StorageSpace {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_space_truncate.cast();
     message.ref.input = Pointer.fromAddress(_id);
-    return _executor.sendSingle(message);
+    return _executor.sendSingle(message, freeInput: false);
   }
 
   Future<List<dynamic>> update(List<dynamic> key, List<StorageUpdateOperation> operations) {
@@ -146,7 +146,7 @@ class StorageSpace {
             ])
         .toList());
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> upsert(List<dynamic> tuple, List<StorageUpdateOperation> operations) {
@@ -164,7 +164,7 @@ class StorageSpace {
             ])
         .toList());
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> select({
@@ -183,21 +183,11 @@ class StorageSpace {
     request.ref.offset = offset;
     request.ref.limit = limit;
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<List<dynamic>> batch(StorageBatchSpaceBuilder Function(StorageBatchSpaceBuilder builder) builder) {
     Pointer<tarantool_message_t> message = builder(StorageBatchSpaceBuilder(_bindings, _id, _descriptor)).build();
-    return _executor.sendBatch(message).then((message) {
-      Queue<dynamic> outputs = ListQueue(message.ref.batch_size);
-      for (var i = 0; i < message.ref.batch_size; i++) {
-        Pointer<tarantool_message_batch_element_t> batch = message.ref.batch[i];
-        outputs.add(_descriptor.read(batch.ref.output.cast()));
-        calloc.free(batch);
-      }
-      calloc.free(message.ref.batch);
-      calloc.free(message);
-      return outputs.toList();
-    });
+    return _executor.sendBatch(message).then(_descriptor.readBatch);
   }
 }

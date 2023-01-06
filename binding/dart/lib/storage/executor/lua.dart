@@ -33,7 +33,7 @@ class StorageLuaExecutor {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_evaluate.cast();
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<void> file(File file) => file.readAsString().then(script);
@@ -49,6 +49,6 @@ class StorageLuaExecutor {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_call.cast();
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 }

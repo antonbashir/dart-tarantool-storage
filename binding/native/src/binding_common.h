@@ -18,7 +18,7 @@ extern "C"
     TARANTOOL_MESSAGE_ROLLBACK = 5,
     tarantool_message_type_MAX,
   };
-  
+
   enum tarantool_error_type
   {
     TARANTOOL_ERROR_LIMIT = 0,

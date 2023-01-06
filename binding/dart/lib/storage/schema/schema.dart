@@ -92,7 +92,7 @@ class StorageSchema {
     request.ref.name = space.toNativeUtf8().cast();
     request.ref.name_length = space.length;
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address);
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => pointer.address);
   }
 
   Future<bool> spaceExists(String space) {
@@ -103,7 +103,7 @@ class StorageSchema {
     request.ref.name = space.toNativeUtf8().cast();
     request.ref.name_length = space.length;
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address != 0);
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => pointer.address != 0);
   }
 
   Future<StorageIndex> indexByName(String spaceName, String indexName) {
@@ -119,7 +119,7 @@ class StorageSchema {
     request.ref.name = indexName.toNativeUtf8().cast();
     request.ref.name_length = indexName.length;
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address != 0);
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => pointer.address != 0);
   }
 
   StorageIndex indexById(int spaceId, int indexId) => StorageIndex(_bindings, _executor, spaceId, indexId, _descriptor);
@@ -133,7 +133,7 @@ class StorageSchema {
     request.ref.name = index.toNativeUtf8().cast();
     request.ref.name_length = index.length;
     message.ref.input = request.cast();
-    return _executor.sendSingle(message).then((pointer) => pointer.address);
+    return _executor.sendSingle(message, freeInput: true).then((pointer) => pointer.address);
   }
 
   Future<void> createSpace(

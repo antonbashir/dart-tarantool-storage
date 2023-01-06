@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
@@ -6,6 +7,7 @@ import 'package:msgpack_dart/msgpack_dart.dart' as messagePack;
 import 'bindings.dart';
 
 class TarantoolTupleDescriptor {
+  // ignore: unused_field
   final TarantoolBindings _bindings;
 
   const TarantoolTupleDescriptor(this._bindings);
@@ -28,5 +30,17 @@ class TarantoolTupleDescriptor {
     calloc.free(tuple.ref.data);
     calloc.free(tuple);
     return output;
+  }
+
+  List<dynamic> readBatch(Pointer<tarantool_message_t> message) {
+    Queue<dynamic> outputs = ListQueue(message.ref.batch_size);
+    for (var i = 0; i < message.ref.batch_size; i++) {
+      Pointer<tarantool_message_batch_element_t> batch = message.ref.batch[i];
+      outputs.add(read(batch.ref.output.cast()));
+      calloc.free(batch);
+    }
+    calloc.free(message.ref.batch);
+    calloc.free(message);
+    return outputs.toList();
   }
 }

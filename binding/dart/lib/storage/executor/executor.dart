@@ -42,7 +42,7 @@ class StorageExecutor {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_iterator_next.cast();
     message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-    return sendSingle(message).then((pointer) => pointer == nullptr ? null : _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    return sendSingle(message, freeInput: false).then((pointer) => pointer == nullptr ? null : _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
   }
 
   Future<void> destroyIterator(StorageIterator iterator) {
@@ -50,25 +50,25 @@ class StorageExecutor {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_iterator_destroy.cast();
     message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-    return sendSingle(message);
+    return sendSingle(message, freeInput: false);
   }
 
   Future<void> begin() {
     Pointer<tarantool_message_t> message = calloc<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_BEGIN;
-    return sendSingle(message);
+    return sendSingle(message, freeInput: false);
   }
 
   Future<void> commit() {
     Pointer<tarantool_message_t> message = calloc<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_COMMIT;
-    return sendSingle(message);
+    return sendSingle(message, freeInput: false);
   }
 
   Future<void> rollback() {
     Pointer<tarantool_message_t> message = calloc<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_ROLLBACK;
-    return sendSingle(message);
+    return sendSingle(message, freeInput: false);
   }
 
   Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
@@ -79,10 +79,10 @@ class StorageExecutor {
     Pointer<tarantool_message_t> message = calloc<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_in_transaction.cast();
-    return sendSingle(message).then((pointer) => pointer.address != 0);
+    return sendSingle(message, freeInput: false).then((pointer) => pointer.address != 0);
   }
 
-  Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message) {
+  Future<Pointer<Void>> sendSingle(Pointer<tarantool_message_t> message, {required freeInput}) {
     if (_bindings.tarantool_initialized() == 0) return Future.error(StorageShutdownException());
     message.ref.callback_send_port = _nativePort;
     message.ref.owner = _ownerId;
@@ -94,6 +94,7 @@ class StorageExecutor {
       if (value.ref.error != nullptr) {
         return hasTransaction().then((has) => has ? rollback().then((_) => _handleSingleError(value)) : _handleSingleError(value));
       }
+      if (freeInput) calloc.free(value.ref.input);
       calloc.free(value);
       return value.ref.output;
     });

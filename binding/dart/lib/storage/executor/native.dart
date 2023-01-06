@@ -15,6 +15,6 @@ class StorageNativeExecutor {
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = function.cast();
     message.ref.input = argument?.cast() ?? nullptr;
-    return _executor.sendSingle(message);
+    return _executor.sendSingle(message, freeInput: false);
   }
 }
