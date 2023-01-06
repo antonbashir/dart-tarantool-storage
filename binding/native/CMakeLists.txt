@@ -5,6 +5,7 @@ set(CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE")
 include_directories(${MSGPUCK_INCLUDE_DIRS})
 
 set(CK_VERSION 0.6.0)
+set(MLIB_VERSION V0.7.0)
 include(FetchContent)
 FetchContent_Declare(
   ck
@@ -13,6 +14,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ck)
 include_directories(${ck_SOURCE_DIR}/include)
+
 set(DEPENDENCY_CFLAGS "-fPIC -O2")
 set(DEPENDENCY_CPPFLAGS "-fPIC -O2")
 set(DEPENDENCY_LDFLAGS)

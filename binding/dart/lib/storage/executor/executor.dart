@@ -19,14 +19,16 @@ class StorageExecutor {
   late StorageSchema _schema;
   late StorageNativeExecutor _native;
   late StorageLuaExecutor _lua;
+  late TarantoolTupleDescriptor _descriptor;
   final int _ownerId;
 
   StorageExecutor(this._bindings, this._ownerId) {
     _receiverPort = RawReceivePort(_receive);
     _nativePort = _receiverPort.sendPort.nativePort;
-    _schema = StorageSchema(_bindings, this);
     _native = StorageNativeExecutor(this);
-    _lua = StorageLuaExecutor(_bindings, this);
+    _descriptor = TarantoolTupleDescriptor(_bindings);
+    _lua = StorageLuaExecutor(_bindings, this, _descriptor);
+    _schema = StorageSchema(_bindings, this, _descriptor);
   }
 
   StorageSchema get schema => _schema;
@@ -40,7 +42,7 @@ class StorageExecutor {
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_iterator_next.cast();
         message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-        return sendSingle(message).then((pointer) => pointer == nullptr ? null : TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return sendSingle(message).then((pointer) => pointer == nullptr ? null : _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<void> destroyIterator(StorageIterator iterator) => using((Arena arena) {

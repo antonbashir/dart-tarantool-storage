@@ -105,7 +105,8 @@
       "ck_cc.h": "c",
       "ck_spinlock.h": "c",
       "extension.h": "c",
-      "ck_array.h": "c"
+      "ck_array.h": "c",
+      "obuf.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",

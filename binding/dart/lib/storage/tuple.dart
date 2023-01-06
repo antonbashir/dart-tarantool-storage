@@ -1,13 +1,15 @@
 import 'dart:ffi';
 
-import 'package:ffi/ffi.dart';
-import 'bindings.dart';
 import 'package:msgpack_dart/msgpack_dart.dart' as messagePack;
 
-class TarantoolTuple {
-  const TarantoolTuple._();
+import 'bindings.dart';
 
-  static Pointer<tarantool_tuple_t> write(Allocator allocator, dynamic data) {
+class TarantoolTupleDescriptor {
+  final TarantoolBindings _bindings;
+
+  const TarantoolTupleDescriptor(this._bindings);
+
+  Pointer<tarantool_tuple_t> write(Allocator allocator, dynamic data) {
     if (data == null) return nullptr.cast();
     final tuple = allocator<tarantool_tuple_t>();
     final tupleBytes = messagePack.serialize(data);
@@ -18,12 +20,11 @@ class TarantoolTuple {
     return tuple;
   }
 
-  static dynamic read(Pointer<tarantool_tuple_t> tuple) {
+  dynamic read(Pointer<tarantool_tuple_t> tuple) {
     if (tuple == nullptr) return [];
     Pointer<Uint8> resultBytes = tuple.ref.data.cast();
     final output = messagePack.deserialize(resultBytes.asTypedList(tuple.ref.size));
-    malloc.free(tuple.ref.data);
-    malloc.free(tuple);
+    _bindings.tarantool_tuple_free(tuple);
     return output;
   }
 }

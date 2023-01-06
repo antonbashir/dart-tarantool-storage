@@ -13,15 +13,16 @@ class StorageBatchSpaceBuilder {
   final TarantoolBindings _bindings;
   final int _id;
   final Allocator _allocator;
+  final TarantoolTupleDescriptor _descriptor;
 
-  StorageBatchSpaceBuilder(this._bindings, this._id, this._allocator);
+  StorageBatchSpaceBuilder(this._bindings, this._id, this._allocator, this._descriptor);
 
   void insert(List<dynamic> data) {
     Pointer<tarantool_message_batch_element_t> message = _allocator<tarantool_message_batch_element_t>();
     message.ref.function = _bindings.addresses.tarantool_space_insert.cast();
     final request = _allocator<tarantool_space_request_t>();
     request.ref.space_id = _id;
-    request.ref.tuple = TarantoolTuple.write(_allocator, data);
+    request.ref.tuple = _descriptor.write(_allocator, data);
     message.ref.input = request.cast();
     _batches.add(message);
   }
@@ -31,7 +32,7 @@ class StorageBatchSpaceBuilder {
     message.ref.function = _bindings.addresses.tarantool_space_put.cast();
     final request = _allocator<tarantool_space_request_t>();
     request.ref.space_id = _id;
-    request.ref.tuple = TarantoolTuple.write(_allocator, data);
+    request.ref.tuple = _descriptor.write(_allocator, data);
     message.ref.input = request.cast();
     _batches.add(message);
   }
@@ -41,7 +42,7 @@ class StorageBatchSpaceBuilder {
     message.ref.function = _bindings.addresses.tarantool_space_delete.cast();
     final request = _allocator<tarantool_space_request_t>();
     request.ref.space_id = _id;
-    request.ref.tuple = TarantoolTuple.write(_allocator, data);
+    request.ref.tuple = _descriptor.write(_allocator, data);
     message.ref.input = request.cast();
     _batches.add(message);
   }
@@ -51,8 +52,8 @@ class StorageBatchSpaceBuilder {
     message.ref.function = _bindings.addresses.tarantool_space_update.cast();
     final request = _allocator<tarantool_space_update_request_t>();
     request.ref.space_id = _id;
-    request.ref.key = TarantoolTuple.write(_allocator, key);
-    request.ref.operations = TarantoolTuple.write(
+    request.ref.key = _descriptor.write(_allocator, key);
+    request.ref.operations = _descriptor.write(
         _allocator,
         operations
             .map((operation) => [
@@ -70,8 +71,8 @@ class StorageBatchSpaceBuilder {
     message.ref.function = _bindings.addresses.tarantool_space_upsert.cast();
     final request = _allocator<tarantool_space_upsert_request_t>();
     request.ref.space_id = _id;
-    request.ref.tuple = TarantoolTuple.write(_allocator, tuple);
-    request.ref.operations = TarantoolTuple.write(
+    request.ref.tuple = _descriptor.write(_allocator, tuple);
+    request.ref.operations = _descriptor.write(
         _allocator,
         operations
             .map((operation) => [
@@ -111,8 +112,9 @@ class StorageBatchIndexBuilder {
   final int _spaceId;
   final int _indexId;
   final Allocator _allocator;
+  final TarantoolTupleDescriptor _descriptor;
 
-  StorageBatchIndexBuilder(this._bindings, this._spaceId, this._indexId, this._allocator);
+  StorageBatchIndexBuilder(this._bindings, this._spaceId, this._indexId, this._allocator, this._descriptor);
 
   void update(List<dynamic> key, List<StorageUpdateOperation> operations) {
     Pointer<tarantool_message_batch_element_t> message = _allocator<tarantool_message_batch_element_t>();
@@ -120,8 +122,8 @@ class StorageBatchIndexBuilder {
     final request = _allocator<tarantool_index_update_request_t>();
     request.ref.space_id = _spaceId;
     request.ref.index_id = _indexId;
-    request.ref.key = TarantoolTuple.write(_allocator, key);
-    request.ref.operations = TarantoolTuple.write(
+    request.ref.key = _descriptor.write(_allocator, key);
+    request.ref.operations = _descriptor.write(
         _allocator,
         operations
             .map((operation) => [

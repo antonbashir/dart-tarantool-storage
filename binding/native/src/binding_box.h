@@ -187,6 +187,8 @@ extern "C"
 
   tarantool_tuple_t *tarantool_iterator_next(intptr_t iterator);
   void tarantool_iterator_destroy(intptr_t iterator);
+  
+  void tarantool_tuple_free(tarantool_tuple_t* tuple);
 #if defined(__cplusplus)
 }
 #endif

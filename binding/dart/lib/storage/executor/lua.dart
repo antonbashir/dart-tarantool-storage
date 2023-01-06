@@ -12,8 +12,9 @@ import '../tuple.dart';
 class StorageLuaExecutor {
   final TarantoolBindings _bindings;
   final StorageExecutor _executor;
+  final TarantoolTupleDescriptor _descriptor;
 
-  const StorageLuaExecutor(this._bindings, this._executor);
+  const StorageLuaExecutor(this._bindings, this._executor, this._descriptor);
 
   Future<void> startBackup() => script(LuaExpressions.startBackup);
 
@@ -27,12 +28,12 @@ class StorageLuaExecutor {
         final request = arena<tarantool_evaluate_request_t>();
         request.ref.expression = expression.toNativeUtf8().cast();
         request.ref.expression_length = expression.length;
-        request.ref.input = TarantoolTuple.write(arena, arguments);
+        request.ref.input = _descriptor.write(arena, arguments);
         final message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_evaluate.cast();
         message.ref.input = request.cast();
-        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
       });
 
   Future<void> file(File file) => file.readAsString().then(script);
@@ -43,11 +44,11 @@ class StorageLuaExecutor {
         final request = arena<tarantool_call_request_t>();
         request.ref.function = function.toNativeUtf8().cast();
         request.ref.function_length = function.length;
-        request.ref.input = TarantoolTuple.write(arena, arguments);
+        request.ref.input = _descriptor.write(arena, arguments);
         final message = arena<tarantool_message_t>();
         message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
         message.ref.function = _bindings.addresses.tarantool_call.cast();
         message.ref.input = request.cast();
-        return _executor.sendSingle(message).then((pointer) => TarantoolTuple.read(Pointer.fromAddress(pointer.address).cast()));
+        return _executor.sendSingle(message).then((pointer) => _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
       });
 }

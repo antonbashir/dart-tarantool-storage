@@ -15,6 +15,10 @@
 #include "box/lua/call.h"
 #include "box/session.h"
 #include "small/obuf.h"
+#include "small/quota.h"
+#include "small/slab_arena.h"
+#include "small/slab_cache.h"
+#include "small/small.h"
 
 #define TARANTOOL_PRIMARY_INDEX_ID 0
 #define TARANTOOL_INDEX_BASE_C 0
@@ -26,7 +30,7 @@ void tarantool_initialize_box(size_t output_buffer_capacity)
   obuf_create(&output_buffer, cord_slab_cache(), output_buffer_capacity);
 }
 
-static inline tarantool_tuple_t *tarantool_tuple_new(char *data, size_t size)
+static inline tarantool_tuple_t *tarantool_tuple_new(const char *data, size_t size)
 {
   tarantool_tuple_t *return_tuple = malloc(sizeof(tarantool_tuple_t));
   if (unlikely(return_tuple == NULL))
@@ -45,7 +49,7 @@ static inline tarantool_tuple_t *tarantool_tuple_from_box(box_tuple_t *source)
     return NULL;
   }
   size_t size = box_tuple_bsize(source);
-  char *data = (char *)malloc(size);
+  char *data = malloc(size);
   box_tuple_to_buf(source, data, size);
   return tarantool_tuple_new(data, size);
 }
@@ -431,4 +435,10 @@ void tarantool_iterator_destroy(intptr_t iterator)
 void tarantool_destroy_box()
 {
   obuf_destroy(&output_buffer);
+}
+
+void tarantool_tuple_free(tarantool_tuple_t *tuple)
+{
+  free((void *)tuple->data);
+  free(tuple);
 }

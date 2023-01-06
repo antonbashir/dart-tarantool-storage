@@ -56,7 +56,7 @@ extern "C"
 
   typedef struct tarantool_tuple_t
   {
-    char *data;
+    const char *data;
     size_t size;
   } tarantool_tuple_t;
 

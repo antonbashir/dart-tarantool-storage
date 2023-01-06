@@ -6,6 +6,7 @@ import '../extensions.dart';
 import '../bindings.dart';
 import '../constants.dart';
 import '../executor/executor.dart';
+import '../tuple.dart';
 import 'index.dart';
 import 'space.dart';
 
@@ -75,12 +76,13 @@ class StorageIndexPart {
 class StorageSchema {
   final StorageExecutor _executor;
   final TarantoolBindings _bindings;
+  final TarantoolTupleDescriptor _descriptor;
 
-  const StorageSchema(this._bindings, this._executor);
+  const StorageSchema(this._bindings, this._executor, this._descriptor);
 
-  StorageSpace spaceById(int id) => StorageSpace(_bindings, _executor, id);
+  StorageSpace spaceById(int id) => StorageSpace(_bindings, _executor, id, _descriptor);
 
-  Future<StorageSpace> spaceByName(String name) => spaceId(name).then((id) => StorageSpace(_bindings, _executor, id));
+  Future<StorageSpace> spaceByName(String name) => spaceId(name).then((id) => StorageSpace(_bindings, _executor, id, _descriptor));
 
   Future<int> spaceId(String space) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
@@ -105,7 +107,7 @@ class StorageSchema {
       });
 
   Future<StorageIndex> indexByName(String spaceName, String indexName) {
-    return spaceId(spaceName).then((spaceId) => indexId(spaceId, indexName).then((indexId) => StorageIndex(_bindings, _executor, spaceId, indexId)));
+    return spaceId(spaceName).then((spaceId) => indexId(spaceId, indexName).then((indexId) => StorageIndex(_bindings, _executor, spaceId, indexId, _descriptor)));
   }
 
   Future<bool> indexExists(int spaceId, String indexName) => using((Arena arena) {
@@ -120,7 +122,7 @@ class StorageSchema {
         return _executor.sendSingle(message).then((pointer) => pointer.address != 0);
       });
 
-  StorageIndex indexById(int spaceId, int indexId) => StorageIndex(_bindings, _executor, spaceId, indexId);
+  StorageIndex indexById(int spaceId, int indexId) => StorageIndex(_bindings, _executor, spaceId, indexId, _descriptor);
 
   Future<int> indexId(int spaceId, String index) => using((Arena arena) {
         Pointer<tarantool_message_t> message = arena<tarantool_message_t>();
