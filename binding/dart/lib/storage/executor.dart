@@ -25,7 +25,7 @@ class StorageExecutor {
     _schema = StorageSchema(_bindings, this);
   }
 
-  StorageSchema schema() => _schema;
+  StorageSchema get schema => _schema;
 
   Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function) {
     return begin().then((_) => function(this)).then((_) => commit()).onError((error, stackTrace) => rollback());

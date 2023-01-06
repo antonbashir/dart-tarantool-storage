@@ -32,10 +32,10 @@ void main() {
         StorageDefaults.loop(),
         replicationConfiguration: StorageDefaults.replication(),
       );
-    _executor = _storage.executor();
-    final spaceId = await _executor.schema().spaceId("test");
-    _space = _executor.schema().spaceById(spaceId);
-    _index = _executor.schema().indexById(spaceId, await _executor.schema().indexId(spaceId, "test"));
+    _executor = _storage.executor;
+    final spaceId = await _executor.schema.spaceId("test");
+    _space = _executor.schema.spaceById(spaceId);
+    _index = _executor.schema.indexById(spaceId, await _executor.schema.indexId(spaceId, "test"));
   });
 
   setUp(() async => await _space.truncate());
@@ -156,7 +156,7 @@ void main() {
 }
 
 Future<void> testSchema() async {
-  await _executor.schema().createSpace(
+  await _executor.schema.createSpace(
         "test-space",
         engine: StorageEngine.memtx,
         fieldCount: 3,
@@ -169,9 +169,9 @@ Future<void> testSchema() async {
         ifNotExists: true,
       );
   expect(await _executor.executeLua("validateCreatedSpace"), equals([true]));
-  expect(await _executor.schema().spaceExists("test-space"), isTrue);
+  expect(await _executor.schema.spaceExists("test-space"), isTrue);
 
-  await _executor.schema().createIndex(
+  await _executor.schema.createIndex(
     "test-space",
     "test-index",
     id: 0,
@@ -184,29 +184,29 @@ Future<void> testSchema() async {
     ],
   );
   expect(await _executor.executeLua("validateCreatedIndex"), equals([true]));
-  expect(await _executor.schema().indexExists(3, "test-index"), isTrue);
+  expect(await _executor.schema.indexExists(3, "test-index"), isTrue);
 
-  await _executor.schema().createUser("test-user", "test-password", ifNotExists: true);
-  expect(await _executor.schema().userExists("test-user"), isTrue);
-  await _executor.schema().grantUser("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
+  await _executor.schema.createUser("test-user", "test-password", ifNotExists: true);
+  expect(await _executor.schema.userExists("test-user"), isTrue);
+  await _executor.schema.grantUser("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
   try {
-    await _executor.schema().grantUser("test-user", privileges: "write", objectType: "universe");
+    await _executor.schema.grantUser("test-user", privileges: "write", objectType: "universe");
   } catch (error) {
     expect(
       error,
       predicate((exception) => exception is StorageExecutionException && exception.toString() == "User 'test-user' already has write access on universe"),
     );
   }
-  await _executor.schema().revokeUser("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
-  await _executor.schema().revokeUser("test-user", privileges: "write", objectType: "universe", ifNotExists: true);
-  await _executor.schema().dropUser("test-user");
-  expect(await _executor.schema().userExists("test-user"), isFalse);
+  await _executor.schema.revokeUser("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
+  await _executor.schema.revokeUser("test-user", privileges: "write", objectType: "universe", ifNotExists: true);
+  await _executor.schema.dropUser("test-user");
+  expect(await _executor.schema.userExists("test-user"), isFalse);
 
-  await _executor.schema().dropIndex("test-space", "test-index");
-  expect(await _executor.schema().indexExists(3, "test-index"), isFalse);
+  await _executor.schema.dropIndex("test-space", "test-index");
+  expect(await _executor.schema.indexExists(3, "test-index"), isFalse);
 
-  await _executor.schema().dropSpace("test-space");
-  expect(await _executor.schema().spaceExists("test-space"), isFalse);
+  await _executor.schema.dropSpace("test-space");
+  expect(await _executor.schema.spaceExists("test-space"), isFalse);
 }
 
 Future<void> testExecuteLua() async {
@@ -259,7 +259,7 @@ Future<void> testMultiIsolateInsert() async {
     data.add(element);
     Isolate.spawn<dynamic>((element) async {
       final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
-      await storage.executor().schema().spaceByName("test").then((space) => space.insert(element));
+      await storage.executor.schema.spaceByName("test").then((space) => space.insert(element));
       storage.close();
     }, element, onExit: port.sendPort);
   }
@@ -283,8 +283,8 @@ Future<void> testMultiIsolateTransactionalInsert() async {
     data.add(element);
     Isolate.spawn<dynamic>((element) async {
       final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
-      final executor = storage.executor();
-      await executor.schema().spaceByName("test").then((space) => executor.transactional((executor) => space.insert(element)));
+      final executor = storage.executor;
+      await executor.schema.spaceByName("test").then((space) => executor.transactional((executor) => space.insert(element)));
       storage.close();
     }, element, onExit: port.sendPort);
   }

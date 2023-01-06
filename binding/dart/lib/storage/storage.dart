@@ -11,7 +11,6 @@ import 'constants.dart';
 import 'executor.dart';
 import 'lookup.dart';
 import 'script.dart';
-import 'extensions.dart';
 
 class Storage {
   Map<String, StorageNativeModule> _loadedModulesByName = {};
@@ -37,26 +36,28 @@ class Storage {
     _shutdownPort = RawReceivePort((_) => close());
   }
 
+  StorageExecutor get executor => _executor;
+
+  StorageLibrary get library => _library;
+
   Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loopConfiguration, {ReplicationConfiguration? replicationConfiguration}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
     final nativeConfiguration = loopConfiguration.native(_library.path);
     nativeConfiguration.ref.shutdown_port = _shutdownPort.sendPort.nativePort;
-    final conf = script.write(configuration: (script) {
-      if (_hasStorageLuaModule && replicationConfiguration != null)
-        script.code(LuaExpressions.boot +
-            LuaArgument.arrayArgument([
-              replicationConfiguration.user.quotted,
-              replicationConfiguration.password.quotted,
-              replicationConfiguration.delay.inSeconds.toString(),
-            ]));
-    });
     _bindings.tarantool_initialize(
       Platform.executable.toNativeUtf8().cast<Char>(),
-      conf.toNativeUtf8().cast(),
+      script.write().toNativeUtf8().cast(),
       nativeConfiguration,
     );
     malloc.free(nativeConfiguration);
+    if (_hasStorageLuaModule && replicationConfiguration != null) {
+      await executor.executeLua(LuaExpressions.boot, arguments: [
+        replicationConfiguration.user,
+        replicationConfiguration.password,
+        replicationConfiguration.delay.inSeconds,
+      ]);
+    }
     if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
   }
 
@@ -80,10 +81,6 @@ class Storage {
     _reloadListener?.cancel();
   }
 
-  StorageExecutor executor() => _executor;
-
-  StorageLibrary library() => _library;
-
   StorageNativeModule loadModuleByPath(String libraryPath) {
     if (_loadedModulesByPath.containsKey(libraryPath)) return _loadedModulesByPath[libraryPath]!;
     final module = StorageNativeModule._loadByFile(libraryPath);
@@ -101,7 +98,7 @@ class Storage {
   Future<void> reload() async {
     _loadedModulesByName.entries.forEach((entry) => _loadedModulesByName[entry.key] = entry.value._reload());
     _loadedModulesByPath.entries.forEach((entry) => _loadedModulesByPath[entry.key] = entry.value._reload());
-    if (_hasStorageLuaModule) await executor().executeLua(LuaExpressions.reload);
+    if (_hasStorageLuaModule) await executor.executeLua(LuaExpressions.reload);
   }
 
   void execute(void Function(StorageExecutor executor) executor) => executor(_executor);

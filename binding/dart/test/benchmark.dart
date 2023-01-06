@@ -19,9 +19,9 @@ void main() {
     });
     _storage = await Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName")
       ..boot(StorageBootstrapScript(StorageDefaults.storage())..file(File("test/test.lua")), StorageDefaults.loop());
-    _executor = _storage.executor();
-    final spaceId = await _executor.schema().spaceId("test");
-    _space = _executor.schema().spaceById(spaceId);
+    _executor = _storage.executor;
+    final spaceId = await _executor.schema.spaceId("test");
+    _space = _executor.schema.spaceById(spaceId);
     await _executor.transactional((executor) => _space.batch((builder) => builder..insertMany(benchmarkData)));
     print("Benhcing: $benchmarkDataCount");
   });
@@ -61,7 +61,7 @@ Future<void> benchIsolatedGet() async {
       final completer = Completer();
       int counter = 0;
       final storage = Storage(libraryPath: "${Directory.current.path}/native/$storageLibraryName");
-      final space = await storage.executor().schema().spaceByName("test");
+      final space = await storage.executor.schema.spaceByName("test");
       for (var i = 0; i < count; i++) {
         space.get([i + 1]).then((value) {
           if (++counter >= count) {
