@@ -53,11 +53,6 @@ add_dependencies(tarantool_binding ck api)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
-if(BUILD_STATIC)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libstdc++")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
-endif()
-
 add_custom_command(TARGET tarantool_binding POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:tarantool_binding> ${CMAKE_CURRENT_SOURCE_DIR}/../dart/native/libstorage.so
 )
