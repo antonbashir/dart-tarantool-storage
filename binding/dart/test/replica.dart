@@ -24,7 +24,7 @@ void main(List<String> args) => test("test replica ${args[0]}", () async {
       await storage.boot(
         StorageBootstrapScript(configuration)..includeStorageLuaModule(),
         StorageDefaults.loop(),
-        boot: StorageDefaults.boot(),
+        boot: StorageDefaults.boot(randomizeDelay: true),
       );
       await storage.awaitInitialized();
       expect(storage.initialized(), equals(true));
