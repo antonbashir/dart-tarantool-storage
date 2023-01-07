@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
+import 'package:tarantool_storage/storage/exception.dart';
 
 import 'bindings.dart';
 import 'configuration.dart';
@@ -53,6 +54,7 @@ class Storage {
       nativeConfiguration,
     );
     calloc.free(nativeConfiguration);
+    if (!initialized()) throw StorageShutdownException();
     if (_hasStorageLuaModule && boot != null) {
       await executor.lua.call(LuaExpressions.boot, arguments: [boot.user, boot.password]);
     }
