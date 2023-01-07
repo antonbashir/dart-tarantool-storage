@@ -14,3 +14,10 @@ nestedArrayToMap = function(array)
   end
   return map
 end
+
+safeRequire = function (module)
+  local function requireFunction(module)
+      require(module)
+  end
+  return pcall(requireFunction, module)
+end

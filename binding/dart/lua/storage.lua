@@ -6,6 +6,7 @@ require("version")
 require("reloader")
 require("user")
 require("migration")
+safeRequire("module")
 
 boot = function(user, password)
   if (user ~= nil and password ~= nil) then 
