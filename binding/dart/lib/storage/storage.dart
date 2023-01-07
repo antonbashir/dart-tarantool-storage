@@ -62,7 +62,7 @@ class Storage {
       await Future.delayed(boot.delay);
     }
     await executor.lua.promote();
-    if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) => reload());
+    if (activateReloader) _reloadListener = ProcessSignal.sighup.watch().listen((event) async => await reload());
   }
 
   bool mutable() => _bindings.tarantool_is_read_only() == 0;
