@@ -116,6 +116,14 @@ If specify `activateReloader` in `Storage.boot` function Tarantool will reload N
 
 So you can change Lua scripts or Native files (and recompile them) and your changes will be applied after SIGHUP. 
 
+## Packaging
+
+If you want distribute your module then run `dart run tarantool_storage:pack ${path to main dart file}`.
+
+This command will recompile Native files and create `${directory name}.tar.gz` archive with executables, libraries and lua scripts. 
+
+After it you can transfer archive to whatever place you want, unarchive it and run `module.exe`.
+
 # API
 
 ## Storage
