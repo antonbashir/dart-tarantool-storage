@@ -17,20 +17,6 @@ final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${ind
 
 void main() {
   setUpAll(() async {
-    final compileResult = Process.runSync(
-      "dart",
-      [
-        "compile",
-        "exe",
-        "${Directory.current.path}/test/replica.dart",
-      ],
-      runInShell: true,
-    );
-    if (compileResult.exitCode != 0) {
-      print(compileResult.stderr);
-      print(compileResult.stdout);
-      fail("Replica compilation failed");
-    }
     _storage = await Storage()
       ..boot(
         StorageBootstrapScript(StorageDefaults.storage())
