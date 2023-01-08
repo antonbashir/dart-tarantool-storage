@@ -64,7 +64,23 @@ Message structure: `{type,function,input,output,batch[{function,input,output,err
 
 # Installation & Usage
 
+### Steps for usage
+
+1. Create Dart project with pubspec.yaml
+2. Add this section to dependencies:
+```
+  tarantool_storage:
+    git: 
+      url: https://github.com/antonbashir/dart-tarantool-storage/
+      path: binding/dart
+```
+3. Run `dart pub get`
+4. Run `dart run tarantool_storage:setup`
+5. Look at the [API](#API) and Enjoy!
+
 ## Sample
+
+
 
 ## Management
 
