@@ -80,8 +80,6 @@ Message structure: `{type,function,input,output,batch[{function,input,output,err
 
 ## Sample
 
-
-
 ## Management
 
 ## Lua custom modules
@@ -118,6 +116,7 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 * Currently not tested Tarantool MVCC but you can enable it by configuration
 * Currently tested only on x86 proccessors, arm and other not tested but could work
 * Not production tested, current version be just coded and tested by function unit tests, possible bug
+* Restart requires restart of process because Tarantool can't be fully shutdown and some stuff stays in memory
 
 # Further work
 

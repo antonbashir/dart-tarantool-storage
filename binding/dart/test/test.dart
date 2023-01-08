@@ -17,9 +17,6 @@ final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${ind
 
 void main() {
   setUpAll(() async {
-    Directory.current.listSync().forEach((element) {
-      if (element.path.contains("00000")) element.deleteSync();
-    });
     final compileResult = Process.runSync(
       "dart",
       [
@@ -55,10 +52,6 @@ void main() {
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });
-  });
-
-  group(["replication"], () {
-    test("three replicas initialized", testReplication);
   });
 
   group(["schema"], () {
@@ -307,38 +300,4 @@ Future<void> testMultiIsolateTransactionalInsert() async {
   ports.forEach((port) => port.close());
   expect(await _space.length(), equals(data.length));
   expect(await _space.select(), containsAll(data));
-}
-
-Future<void> testReplication() async {
-  final first = Process.run(
-      "${Directory.current.path}/test/replica.exe",
-      [
-        "3302",
-        "3302",
-        "3303",
-        "3304",
-      ],
-      runInShell: true);
-  await Future.delayed(Duration(seconds: 1));
-  final second = Process.run(
-      "${Directory.current.path}/test/replica.exe",
-      [
-        "3303",
-        "3302",
-        "3303",
-        "3304",
-      ],
-      runInShell: true);
-  await Future.delayed(Duration(seconds: 1));
-  final third = Process.run(
-      "${Directory.current.path}/test/replica.exe",
-      [
-        "3304",
-        "3302",
-        "3303",
-        "3304",
-      ],
-      runInShell: true);
-  await Future.delayed(Duration(seconds: 1));
-  (await Future.wait([first, second, third])).forEach((process) => expect(process.exitCode, equals(0)));
 }

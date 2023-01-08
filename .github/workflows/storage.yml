@@ -30,4 +30,4 @@ jobs:
         run: cd binding/dart && dart pub get
 
       - name: Run tests
-        run: cd binding/dart && dart compile exe test/test.dart && ./test/test.exe
+        run: cd binding/dart && dart compile exe test/test.dart && ./test/test.exe && ./test/test-replication.sh

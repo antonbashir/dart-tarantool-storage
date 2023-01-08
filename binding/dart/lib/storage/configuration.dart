@@ -217,7 +217,9 @@ class StorageConfiguration {
     return StorageConfiguration(copy);
   }
 
-  String format() => LuaExpressions.boxCfg + LuaArgument.singleTableArgument(_configurationMap.entries.map((entry) => LuaField.stringField(entry.key, entry.value.toString())).join(comma));
+  String format() =>
+      LuaExpressions.boxCfg +
+      LuaArgument.singleTableArgument(_configurationMap.entries.where((entry) => entry.value != null).map((entry) => LuaField.stringField(entry.key, entry.value.toString())).join(comma));
 }
 
 class StorageMessageLoopConfiguration {
