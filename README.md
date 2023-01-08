@@ -141,6 +141,16 @@ After it you can transfer archive to whatever place you want, unarchive it and r
 * `StorageNativeModule loadModuleByPath(String libraryPath)`
 * `StorageNativeModule loadModuleByName(String libraryName)`
 * `Future<void> reload() async`
+* `executor`
+
+## Executor - StorageExecutor
+* `Future<List<List<dynamic>>?> next(StorageIterator iterator, int count)`
+* `Future<void> destroyIterator(StorageIterator iterator)`
+* `Future<void> begin()`
+* `Future<void> commit()`
+* `Future<void> rollback()`
+* `Future<void> transactional(FutureOr<void> Function(StorageExecutor executor) function)`
+* `Future<bool> hasTransaction()`
 
 ## Schema - StorageSchema
 * `StorageSpace spaceById(int id)`
@@ -229,12 +239,86 @@ After it you can transfer archive to whatever place you want, unarchive it and r
   })`
 * `Future<List<dynamic>> batch(StorageBatchSpaceBuilder Function(StorageBatchSpaceBuilder builder) builder)`
 
+## Index - StorageIndex
+* `Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq})`
+* `Future<int> length()`
+* `Future<StorageIterator> iterator({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq})`
+* `Future<List<dynamic>> get(List<dynamic> key)`
+* `Future<List<dynamic>> min({List<dynamic> key = const []})`
+* `Future<List<dynamic>> max({List<dynamic> key = const []})`
+* `Future<List<dynamic>> update(List<dynamic> key, List<StorageUpdateOperation> operations)`
+* `Future<List<dynamic>> select({
+    List<dynamic> key = const [],
+    int offset = 0,
+    int limit = int32Max,
+    StorageIteratorType iteratorType = StorageIteratorType.eq,
+  })`
+* `Future<List<dynamic>> batch(StorageBatchIndexBuilder Function(StorageBatchIndexBuilder builder) builder)`
 
-## Index
 ## Iterator
+* `Future<List<List<dynamic>>?> next({int count = 1})`
+* `Future<void> destroy()`
+* `Future<void> destroy()`
+* `Future<List<dynamic>> collect({
+    bool Function(List<dynamic> value)? filter,
+    dynamic Function(List<dynamic> value)? map,
+    int? limit,
+    int? offset,
+    int count = 1,
+  })`
+* `Future<void> forEach(
+    void Function(dynamic element) action, {
+    bool Function(List<dynamic> value)? filter,
+    dynamic Function(List<dynamic> value)? map,
+    int? limit,
+    int? offset,
+    int count = 1,
+  })`
+* `Stream<dynamic> stream({
+    bool Function(List<dynamic> value)? filter,
+    dynamic Function(List<dynamic> value)? map,
+    int? limit,
+    int? offset,
+    int count = 1,
+  }) async*`
+
+
 ## Batch
-## Lua
-## Native
+
+### StorageBatchSpaceBuilder
+* `void insert(List<dynamic> data)`
+* `void put(List<dynamic> data)`
+* `void put(List<dynamic> data)`
+* `void delete(List<dynamic> data)`
+* `void update(List<dynamic> key, List<StorageUpdateOperation> operations)`
+* `void upsert(List<dynamic> tuple, List<StorageUpdateOperation> operations)`
+* `void insertMany(List<List<dynamic>> data)`
+* `void putMany(List<List<dynamic>> data)`
+* `void putMany(List<List<dynamic>> data)`
+* `void deleteMany(List<List<dynamic>> data)`
+
+### StorageBatchIndexBuilder
+* `void update(List<dynamic> key, List<StorageUpdateOperation> operations)`
+
+## Lua - StorageLuaExecutor
+* `Future<void> startBackup()`
+* `Future<void> stopBackup()`
+* `Future<void> promote()`
+* `Future<void> configure(StorageConfiguration configuration)`
+* `Future<List<dynamic>> script(String expression, {List<dynamic> arguments = const []})`
+* `Future<void> file(File file)`
+* `Future<void> require(String module)`
+* `Future<List<dynamic>> call(String function, {List<dynamic> arguments = const []})`
+
+## Native - StorageNativeExecutor
+`Future<Pointer<Void>> call(tarantool_function function, {tarantool_function_argument? argument})`
+
+# Configuration
+
+## StorageConfiguration
+## StorageMessageLoopConfiguration
+## StorageBootConfiguration
+## StorageReplicationConfiguration
 
 # Perfomance
 

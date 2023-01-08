@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
