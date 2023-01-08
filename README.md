@@ -90,7 +90,7 @@ TODO: Make benchmark on preferable machine
 Latest benchmark results (count of entities - 1M, single dart Isolate):
 
 * Get RPS: 200k
-* Lua function RPS: 170k
+* Lua function RPS: 200k
 * Select time: 250 milliseconds
 * Iterator time (with 1k prefetch count): 1 second
 * Batch insert: 2.7 seconds
