@@ -40,7 +40,7 @@ function(rebuild_module_api)
 
     add_custom_target(api ALL DEPENDS ${dstfile})
     add_custom_command(TARGET api POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${dstfile} ${CMAKE_CURRENT_SOURCE_DIR}/../binding/dart/native/module.h
+        COMMAND ${CMAKE_COMMAND} -E copy ${dstfile} ${CMAKE_CURRENT_SOURCE_DIR}/../binding/dart/native/library.h
     )
     install(FILES ${dstfile} DESTINATION ${MODULE_INCLUDEDIR})
 endfunction()

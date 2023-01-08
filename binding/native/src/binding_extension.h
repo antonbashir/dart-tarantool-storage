@@ -1,7 +1,7 @@
-#ifndef BINDING_EXTENSION_H_INCLUDED
-#define BINDING_EXTENSION_H_INCLUDED
+#ifndef USER_MODULE_H_INCLUDED
+#define USER_MODULE_INCLUDED
 
-#include "module.h"
+#include "library.h"
 #include "msgpuck.h"
 
 #if defined(__cplusplus)

@@ -48,19 +48,19 @@ Message structure: `{type,function,input,output,batch[{function,input,output,err
 * `batch` - array of structure simillar to message (for bulk execution of functions)
 
 ### Message types
-* call
-* batch
-* begin
-* commit
-* rollback
-* stop
+* call - calling function on Tarantool thread with access to Tarantool API
+* batch - mark that it is batch message and binding should handle batch processing
+* begin - Tarantool transaction begin
+* commit - Tarantool transaction commit
+* rollback - Tarantool transaction rollback
+* stop - used only inside native binding code, stops the binding message loop
 
 ### Message input variations
-* management request
-* space request
-* index request
-* index request
-
+* management request - operations for manage Tarantool, for example initialize, shutdown, .etc 
+* space request - data operations for space, usally contains space id
+* index request - data operations for index, usally contains space id and index id
+* iterator next request - get next element by iterator
+* execution request - execute Lua or Native function on Tarantool thread with access to Tarantool API
 
 # Installation & Usage
 
@@ -98,7 +98,7 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 # Limitations
 
 * Linux only
-* Currently not supported Tarantool VShard but you stil can use it by writing lua code to `extension.lua`
+* Currently not supported Tarantool VShard but you still can use it by writing lua code to `module.lua`
 * Currently not tested Tarantool MVCC but you can enable it by configuration
 * Currently tested only on x86 proccessors, arm and other not tested but could work
 * Not production tested, current version be just coded and tested by function unit tests, possible bug
@@ -111,3 +111,9 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 4. Flutter UI for management and administration
 5. Upgrade to Tarantool 2.11
 6. Demo project
+
+# Contribution
+
+Currently maintainer hasn't resources on maintain pull requests but issues are welcome. 
+
+Every issue will be observed, discussed and applied or closed if this project does not need of it.
