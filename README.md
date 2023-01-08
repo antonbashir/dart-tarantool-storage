@@ -62,18 +62,17 @@ Message structure: `{type,function,input,output,batch[{function,input,output,err
 * index request
 
 
-# Installation
-
-
-# Usage 
+# Installation & Usage
 
 ## Sample
 
-## Lua custom modules
+## Management
 
+## Lua custom modules
 
 ## Native custom modules
 
+## Reloading
 
 # API
 
