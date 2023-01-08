@@ -151,7 +151,7 @@ After it you can transfer archive to whatever place you want, unarchive it and r
 * `Future<bool> indexExists(int spaceId, String indexName)`
 * `StorageIndex indexById(int spaceId, int indexId)`
 * `Future<int> indexId(int spaceId, String index)`
-* ```Future<void> createSpace(
+* `Future<void> createSpace(
     String name, {
     StorageEngine? engine,
     int? fieldCount,
@@ -162,18 +162,18 @@ After it you can transfer archive to whatever place you want, unarchive it and r
     bool? synchronous,
     bool? temporary,
     String? user,
-  })```
-* ```Future<void> alterSpace(
+  })`
+* `Future<void> alterSpace(
     String name, {
     int? fieldCount,
     List<StorageSpaceField>? format,
     bool? synchronous,
     bool? temporary,
     String? user,
-  })```
+  })`
 * `Future<void> renameSpace(String from, String to)`
 * `Future<void> dropSpace(String name)`
-* ```Future<void> createIndex(
+* `Future<void> createIndex(
     String spaceName,
     String indexName, {
     IndexType? type,
@@ -181,22 +181,22 @@ After it you can transfer archive to whatever place you want, unarchive it and r
     bool? unique,
     bool? ifNotExists,
     List<StorageIndexPart>? parts,
-  })```
+  })`
 * `Future<void> alterIndex(String spaceName, String indexName, {List<StorageIndexPart>? parts})`
 * `Future<void> dropIndex(String spaceName, String indexName)`
 * `Future<void> createUser(String name, String password, {bool? ifNotExists})`
 * `Future<void> dropUser(String name)`
 * `Future<void> changePassword(String name, String password)`
 * `Future<bool> userExists(String name)`
-* ```Future<void> grantUser(
+* `Future<void> grantUser(
     String name, {
     required String privileges,
     String? objectType,
     String? objectName,
     String? roleName,
     bool? ifNotExists,
-  })```
-* ```Future<void> revokeUser(
+  })`
+* `Future<void> revokeUser(
     String name, {
     required String privileges,
     String? objectType,
@@ -204,7 +204,7 @@ After it you can transfer archive to whatever place you want, unarchive it and r
     String? roleName,
     bool? universe,
     bool? ifNotExists,
-  })```
+  })`
 
 ## Space - StorageSpace
 * `Future<int> count({List<dynamic> key = const [], StorageIteratorType iteratorType = StorageIteratorType.eq})`
@@ -221,12 +221,12 @@ After it you can transfer archive to whatever place you want, unarchive it and r
 * `Future<void> truncate()`
 * `Future<List<dynamic>> update(List<dynamic> key, List<StorageUpdateOperation> operations)`
 * `Future<List<dynamic>> upsert(List<dynamic> tuple, List<StorageUpdateOperation> operations)`
-* ```Future<List<dynamic>> select({
+* `Future<List<dynamic>> select({
     List<dynamic> key = const [],
     int offset = 0,
     int limit = int32Max,
     StorageIteratorType iteratorType = StorageIteratorType.eq,
-  })```
+  })`
 * `Future<List<dynamic>> batch(StorageBatchSpaceBuilder Function(StorageBatchSpaceBuilder builder) builder)`
 
 
