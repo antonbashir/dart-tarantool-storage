@@ -26,7 +26,7 @@ Dart Tarantool storage should helps with this need by combining Tarantool featur
 
 # Idea and concepts
 
-[Main diagram](dart-tarantool-storage.drawio)
+[Main diagram](dart-tarantool-storage.svg)
 
 # Installation
 
