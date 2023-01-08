@@ -21,12 +21,11 @@ class Storage {
   late StorageLibrary _library;
   late StorageExecutor _executor;
   late RawReceivePort _shutdownPort;
-  final bool activateReloader;
+  late bool _hasStorageLuaModule;
 
   StreamSubscription<ProcessSignal>? _reloadListener = null;
-  bool _hasStorageLuaModule = false;
 
-  Storage({String? libraryPath, this.activateReloader = false}) {
+  Storage({String? libraryPath}) {
     _library = libraryPath != null
         ? File(libraryPath).existsSync()
             ? StorageLibrary(DynamicLibrary.open(libraryPath), libraryPath)
@@ -43,7 +42,7 @@ class Storage {
 
   TarantoolBindings get bindings => _bindings;
 
-  Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loop, {StorageBootConfiguration? boot}) async {
+  Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loop, {StorageBootConfiguration? boot, activateReloader = false}) async {
     if (initialized()) return;
     _hasStorageLuaModule = script.hasStorageLuaModule;
     final nativeConfiguration = loop.native(_library.path);

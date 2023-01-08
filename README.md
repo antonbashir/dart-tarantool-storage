@@ -1,5 +1,8 @@
 # Introduction
 
+<img src="dart-logo.png"  height="80" />
+<img src="tarantool-logo.png" height="80" />
+
 The main goal of this library is to provide fast and strong database to Dart developers.
 
 This repository contains fork of Tarantool Database (currently 2.8.4 version, will be updated to 2.11 after release).
@@ -127,9 +130,11 @@ After it you can transfer archive to whatever place you want, unarchive it and r
 # API
 
 ## Storage
+## Schema
 ## Space
 ## Index
 ## Iterator
+## Batch
 ## Lua
 ## Native
 
@@ -168,4 +173,4 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 
 Currently maintainer hasn't resources on maintain pull requests but issues are welcome. 
 
-Every issue will be observed, discussed and applied or closed if this project does not need of it.
+Every issue will be observed, discussed and applied or closed if this project does not need it.
