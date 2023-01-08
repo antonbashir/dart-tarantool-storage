@@ -1,9 +1,13 @@
 # Introduction
 
 The main goal of this library is to provide fast and strong database to Dart developers.
+
 This repository contains fork of Tarantool Database (currently 2.8.4 version, will be updated to 2.11 after release).
+
 Currently there are a lot of local database solutions for Dart (Isaar, Hive, ObjectBox) and a lot of connectors to famous databases (such as  Redis, Postgres, Mongo, .etc).
+
 But also exists need of predictable and controllable data storage solution with freedom of customization of data processing logic. 
+
 Dart Tarantool storage should helps with this need by combining Tarantool features and Dart language features.
 
 ## About Tarantool
