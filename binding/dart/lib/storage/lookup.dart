@@ -13,7 +13,8 @@ class StorageLibrary {
 
 StorageLibrary loadBindingLibrary() {
   try {
-    return StorageLibrary(Platform.isLinux ? DynamicLibrary.open(storageLibraryName) : throw UnsupportedError(loadError), Directory.current.path + slash + storageLibraryName);
+    return StorageLibrary(
+        Platform.isLinux ? DynamicLibrary.open(storageLibraryName) : throw UnsupportedError(Directory.current.path + slash + storageLibraryName), Directory.current.path + slash + storageLibraryName);
   } on ArgumentError {
     final dotDartTool = findDotDartTool();
     if (dotDartTool != null) {
@@ -22,8 +23,9 @@ StorageLibrary loadBindingLibrary() {
       if (libraryFile.existsSync()) {
         return StorageLibrary(DynamicLibrary.open(libraryFile.path), libraryFile.path);
       }
+      throw UnsupportedError(loadError(libraryFile.path));
     }
-    throw UnsupportedError(loadError);
+    throw UnsupportedError(unableToFindProjectRoot);
   }
 }
 
@@ -53,11 +55,11 @@ Uri findPackageRoot(Uri dotDartTool) {
   try {
     packageConfig = json.decode(packageConfigFile.readAsStringSync());
   } catch (ignore) {
-    throw UnsupportedError(loadError);
+    throw UnsupportedError(unableToFindProjectRoot);
   }
   final package = (packageConfig[PackageConfigFields.packages] ?? []).firstWhere(
     (element) => element[PackageConfigFields.name] == storagePackageName,
-    orElse: () => throw UnsupportedError(loadError),
+    orElse: () => throw UnsupportedError(unableToFindProjectRoot),
   );
   return packageConfigFile.uri.resolve(package[PackageConfigFields.rootUri] ?? empty);
 }

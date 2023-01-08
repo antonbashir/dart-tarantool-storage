@@ -25,6 +25,8 @@ const packageConfigJsonFile = "package_config.json";
 
 String loadError(path) => "Unable to load library ${path}";
 
+const unableToFindProjectRoot = "Unable to find project root";
+
 const dlCloseFunction = 'dlclose';
 
 const pubspecYamlFile = 'pubspec.yaml';

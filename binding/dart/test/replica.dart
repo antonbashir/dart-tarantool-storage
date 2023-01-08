@@ -9,7 +9,7 @@ void main(List<String> args) => test("test replica ${args[0]}", () async {
       final workDirectory = Directory(Directory.current.path + "/test/tarantool_${int.parse(args[0].toString())}");
       final bootConfiguration = StorageDefaults.boot();
       final configuration = StorageDefaults.storage().copyWith(
-        listen: int.parse(args[0].toString()),
+        listen: args[0].toString(),
         replication: StorageReplicationConfiguration()
             .addAddressReplica("127.0.0.1", args[1], user: bootConfiguration.user, password: bootConfiguration.password)
             .addAddressReplica("127.0.0.1", args[2], user: bootConfiguration.user, password: bootConfiguration.password)
