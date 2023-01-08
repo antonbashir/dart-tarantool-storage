@@ -102,3 +102,12 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 * Currently not tested Tarantool MVCC but you can enable it by configuration
 * Currently tested only on x86 proccessors, arm and other not tested but could work
 * Not production tested, current version be just coded and tested by function unit tests, possible bug
+
+# Further work
+
+1. Benchmarks and optimization
+2. CI for building library and way to provide it to user modules (currently library included with sources, that is not good)
+3. Dart network transport based on io_uring
+4. Flutter UI for management and administration
+5. Upgrade to Tarantool 2.11
+6. Demo project
