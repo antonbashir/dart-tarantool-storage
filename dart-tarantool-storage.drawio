@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-01-08T15:34:52.403Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36" version="20.8.3" etag="KbVD_andgjXmp5zOE1Kj" type="github">
+<mxfile host="app.diagrams.net" modified="2023-01-08T15:36:04.053Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36" version="20.8.3" etag="Py__fwgztWkeH_Acxxyh" type="github">
   <diagram id="RhJtP4QG4hAFuGJJz91S" name="Page-1">
     <mxGraphModel dx="2174" dy="126" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -6,6 +6,17 @@
         <mxCell id="1" parent="0" />
         <mxCell id="sVejFx8yL5esK1ZOAj3X-6" value="Dart &amp;amp; Tarantool module propcess" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;" vertex="1" parent="1">
           <mxGeometry x="-510" y="588" width="1191" height="439" as="geometry" />
+        </mxCell>
+        <mxCell id="sVejFx8yL5esK1ZOAj3X-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sVejFx8yL5esK1ZOAj3X-39" target="sVejFx8yL5esK1ZOAj3X-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sVejFx8yL5esK1ZOAj3X-42" value="Call" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="sVejFx8yL5esK1ZOAj3X-40">
+          <mxGeometry x="-0.4687" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sVejFx8yL5esK1ZOAj3X-39" value="User code" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="-82" y="665" width="153" height="155" as="geometry" />
         </mxCell>
         <mxCell id="sVejFx8yL5esK1ZOAj3X-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="sVejFx8yL5esK1ZOAj3X-5" target="sVejFx8yL5esK1ZOAj3X-8">
           <mxGeometry relative="1" as="geometry" />
@@ -18,8 +29,16 @@
         <mxCell id="sVejFx8yL5esK1ZOAj3X-5" value="Tarantool shared library" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="-249.81" y="858.5" width="181.62" height="76" as="geometry" />
         </mxCell>
+        <mxCell id="sVejFx8yL5esK1ZOAj3X-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sVejFx8yL5esK1ZOAj3X-8" target="sVejFx8yL5esK1ZOAj3X-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sVejFx8yL5esK1ZOAj3X-43" value="Call &amp;amp; Use" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="sVejFx8yL5esK1ZOAj3X-41">
+          <mxGeometry x="-0.2765" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="sVejFx8yL5esK1ZOAj3X-8" value="Dart VM" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-223" y="743" width="128" height="73" as="geometry" />
+          <mxGeometry x="-282" y="706" width="128" height="73" as="geometry" />
         </mxCell>
         <mxCell id="sVejFx8yL5esK1ZOAj3X-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="sVejFx8yL5esK1ZOAj3X-10" target="sVejFx8yL5esK1ZOAj3X-13">
           <mxGeometry relative="1" as="geometry" />
