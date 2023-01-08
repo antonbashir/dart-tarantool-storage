@@ -28,6 +28,38 @@ Dart Tarantool storage should helps with this need by combining Tarantool featur
 
 ![Main diagram](dart-tarantool-storage.svg)
 
+## Architecture
+
+Tarantool is using as shared library (.so) and running in separate single thread.
+
+Between Tarantool and Dart code existing ring buffer which transporting messages from Dart to Tarantool.
+
+After execution of message Tarantool thread will notify DartVM with Dart_Post. 
+
+Message structure: `{type,function,input,output,batch[{function,input,output,error}],error}`.
+
+* `type` - type or action of message
+* `function` - pointer to binding function which should be called in Tarantool thread and has access to Tarantool API
+* `input` - binding function argument
+* `output` - holder for function result
+* `error` - holder for Tarantool error which could happen during function calling
+* `batch` - array of structure simillar to message (for bulk execution of functions)
+
+### Message types
+* call
+* batch
+* begin
+* commit
+* rollback
+* stop
+
+### Message input variations
+* management request
+* space request
+* index request
+* index request
+
+
 # Installation
 
 
