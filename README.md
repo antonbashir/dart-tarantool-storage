@@ -7,21 +7,21 @@ The main goal of this library is to provide fast and strong database to Dart dev
 
 This repository contains fork of Tarantool Database (currently 2.8.4 version, will be updated to 2.11 after release).
 
-Currently there are a lot of local database solutions for Dart (Isaar, Hive, ObjectBox) and a lot of connectors to famous databases (such as  Redis, Postgres, Mongo, .etc).
+Currently, there are a lot of local database solutions for Dart (Isaar, Hive, ObjectBox) and a lot of connectors to commonly used databases (such as  Redis, Postgres, Mongo, .etc) as well.
 
-But also exists need of predictable and controllable data storage solution with freedom of customization of data processing logic. 
+But also there is a need of predictable and controllable data storage solution with ability of data processing logic customization. 
 
-Dart Tarantool storage should helps with this need by combining Tarantool features and Dart language features.
+Dart Tarantool storage should satisfy these needs by combining Tarantool features and Dart language features.
 
 ## About Tarantool
 * [Tarantool Documentation](https://tarantool.io/en/doc)
 
 ### Features
-* schema and schemaless per space
-* speed
-* in-memory and disk engines per space
-* asynchronouse replication and synchronous replication with raft and auto leader election
-* fluent and predictable data processing (you write code in procedural style which is working with your data)
+* schemed or schemaless per space
+* fast
+* in-memory or disk engines per space
+* asynchronous or synchronous replication modes with raft and automatic leader election
+* fluent and predictable data processing: you write your data processing code in procedural style
 * transactional
 * (after 2.10) MVCC and interactive (stream) transactions - currently not supported in this library
 * [sharding](https://www.tarantool.io/en/doc/latest/reference/reference_rock/vshard/) - currently not supported in this library
@@ -35,20 +35,20 @@ Dart Tarantool storage should helps with this need by combining Tarantool featur
 
 ## Processing
 
-Tarantool is using as shared library (.so) and running in separate single thread.
+Tarantool is used as shared library (.so) and running in separate single thread.
 
-Between Tarantool and Dart code existing ring buffer which transporting messages from Dart to Tarantool.
+Circular buffer between Tarantool and Dart code is used to transport messages from Dart to Tarantool.
 
 After execution of message Tarantool thread will notify DartVM with Dart_Post. 
 
 Message structure: `{type,function,input,output,batch[{function,input,output,error}],error}`.
 
-* `type` - type or action of message
+* `type` - type of message
 * `function` - pointer to binding function which should be called in Tarantool thread and has access to Tarantool API
 * `input` - binding function argument
 * `output` - holder for function result
 * `error` - holder for Tarantool error which could happen during function calling
-* `batch` - array of structure simillar to message (for bulk execution of functions)
+* `batch` - array of structures similar to message (for bulk execution of functions)
 
 ### Message types
 * call - calling function on Tarantool thread with access to Tarantool API
@@ -60,14 +60,14 @@ Message structure: `{type,function,input,output,batch[{function,input,output,err
 
 ### Message input variations
 * management request - operations for manage Tarantool, for example initialize, shutdown, .etc 
-* space request - data operations for space, usally contains space id
-* index request - data operations for index, usally contains space id and index id
-* iterator next request - get next element by iterator
+* space request - data operations for space, usually contains space id
+* index request - data operations for index, usually contains space id and index id
+* iterator next request - get next element of iterator
 * execution request - execute Lua or Native function on Tarantool thread with access to Tarantool API
 
 # Installation & Usage
 
-### Steps for usage
+### Quick start
 
 1. Create Dart project with pubspec.yaml
 2. Add this section to dependencies:
@@ -87,7 +87,7 @@ You can find simple example [here](https://github.com/antonbashir/dart-tarantool
 
 ## Management
 
-For initialize and boot library use `Storage.boot()`.
+To initialize and boot library use `Storage.boot()`.
 
 You can provide bootstrap lua script, change configuration and also provide initial user which will be used for replication.
 
@@ -99,33 +99,33 @@ They are loading from root file `storage.lua`.
 
 You can write custom code in the end of that file or in `module.lua` file. 
 
-All Tarantool Lua API is available for usage.
+All of Tarantool Lua APIs are available for usage.
 
 For execution of custom Lua functions you can use `StorageExecutor.lua`.
 
 ## Native custom modules
 There are native header files in `native` directory.
 
-They are compiling during run `dart run tarantool_storage:compile`.
+You can compile them using `dart run tarantool_storage:compile`.
 
 You can write custom definitions in `module.h` file and create `module.c` for implementations.
 
-All Tarantool Native API is available for usage in your functions.
+All of Tarantool Native APIs are available for usage in your functions.
 
 For execution of custom Native functions you can use `StorageExecutor.native`.
 
 ## Reloading
-If specify `activateReloader` in `Storage.boot` function Tarantool will reload Native and Lua modules when received SIGHUP signal.
+If `activateReloader` in `Storage.boot` function is specified, Tarantool will reload Native and Lua modules on receiving SIGHUP signal.
 
 So you can change Lua scripts or Native files (and recompile them) and your changes will be applied after SIGHUP. 
 
 ## Packaging
 
-If you want distribute your module then run `dart run tarantool_storage:pack ${path to main dart file}`.
+If you want to distribute your module, run `dart run tarantool_storage:pack ${path to main dart file}`.
 
 This command will recompile Native files and create `${directory name}.tar.gz` archive with executables, libraries and lua scripts. 
 
-After it you can transfer archive to whatever place you want, unarchive it and run `module.exe`.
+After this you can transfer archive to whatever place you want, unarchive it and run `module.exe`.
 
 # API
 
@@ -335,12 +335,12 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 # Limitations
 
 * Linux only
-* Currently not supported Tarantool VShard but you still can use it by writing lua code to `module.lua`
-* Currently not tested Tarantool MVCC but you can enable it by configuration
-* Currently tested only on x86 proccessors, arm and other not tested but could work
-* Not production tested, current version be just coded and tested by function unit tests, possible bug
-* Restart requires restart of process because Tarantool can't be fully shutdown and some stuff stays in memory
-* Full size of static build of library is 70mb which could be critical for embedded or mobile devices
+* Currently, Tarantool VShard is not supported, but you still can use it by writing lua code to `module.lua`
+* Currently, Tarantool MVCC is not tested, but you can enable it by configuration
+* Currently, tested only on x86 architecture, arm and others are not tested but could work
+* Not production tested, current version is coded and tested by function unit tests, bugs are possible
+* Process restart required to restart Tarantool, because it can't be fully shutdown programmatically and some stuff stays in memory
+* Full size of library static build is 70mb which could be critical for embedded or mobile devices
 
 # Further work
 
