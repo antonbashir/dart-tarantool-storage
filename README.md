@@ -80,13 +80,41 @@ Message structure: `{type,function,input,output,batch[{function,input,output,err
 
 ## Sample
 
+You can find simple example [here](https://github.com/antonbashir/dart-tarantool-sample)
+
 ## Management
+
+For initialize and boot library use `Storage.boot()`.
+
+You can provide bootstrap lua script, change configuration and also provide initial user which will be used for replication.
 
 ## Lua custom modules
 
+There are Lua files in `lua` directory.
+
+They are loading from root file `storage.lua`.
+
+You can write custom code in the end of that file or in `module.lua` file. 
+
+All Tarantool Lua API is available for usage.
+
+For execution of custom Lua functions you can use `StorageExecutor.lua`.
+
 ## Native custom modules
+There are native header files in `native` directory.
+
+They are compiling during run `dart run tarantool_storage:compile`.
+
+You can write custom definitions in `module.h` file and create `module.c` for implementations.
+
+All Tarantool Native API is available for usage in your functions.
+
+For execution of custom Native functions you can use `StorageExecutor.native`.
 
 ## Reloading
+If specify `activateReloader` in `Storage.boot` function Tarantool will reload Native and Lua modules when received SIGHUP signal.
+
+So you can change Lua scripts or Native files (and recompile them) and your changes will be applied after SIGHUP. 
 
 # API
 
@@ -117,6 +145,7 @@ Latest benchmark results (count of entities - 1M, single dart Isolate):
 * Currently tested only on x86 proccessors, arm and other not tested but could work
 * Not production tested, current version be just coded and tested by function unit tests, possible bug
 * Restart requires restart of process because Tarantool can't be fully shutdown and some stuff stays in memory
+* Full size of static build of library is 70mb which could be critical for embedded or mobile devices
 
 # Further work
 
