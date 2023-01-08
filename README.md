@@ -26,9 +26,11 @@ Dart Tarantool storage should helps with this need by combining Tarantool featur
 
 # Idea and concepts
 
+## Architecture
+
 ![Main diagram](dart-tarantool-storage.svg)
 
-## Architecture
+## Processing
 
 Tarantool is using as shared library (.so) and running in separate single thread.
 
