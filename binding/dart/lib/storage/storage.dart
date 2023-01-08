@@ -103,8 +103,6 @@ class Storage {
     _loadedModulesByPath.entries.forEach((entry) => _loadedModulesByPath[entry.key] = entry.value._reload());
     if (_hasStorageLuaModule) await executor.lua.call(LuaExpressions.reload);
   }
-
-  void execute(void Function(StorageExecutor executor) executor) => executor(_executor);
 }
 
 class StorageNativeModule {
@@ -117,7 +115,7 @@ class StorageNativeModule {
   static StorageNativeModule _loadByFile(String library) => StorageNativeModule._(
         library,
         library,
-        Platform.isLinux ? DynamicLibrary.open(library) : throw UnsupportedError(loadError),
+        Platform.isLinux ? DynamicLibrary.open(library) : throw UnsupportedError(library),
       );
 
   static StorageNativeModule _loadByName(String name) {
@@ -126,16 +124,16 @@ class StorageNativeModule {
       return StorageNativeModule._(
         Directory.current.path + slash + name,
         Directory.current.path + slash + name,
-        Platform.isLinux ? DynamicLibrary.open(name) : throw UnsupportedError(loadError),
+        Platform.isLinux ? DynamicLibrary.open(name) : throw UnsupportedError(Directory.current.path + slash + name),
       );
     } on ArgumentError {
       final projectRoot = findProjectRoot();
-      if (projectRoot == null) throw UnsupportedError(loadError);
+      if (projectRoot == null) throw UnsupportedError(Directory.current.path + slash + name);
       final libraryFile = File(projectRoot + Directories.native + slash + name);
       if (libraryFile.existsSync()) {
         return StorageNativeModule._(name, libraryFile.path, DynamicLibrary.open(libraryFile.path));
       }
-      throw UnsupportedError(loadError);
+      throw UnsupportedError(loadError(libraryFile.absolute.path));
     }
   }
 

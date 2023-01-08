@@ -23,7 +23,7 @@ const awaitTransactionDuration = Duration(milliseconds: 1);
 
 const packageConfigJsonFile = "package_config.json";
 
-const loadError = "Unable to load Tarantool binding library";
+String loadError(path) => "Unable to load library ${path}";
 
 const dlCloseFunction = 'dlclose';
 

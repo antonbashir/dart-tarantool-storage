@@ -130,7 +130,61 @@ After it you can transfer archive to whatever place you want, unarchive it and r
 # API
 
 ## Storage
-## Schema
+* `Future<void> boot(StorageBootstrapScript script, StorageMessageLoopConfiguration loop, {StorageBootConfiguration? boot, activateReloader = false}) async`
+* `bool mutable()`
+* `bool initialized()`
+* `Future<void> awaitInitialized()`
+* `Future<void> awaitImmutable()`
+* `Future<void> awaitMutable()`
+* `void shutdown()`
+* `void close()`
+* `StorageNativeModule loadModuleByPath(String libraryPath)`
+* `StorageNativeModule loadModuleByName(String libraryName)`
+* `Future<void> reload() async`
+
+## Schema - StorageSchema
+* `StorageSpace spaceById(int id)`
+* `Future<StorageSpace> spaceByName(String name)`
+* `Future<int> spaceId(String space)`
+* `Future<bool> spaceExists(String space)`
+* `Future<StorageIndex> indexByName(String spaceName, String indexName)`
+* `Future<bool> indexExists(int spaceId, String indexName)`
+* `StorageIndex indexById(int spaceId, int indexId)`
+* `Future<int> indexId(int spaceId, String index)`
+* ```Future<void> createSpace(
+    String name, {
+    StorageEngine? engine,
+    int? fieldCount,
+    List<StorageSpaceField>? format,
+    int? id,
+    bool? ifNotExists,
+    bool? local,
+    bool? synchronous,
+    bool? temporary,
+    String? user,
+  })```
+* ``` Future<void> alterSpace(
+    String name, {
+    int? fieldCount,
+    List<StorageSpaceField>? format,
+    bool? synchronous,
+    bool? temporary,
+    String? user,
+  })```
+* `Future<void> renameSpace(String from, String to)`
+* `Future<void> dropSpace(String name)`
+* ```Future<void> createIndex(
+    String spaceName,
+    String indexName, {
+    IndexType? type,
+    int? id,
+    bool? unique,
+    bool? ifNotExists,
+    List<StorageIndexPart>? parts,
+  })```
+* `Future<void> alterIndex(String spaceName, String indexName, {List<StorageIndexPart>? parts})`
+* 
+
 ## Space
 ## Index
 ## Iterator

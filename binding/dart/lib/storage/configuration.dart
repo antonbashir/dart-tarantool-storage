@@ -10,7 +10,7 @@ class StorageConfiguration {
 
   const StorageConfiguration(this._configurationMap);
 
-  int? get listen => _configurationMap[ConfigurationKeys.listen];
+  String? get listen => _configurationMap[ConfigurationKeys.listen];
   int get memtxMemory => _configurationMap[ConfigurationKeys.memtxMemory];
   bool get stripCore => _configurationMap[ConfigurationKeys.stripCore];
   int get memtxMinTupleSize => _configurationMap[ConfigurationKeys.memtxMinTupleSize];
@@ -79,7 +79,7 @@ class StorageConfiguration {
   String get log => _configurationMap[ConfigurationKeys.log] ?? empty;
 
   StorageConfiguration copyWith(
-      {int? listen,
+      {String? listen,
       int? memtxMemory,
       bool? stripCore,
       int? memtxMinTupleSize,
@@ -147,7 +147,7 @@ class StorageConfiguration {
       int? logLevel,
       String? log}) {
     final copy = {..._configurationMap};
-    copy[ConfigurationKeys.listen] = listen ?? _configurationMap[ConfigurationKeys.listen];
+    copy[ConfigurationKeys.listen] = listen?.quotted ?? _configurationMap[ConfigurationKeys.listen];
     copy[ConfigurationKeys.memtxMemory] = memtxMemory ?? _configurationMap[ConfigurationKeys.memtxMemory];
     copy[ConfigurationKeys.stripCore] = stripCore ?? _configurationMap[ConfigurationKeys.stripCore];
     copy[ConfigurationKeys.memtxMinTupleSize] = memtxMinTupleSize ?? _configurationMap[ConfigurationKeys.memtxMinTupleSize];
