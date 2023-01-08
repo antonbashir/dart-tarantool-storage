@@ -1,4 +1,3 @@
-
 import '../executor/executor.dart';
 
 class StorageIterator {
@@ -7,7 +6,7 @@ class StorageIterator {
 
   const StorageIterator(this._executor, this.iterator);
 
-  Future<List<dynamic>?> next() => _executor.next(this);
+  Future<List<List<dynamic>>?> next({int count = 1}) => _executor.next(this, count);
 
   Future<void> destroy() => _executor.destroyIterator(this);
 
@@ -16,8 +15,15 @@ class StorageIterator {
     dynamic Function(List<dynamic> value)? map,
     int? limit,
     int? offset,
+    int count = 1,
   }) =>
-      stream(filter: filter, map: map, limit: limit, offset: offset).toList();
+      stream(
+        filter: filter,
+        map: map,
+        limit: limit,
+        offset: offset,
+        count: count,
+      ).toList();
 
   Future<void> forEach(
     void Function(dynamic element) action, {
@@ -25,40 +31,56 @@ class StorageIterator {
     dynamic Function(List<dynamic> value)? map,
     int? limit,
     int? offset,
+    int count = 1,
   }) =>
-      stream(filter: filter, map: map, limit: limit, offset: offset).forEach(action);
+      stream(
+        filter: filter,
+        map: map,
+        limit: limit,
+        offset: offset,
+        count: count,
+      ).forEach(action);
 
   Stream<dynamic> stream({
     bool Function(List<dynamic> value)? filter,
     dynamic Function(List<dynamic> value)? map,
     int? limit,
     int? offset,
+    int count = 1,
   }) async* {
     var index = 0;
     if (filter == null) {
-      List<dynamic>? value;
-      while ((value = await _executor.next(this)) != null) {
+      List<List<dynamic>>? tuples;
+      while ((tuples = await _executor.next(this, count)) != null) {
         if (offset != null && index <= offset) {
-          index++;
+          index += count;
           continue;
         }
         if (limit != null && index > limit) return;
-        index++;
-        yield (map == null ? value : map(value!));
+        index += count;
+        for (List<dynamic> tuple in tuples!) {
+          yield (map == null ? tuple : map(tuple));
+        }
       }
       await destroy();
       return;
     }
-    List<dynamic>? value;
-    while ((value = await _executor.next(this)) != null) {
+    List<List<dynamic>>? tuples;
+    while ((tuples = await _executor.next(this, count)) != null) {
       if (offset != null && index <= offset) {
-        index++;
+        index += count;
         continue;
       }
-      if (!filter(value!)) continue;
+      List<dynamic> filtered = [];
+      for (List<dynamic> tuple in tuples!) {
+        if (filter(tuple)) filtered.add(tuple);
+      }
+      if (filtered.isEmpty) continue;
       if (limit != null && index > limit) return;
-      index++;
-      yield (map == null ? value : map(value));
+      index += filtered.length;
+      for (List<dynamic> tuple in tuples) {
+        yield (map == null ? tuple : map(tuple));
+      }
     }
     await destroy();
   }

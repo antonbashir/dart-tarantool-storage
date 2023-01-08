@@ -417,14 +417,27 @@ tarantool_tuple_t *tarantool_index_update(tarantool_index_update_request_t *requ
   return tarantool_tuple_from_box(result);
 }
 
-tarantool_tuple_t *tarantool_iterator_next(intptr_t iterator)
+tarantool_tuple_t *tarantool_iterator_next(tarantool_iterator_next_request_t *request)
 {
-  box_tuple_t *result;
-  if (unlikely(box_iterator_next((box_iterator_t *)iterator, &result) < 0))
+  struct port port;
+  port_c_create(&port);
+  uint32_t found = 0;
+  while (found < request->count)
   {
-    return NULL;
+    box_tuple_t *tuple;
+    if (unlikely(box_iterator_next((box_iterator_t *)request->iterator, &tuple) < 0 || !tuple))
+    {
+      port_destroy(&port);
+      return NULL;
+    }
+    if (unlikely(port_c_add_tuple(&port, tuple)))
+    {
+      port_destroy(&port);
+      return NULL;
+    }
+    found++;
   }
-  return tarantool_tuple_from_box(result);
+  return tarantool_tuple_from_port((struct port_c*)&port);
 }
 
 void tarantool_iterator_destroy(intptr_t iterator)

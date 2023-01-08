@@ -60,6 +60,12 @@ extern "C"
     tarantool_tuple_t *key;
   } tarantool_space_iterator_request_t;
 
+  typedef struct tarantool_iterator_next_request_t
+  {
+    intptr_t iterator;
+    int count;
+  } tarantool_iterator_next_request_t;
+
   typedef struct tarantool_index_request_t
   {
     uint32_t space_id;
@@ -185,7 +191,7 @@ extern "C"
   tarantool_tuple_t *tarantool_index_select(tarantool_index_select_request_t *request);
   tarantool_tuple_t *tarantool_index_update(tarantool_index_update_request_t *request);
 
-  tarantool_tuple_t *tarantool_iterator_next(intptr_t iterator);
+  tarantool_tuple_t *tarantool_iterator_next(tarantool_iterator_next_request_t* request);
   void tarantool_iterator_destroy(intptr_t iterator);
   
   void tarantool_tuple_free(tarantool_tuple_t* tuple);

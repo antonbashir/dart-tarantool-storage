@@ -37,12 +37,22 @@ class StorageExecutor {
 
   StorageLuaExecutor get lua => _lua;
 
-  Future<List<dynamic>?> next(StorageIterator iterator) {
+  Future<List<List<dynamic>>?> next(StorageIterator iterator, int count) {
     Pointer<tarantool_message_t> message = calloc<tarantool_message_t>();
     message.ref.type = tarantool_message_type.TARANTOOL_MESSAGE_CALL;
     message.ref.function = _bindings.addresses.tarantool_iterator_next.cast();
-    message.ref.input = Pointer.fromAddress(iterator.iterator).cast();
-    return sendSingle(message, freeInput: false).then((pointer) => pointer == nullptr ? null : _descriptor.read(Pointer.fromAddress(pointer.address).cast()));
+    final request = calloc<tarantool_iterator_next_request_t>();
+    request.ref.iterator = iterator.iterator;
+    request.ref.count = count;
+    message.ref.input = request.cast();
+    return sendSingle(message, freeInput: true).then((pointer) => pointer == nullptr ? null : _descriptor.read(Pointer.fromAddress(pointer.address).cast())).then((tuplesContainer) {
+      if (tuplesContainer == null) return null;
+      List<List<dynamic>> tuples = [];
+      for (var tuple in tuplesContainer) {
+        tuples.add(tuple);
+      }
+      return tuples;
+    });
   }
 
   Future<void> destroyIterator(StorageIterator iterator) {

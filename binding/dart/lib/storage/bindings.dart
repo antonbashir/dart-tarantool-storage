@@ -6673,19 +6673,21 @@ class TarantoolBindings {
           ffi.Pointer<tarantool_index_update_request_t>)>();
 
   ffi.Pointer<tarantool_tuple_t> tarantool_iterator_next(
-    int iterator,
+    ffi.Pointer<tarantool_iterator_next_request_t> request,
   ) {
     return _tarantool_iterator_next(
-      iterator,
+      request,
     );
   }
 
   late final _tarantool_iterator_nextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<tarantool_tuple_t> Function(
-              ffi.IntPtr)>>('tarantool_iterator_next');
-  late final _tarantool_iterator_next = _tarantool_iterator_nextPtr
-      .asFunction<ffi.Pointer<tarantool_tuple_t> Function(int)>();
+          ffi.NativeFunction<
+              ffi.Pointer<tarantool_tuple_t> Function(
+                  ffi.Pointer<tarantool_iterator_next_request_t>)>>(
+      'tarantool_iterator_next');
+  late final _tarantool_iterator_next = _tarantool_iterator_nextPtr.asFunction<
+      ffi.Pointer<tarantool_tuple_t> Function(
+          ffi.Pointer<tarantool_iterator_next_request_t>)>();
 
   void tarantool_iterator_destroy(
     int iterator,
@@ -7838,7 +7840,8 @@ class _SymbolAddresses {
       get tarantool_index_update => _library._tarantool_index_updatePtr;
   ffi.Pointer<
           ffi.NativeFunction<
-              ffi.Pointer<tarantool_tuple_t> Function(ffi.IntPtr)>>
+              ffi.Pointer<tarantool_tuple_t> Function(
+                  ffi.Pointer<tarantool_iterator_next_request_t>)>>
       get tarantool_iterator_next => _library._tarantool_iterator_nextPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>
       get tarantool_iterator_destroy => _library._tarantool_iterator_destroyPtr;
@@ -8722,6 +8725,14 @@ class tarantool_space_iterator_request_t extends ffi.Struct {
   external int type;
 
   external ffi.Pointer<tarantool_tuple_t> key;
+}
+
+class tarantool_iterator_next_request_t extends ffi.Struct {
+  @ffi.IntPtr()
+  external int iterator;
+
+  @ffi.Int()
+  external int count;
 }
 
 class tarantool_index_request_t extends ffi.Struct {

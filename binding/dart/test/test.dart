@@ -20,6 +20,20 @@ void main() {
     Directory.current.listSync().forEach((element) {
       if (element.path.contains("00000")) element.deleteSync();
     });
+    final compileResult = Process.runSync(
+      "dart",
+      [
+        "compile",
+        "exe",
+        "${Directory.current.path}/test/replica.dart",
+      ],
+      runInShell: true,
+    );
+    if (compileResult.exitCode != 0) {
+      print(compileResult.stderr);
+      print(compileResult.stdout);
+      fail("Replica compilation failed");
+    }
     _storage = await Storage()
       ..boot(
         StorageBootstrapScript(StorageDefaults.storage())
@@ -235,7 +249,8 @@ Future<void> testExecuteNative() async => expect((await _executor.native.call(_s
 
 Future<void> testIterator() async {
   await Future.wait(testMultipleData.map(_space.insert));
-  expect(await (await _space.iterator()).next(), equals(testMultipleData[0]));
+  expect((await (await _space.iterator()).next(count: 1))!.length, 1);
+  expect((await (await _space.iterator()).next())!.first, equals(testMultipleData[0]));
   expect(await (await _space.iterator()).collect(), equals(testMultipleData));
   expect(await (await _index.iterator()).collect(), equals(testMultipleData));
   expect(
@@ -296,10 +311,8 @@ Future<void> testMultiIsolateTransactionalInsert() async {
 
 Future<void> testReplication() async {
   final first = Process.run(
-      "dart",
+      "${Directory.current.path}/test/replica.exe",
       [
-        "run",
-        "${Directory.current.path}/test/replica.dart",
         "3302",
         "3302",
         "3303",
@@ -308,10 +321,8 @@ Future<void> testReplication() async {
       runInShell: true);
   await Future.delayed(Duration(seconds: 1));
   final second = Process.run(
-      "dart",
+      "${Directory.current.path}/test/replica.exe",
       [
-        "run",
-        "${Directory.current.path}/test/replica.dart",
         "3303",
         "3302",
         "3303",
@@ -320,10 +331,8 @@ Future<void> testReplication() async {
       runInShell: true);
   await Future.delayed(Duration(seconds: 1));
   final third = Process.run(
-      "dart",
+      "${Directory.current.path}/test/replica.exe",
       [
-        "run",
-        "${Directory.current.path}/test/replica.dart",
         "3304",
         "3302",
         "3303",
@@ -331,9 +340,5 @@ Future<void> testReplication() async {
       ],
       runInShell: true);
   await Future.delayed(Duration(seconds: 1));
-  (await Future.wait([first, second, third])).forEach((process) {
-    print(process.stdout);
-    print(process.stderr);
-    expect(process.exitCode, equals(0));
-  });
+  (await Future.wait([first, second, third])).forEach((process) => expect(process.exitCode, equals(0)));
 }

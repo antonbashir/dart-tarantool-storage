@@ -136,7 +136,7 @@ void tarantool_message_loop_start(tarantool_message_loop_configuration_t *config
   while (likely(active))
   {
     tarantool_message_t *message;
-    if (likely(ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message)))
+    if (ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message))
     {
       current_empty_cycles = 0;
       curent_empty_cycles_limit = initial_empty_cycles;
