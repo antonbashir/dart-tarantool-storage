@@ -443,32 +443,72 @@ After this you can transfer archive to whatever place you want, unarchive it and
 ## Batch
 
 ### StorageBatchSpaceBuilder
-* `void insert(List<dynamic> data)`
-* `void put(List<dynamic> data)`
-* `void put(List<dynamic> data)`
-* `void delete(List<dynamic> data)`
-* `void update(List<dynamic> key, List<StorageUpdateOperation> operations)`
-* `void upsert(List<dynamic> tuple, List<StorageUpdateOperation> operations)`
-* `void insertMany(List<List<dynamic>> data)`
-* `void putMany(List<List<dynamic>> data)`
-* `void putMany(List<List<dynamic>> data)`
-* `void deleteMany(List<List<dynamic>> data)`
+### `insert()`
+* `List<dynamic> data`
+
+### `put()`
+* `List<dynamic> data`
+
+### `put()`
+* `List<dynamic> data`
+
+### `delete()`
+* `List<dynamic> data`
+
+### `update()`
+* `List<dynamic> key, List<StorageUpdateOperation> operations`
+
+### `upsert()`
+* `List<dynamic> tuple, List<StorageUpdateOperation> operations`
+
+### `insertMany()`
+* `List<List<dynamic>> data`
+
+### `putMany()`
+* `List<List<dynamic>> data`
+
+### `putMany()`
+* `List<List<dynamic>> data`
+
+### `deleteMany()`
+* `List<List<dynamic>> data`
+
 
 ### StorageBatchIndexBuilder
-* `void update(List<dynamic> key, List<StorageUpdateOperation> operations)`
+### `update()`
+* `List<dynamic> key, List<StorageUpdateOperation> operations`
 
 ## Lua - StorageLuaExecutor
-* `Future<void> startBackup()`
-* `Future<void> stopBackup()`
-* `Future<void> promote()`
-* `Future<void> configure(StorageConfiguration configuration)`
-* `Future<List<dynamic>> script(String expression, {List<dynamic> arguments = const []})`
-* `Future<void> file(File file)`
-* `Future<void> require(String module)`
-* `Future<List<dynamic>> call(String function, {List<dynamic> arguments = const []})`
+### [async] `<startBackup()`
+
+### [async] `<stopBackup()`
+
+### [async] `<promote()`
+
+### [async] `configure()`
+* `StorageConfiguration configuration`
+
+### [async] `script()`
+* `String expression`
+* [optional] `List<dynamic> arguments`
+* [return] `List<dynamic>`
+
+### [async] `file()`
+* `File file`
+
+### [async] `require()`
+* `String module`
+
+### [async] `call()`
+* `String function`
+* [optional] `List<dynamic> arguments`
+* [return] `List<dynamic>`
 
 ## Native - StorageNativeExecutor
-`Future<Pointer<Void>> call(tarantool_function function, {tarantool_function_argument? argument})`
+### [async] `call()`
+* `tarantool_function function`
+* [optional] `tarantool_function_argument argument`
+* [return] `Pointer<Void>`
 
 # Configuration
 
