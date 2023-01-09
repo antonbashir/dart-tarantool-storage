@@ -82,7 +82,7 @@ class StorageSchema {
 
   StorageSpace spaceById(int id) => StorageSpace(_bindings, _executor, id, _descriptor);
 
-  Future<StorageSpace> spaceByName(String name) => spaceId(name).then((id) => StorageSpace(_bindings, _executor, id, _descriptor));
+  Future<StorageSpace> spaceByName(String space) => spaceId(space).then((id) => StorageSpace(_bindings, _executor, id, _descriptor));
 
   Future<int> spaceId(String space) {
     Pointer<tarantool_message_t> message = calloc<tarantool_message_t>();
@@ -220,8 +220,8 @@ class StorageSchema {
   Future<bool> userExists(String name) => _executor.lua.call(LuaExpressions.userExists, arguments: [name]).then((value) => value.first);
 
   Future<void> grantUser(
-    String name, {
-    required String privileges,
+    String name,
+    String privileges, {
     String? objectType,
     String? objectName,
     String? roleName,
@@ -243,8 +243,8 @@ class StorageSchema {
   }
 
   Future<void> revokeUser(
-    String name, {
-    required String privileges,
+    String name,
+    String privileges, {
     String? objectType,
     String? objectName,
     String? roleName,

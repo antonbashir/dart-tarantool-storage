@@ -186,17 +186,17 @@ Future<void> testSchema() async {
 
   await _executor.schema.createUser("test-user", "test-password", ifNotExists: true);
   expect(await _executor.schema.userExists("test-user"), isTrue);
-  await _executor.schema.grantUser("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
+  await _executor.schema.grantUser("test-user",  "read", objectType: "space", objectName: "test", ifNotExists: true);
   try {
-    await _executor.schema.grantUser("test-user", privileges: "write", objectType: "universe");
+    await _executor.schema.grantUser("test-user", "write", objectType: "universe");
   } catch (error) {
     expect(
       error,
       predicate((exception) => exception is StorageExecutionException && exception.toString() == "User 'test-user' already has write access on universe"),
     );
   }
-  await _executor.schema.revokeUser("test-user", privileges: "read", objectType: "space", objectName: "test", ifNotExists: true);
-  await _executor.schema.revokeUser("test-user", privileges: "write", objectType: "universe", ifNotExists: true);
+  await _executor.schema.revokeUser("test-user", "read", objectType: "space", objectName: "test", ifNotExists: true);
+  await _executor.schema.revokeUser("test-user", "write", objectType: "universe", ifNotExists: true);
   await _executor.schema.dropUser("test-user");
   expect(await _executor.schema.userExists("test-user"), isFalse);
 
