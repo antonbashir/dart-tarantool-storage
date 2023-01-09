@@ -130,84 +130,84 @@ After this you can transfer archive to whatever place you want, unarchive it and
 
 ## Storage
 
-### [async] `boot()` -
-* `StorageBootstrapScript script` -
-* `StorageMessageLoopConfiguration loop` -
-* [optional] `StorageBootConfiguration boot` -
-* [optional] `bool activateReloader` -
+### [async] `boot()` - Initializing and bootstraping Tarantool and binding library components
+* `StorageBootstrapScript script` - Initial Lua script representation
+* `StorageMessageLoopConfiguration loop` - [See](#StorageMessageLoopConfiguration) 
+* [optional] `StorageBootConfiguration boot` - [See](#StorageBootConfiguration)
+* [optional] `bool activateReloader` - Activates Tarantool reloading 
 
-### `mutable()`
-* [return] `bool` - 
+### `mutable()`  - Checking that Tarantool is not read only
+* [return] `bool` - True if Tarantool is available for writing
 
-### `initialized()`
-* [return] `bool` - 
+### `initialized()` - Checking that Tarantool is read only
+* [return] `bool` - True if Tarantool is available for reading
 
-### [async] `awaitInitialized()` - 
+### [async] `awaitInitialized()` - Waiting for Tarantool initialization
 
-### [async] `awaitImmutable()`
+### [async] `awaitImmutable()` - Waiting for Tarantool is available for reading
 
-### [async] `awaitMutable()`
+### [async] `awaitMutable()` - Waiting for Tarantool is available for writing
 
-### `shutdown()` -
+### `shutdown()` - Shutdowning Tarantool and binding
 
-### `close()` -
+### `close()` - Closing Dart ports 
 
-### `loadModuleByPath()` -
-* `String libraryPath` -
-* [return] `StorageNativeModule` - 
+### `loadModuleByPath()` - Loading Native module by full path
+* `String libraryPath` - Module path
+* [return] `StorageNativeModule` - Loaded module instance
 
-### `loadModuleByName()`
-* `String libraryName`
-* [return] `StorageNativeModule`
+### `loadModuleByName()` - Loading Native module by name
+* `String libraryName` - Module name
+* [return] `StorageNativeModule` - Loaded module instance
 
-### `reload()`
+### `reload()` - Reloading Lua and Native modules
 
-### `executor`
+### `executor` - Provider for StorageExecutor
 
 ## Executor - StorageExecutor
 
-### [async] `next()`
-* `StorageIterator iterator`
-* `int count`
-* [return] `List<List<dynamic>>?`
+### [async] `next()` - Getting next element of the iterator
+* `StorageIterator iterator` - Input iterator
+* `int count` - Prefetch count. Binding can prefetch more tuples than 1 and combine it after return
+* [return] `List<List<dynamic>>?` - Tuples
 
-### [async] `destroyIterator()`
-* `StorageIterator iterator`
+### [async] `destroyIterator()` - Destroying Tarnatool iterator
+* `StorageIterator iterator` - Input iterator
 
-### [async] `begin()`
+### [async] `begin()` - Tarnatool transaction begin
 
-### [async] `commit()`
+### [async] `commit()` - Tarnatool transaction commit
 
-### [async] `rollback()`
+### [async] `rollback()` - Tarnatool transaction rollback
 
-### [async] `transactional()`
-* `Function(StorageExecutor executor) function`
+### [async] `transactional()` - Executing function inside Tarantool transaction
+* `Function(StorageExecutor executor) function` - Function which should be executed in transaction
 
-### `hasTransaction`
-* [return] `bool`
+### [async] `hasTransaction()` - Checking transaction status
+* [return] `bool` - True if inside transaction
 
 ## Schema - StorageSchema
 
-### [async] `spaceById()` -
-* `int id` -
-* [return] `StorageSpace` -
+### [async] `spaceById()` - Creating StorageSpace instance for space with id
+* `int id` - Input space id 
+* [return] `StorageSpace` - Created instance
 
-### [async] `spaceByName()` -
-* `String name` - 
-* [return] `StorageSpace` -
+### [async] `spaceByName()` - Creating StorageSpace instance for space with name
+* `String name` - Input space name
+* [return] `StorageSpace` - Created instance
 
-### [async] `spaceId()`
-* `String space` - 
-* [return] `int` -
+### [async] `spaceId()` - Getting space id by its name
+* `String space` - Input space name
+* [return] `int` - Received space id 
 
-### [async] `spaceExists()`
-* `String space`
-* [return] `bool`
+### [async] `spaceExists()` - Checking that space exists inside Tarantool
+* `String space` - Input space name
+* [return] `bool` - True if space exists
 
-### [async] `indexByName()`
-* `String spaceName`
-* `String indexName`
-* [return] `StorageIndex`
+### [async] `indexByName()` - Creating StorageIndex instance for space and index names
+* `String spaceName` - Input space name
+* `String indexName` - Input index name
+* [return] `StorageIndex` - Created instance
 
 ### [async] `indexExists()`
 * `int spaceId`
