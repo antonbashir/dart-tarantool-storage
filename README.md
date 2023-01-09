@@ -345,28 +345,28 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [optional] `List<dynamic> key` - Key to find tuple
 * [return] `List<dynamic>` - Received tuple
 
-### [async] `truncate()`
+### [async] `truncate()` - Truncating space
 
-### [async] `update()`
-* `List<dynamic> key`
-* `List<StorageUpdateOperation> operations`
-* [return] `List<dynamic>`
+### [async] `update()` - Updating space tuple by key with operations
+* `List<dynamic> key` - Tuple key
+* `List<StorageUpdateOperation> operations` - Update oeprations. [See](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/update/)
+* [return] `List<dynamic>` - Updated tuple
 
-### [async] `upsert()`
-* `List<dynamic> tuple`
-* `List<StorageUpdateOperation> operations`
-* [return] `List<dynamic>`
+### [async] `upsert()` - Updating with operations or inserting tuple in the space 
+* `List<dynamic> tuple` - Tuple
+* `List<StorageUpdateOperation> operations` - Update oeprations. [See](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/update/)
+* [return] `List<dynamic>` - Updated or inserted tuple
 
-### [async] `select()`
-* [optional] `List<dynamic`
-* [optional] `int offset`
-* [optional] `int limit`
-* [optional] `StorageIteratorType iteratorType`
-* [return] `List<dynamic>`
+### [async] `select()` - Selecting tuples from the space
+* [optional] `List<dynamic> key` - Selecting tuples only matched with key
+* [optional] `int offset` - Offset for selection
+* [optional] `int limit` - Limit for selection
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type
+* [return] `List<dynamic>` - Selected tuples
 
-### [async] `batch()`
-* `Function(StorageBatchSpaceBuilder builder) builder`
-* [return] `List<dynamic>`
+### [async] `batch()` - Batch operations provider
+* `Function(StorageBatchSpaceBuilder builder) builder` - Batch operations build
+* [return] `List<dynamic>` - Result tuple after batch execution
 
 ## Index - StorageIndex
 ### [async] `count()`
