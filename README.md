@@ -409,7 +409,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * `Function(StorageBatchIndexBuilder builder) builder`
 * [return] `List<dynamic>`
 
-## Iterator
+## Iterator - StorageIterator
 ### [async] `next()`
 * [optional] `count`
 * [return] `List<List<dynamic>>?`
