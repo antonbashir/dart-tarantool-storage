@@ -304,7 +304,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 ## Space - StorageSpace
 ### [async] `count()` - Counting tuples in the space
 * [optional] `List<dynamic> key` - Include in count only matched tuples by key
-* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/pairs/)
 * [return] `int` - Count of tuples
 
 ### [async] `isEmpty()` - Checking that space is empty
@@ -318,7 +318,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 
 ### [async] `iterator()` - Creating iterator for tuples ([see pairs](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/pairs/))
 * [optional] `List<dynamic> key` - Include only matched tuples by key
-* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/pairs/)
 * [return] `StorageIterator` - Created iterator instance
 
 ### [async] `insert()` - Inserting tuple into the space
@@ -361,82 +361,82 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [optional] `List<dynamic> key` - Selecting tuples only matched with key
 * [optional] `int offset` - Offset for selection
 * [optional] `int limit` - Limit for selection
-* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/pairs/)
 * [return] `List<dynamic>` - Selected tuples
 
 ### [async] `batch()` - Batch operations provider
-* `Function(StorageBatchSpaceBuilder builder) builder` - Batch operations build
+* `Function(StorageBatchSpaceBuilder builder) builder` - Batch operations builder
 * [return] `List<dynamic>` - Result tuple after batch execution
 
-## Index - StorageIndex
-### [async] `count()`
-* [optional] `List<dynamic> key`
-* [optional] `StorageIteratorType iteratorType`
-* [return] `int`
+## Index - StorageIndex 
+### [async] `count()` - Counting tuples in the space
+* [optional] `List<dynamic> key` - Include in count only matched tuples by key
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/pairs/)
+* [return] `int` - Count of tuples
 
-### [async] `iterator()`
-* [optional] `List<dynamic> key`
-* [optional] `StorageIteratorType iteratorType`
-* [return] `StorageIterator`
+### [async] `iterator()` - Creating iterator for tuples ([see pairs](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/pairs/))
+* [optional] `List<dynamic> key` - Include only matched tuples by key
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/pairs/)
+* [return] `StorageIterator` - Created iterator instance
 
-### [async] `delete()`
-* `List<dynamic> key`
+### [async] `delete()` - Deleting tuple from the space by index
+* `List<dynamic> key` - Key to find tuple for deletion
+* [return] `List<dynamic>` - Deleted tuple
+
+### [async] `min()` - Getting minimal tuple from the space
+* [optional] `List<dynamic> key` - Key to find tuple
+* [return] `List<dynamic>` - Received tuple
+
+### [async] `max()` - Getting maximal tuple from the space
+* [optional] `List<dynamic> key` - Key to find tuple
+* [return] `List<dynamic>`  - Received tuple
+
+### [async] `update()` - Updating space tuple by key with operations
+* `List<dynamic> key` - Tuple key
+* `List<StorageUpdateOperation> operations` - Update oeprations. [See](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/update/)
 * [return] `List<dynamic>`
 
-### [async] `min()`
-* [optional] `List<dynamic> key`
-* [return] `List<dynamic>`
+### [async] `select()` - Selecting tuples from the space
+* [optional] `List<dynamic` - Selecting tuples only matched with key
+* [optional] `int offset` - Offset for selection
+* [optional] `int limit` - Limit for selection
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/pairs/)
+* [return] `List<dynamic>` -  Selected tuples
 
-### [async] `max()`
-* [optional] `List<dynamic> key`
-* [return] `List<dynamic>`
-
-### [async] `update()`
-* `List<dynamic> key`
-* `List<StorageUpdateOperation> operations`
-* [return] `List<dynamic>`
-
-### [async] `select()`
-* [optional] `List<dynamic`
-* [optional] `int offset`
-* [optional] `int limit`
-* [optional] `StorageIteratorType iteratorType`
-* [return] `List<dynamic>`
-
-### [async] `batch()`
-* `Function(StorageBatchIndexBuilder builder) builder`
-* [return] `List<dynamic>`
+### [async] `batch()` - Batch operations provider
+* `Function(StorageBatchIndexBuilder builder) builder` - Batch operations builder
+* [return] `List<dynamic>` - Result tuple after batch execution
 
 ## Iterator - StorageIterator
-### [async] `next()`
-* [optional] `count`
-* [return] `List<List<dynamic>>?`
+### [async] `next()` - Getting next element of the iterator
+* [optional] `count` - Prefetch count. Binding can prefetch more tuples than 1 and combine it after return
+* [return] `List<List<dynamic>>?` - Tuples or null if iterator reached the end
 
-### [async] `destroy()`
+### [async] `destroy()` - Destroying Tarnatool iterator
 
-### [async] `collect()`
-* [optional] `bool Function(List<dynamic> value) filter`
-* [optional] `dynamic Function(List<dynamic> value) map`
-* [optional] `int limit`
-* [optional] `int offset`
-* [optional] `int count`
-* [return] `List<dynamic>`
+### [async] `collect()` - Collecting all elements by iterator
+* [optional] `bool Function(List<dynamic> value) filter` - Iterator filter
+* [optional] `dynamic Function(List<dynamic> value) map` - Iterator mapper
+* [optional] `int limit` - Iterator limit
+* [optional] `int offset` - Iterator offset
+* [optional] `int count` - Prefetch count. Binding can prefetch more tuples than 1 and combine it after return
+* [return] `List<dynamic>` - Collected tuples
 
-### [async] `forEach()`
-* `void Function(dynamic element) action`
-* [optional] `bool Function(List<dynamic> value) filter`
-* [optional] `dynamic Function(List<dynamic> value) map`
-* [optional] `int limit`
-* [optional] `int offset`
-* [optional] `int count`
+### [async] `forEach()` - Executing actin for all elements by iterator
+* `void Function(dynamic element) action` - Action on tuple
+* [optional] `bool Function(List<dynamic> value) filter` - Iterator filter
+* [optional] `dynamic Function(List<dynamic> value) map` - Iterator mapper
+* [optional] `int limit` - Iterator limit
+* [optional] `int offset` - Iterator offset
+* [optional] `int count`  - Prefetch count. Binding can prefetch more tuples than 1 and combine it after return
 
-### [async] `stream()`
-* [optional] `bool Function(List<dynamic> value) filter`
-* [optional] `dynamic Function(List<dynamic> value) map`
-* [optional] `int limit`
-* [optional] `int offset`
-* [optional] `int count`
-* [return] `Stream<dynamic>`
+### [async] `stream()` - Stream of tuples from iterator
+* [optional] `bool Function(List<dynamic> value) filter` - Iterator filter
+* [optional] `dynamic Function(List<dynamic> value) map` - Iterator mapper
+* [optional] `int limit` - Iterator limit
+* [optional] `int offset` - Iterator offset
+* [optional] `int count` - Prefetch count. Binding can prefetch more tuples than 1 and combine it after return
+* [return] `Stream<dynamic>` - Stream of tuples
 
 ## Batch
 ### StorageBatchSpaceBuilder
