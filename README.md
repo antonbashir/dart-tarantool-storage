@@ -514,19 +514,19 @@ After this you can transfer archive to whatever place you want, unarchive it and
 This class fully identical to [Tarantool configuration](https://www.tarantool.io/en/doc/latest/reference/configuration/)
 
 ## StorageMessageLoopConfiguration
-* `int boxOutputBufferCapacity` - 
-* `double messageLoopMaxSleepSeconds` - 
-* `int messageLoopRingSize` - 
-* `double messageLoopRegularSleepSeconds` - 
-* `int messageLoopMaxEmptyCycles` - 
-* `int messageLoopEmptyCyclesMultiplier` - 
-* `int messageLoopInitialEmptyCycles` - 
-* `int messageLoopRingRetryMaxCount` - 
+* `int boxOutputBufferCapacity` - Internal buffer initial capacity for some returing tuples
+* `double messageLoopMaxSleepSeconds` - Max count of seconds for binding message loop idle sleeping time
+* `int messageLoopRingSize` - Internal ring buffer size for all messages between Dart and Tarantool
+* `double messageLoopRegularSleepSeconds` - Count of seconds for binding message loop idle sleeping time before count of empty cycles reached maximum
+* `int messageLoopMaxEmptyCycles` - Maximum of empty cycles
+* `int messageLoopEmptyCyclesMultiplier` - Multiplier for empty cycles
+* `int messageLoopInitialEmptyCycles` - Initial count for empty cycles
+* `int messageLoopRingRetryMaxCount` - Maximum retry count during tries of returing message into queue (used in concurrent transactions)
 
 ## StorageBootConfiguration
-* `String user` -
-* `String password` -
-* `Duration delay` -
+* `String user` - Initial Tarantool user name
+* `String password` - Initial Tarantool user password
+* `Duration delay` - Delay after boot (could be usable for delay between replica bootstraps)
 
 ## StorageReplicationConfiguration
 
