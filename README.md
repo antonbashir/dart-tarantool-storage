@@ -441,7 +441,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [return] `Stream<dynamic>`
 
 ## Batch
-## `StorageBatchSpaceBuilder`
+### `StorageBatchSpaceBuilder`
 
 #### `insert()`
 * `List<dynamic> data`
