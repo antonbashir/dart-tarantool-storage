@@ -169,7 +169,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 ### [async] `next()` - Getting next element of the iterator
 * `StorageIterator iterator` - Input iterator
 * `int count` - Prefetch count. Binding can prefetch more tuples than 1 and combine it after return
-* [return] `List<List<dynamic>>?` - Tuples
+* [return] `List<List<dynamic>>?` - Tuples or null if iterator reached the end
 
 ### [async] `destroyIterator()` - Destroying Tarnatool iterator
 * `StorageIterator iterator` - Input iterator
@@ -230,7 +230,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [optional] `int fieldCount` - Space tuple fields count
 * [optional] `List<StorageSpaceField> format` - Space tuple format
 * [optional] `int id` - Space id
-* [optional] `bool ifNotExists` - If true then Tarantool will ignore space existence
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore space existence and update it
 * [optional] `bool local` - If true then space will not participate in replication
 * [optional] `bool synchronous` - If true then space operations will require synchronous commit
 * [optional] `bool temporary` - If true then space will be empty on every server restart
@@ -252,56 +252,54 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * `String name` - Space name
 
 ### [async] `createIndex()` - DDL operation for creating Tarantool index
-* `String spaceName` - Space name (owner of created index)
+* `String spaceName` - Space name (owner of creating index)
 * `String indexName` - Index name
 * [optional] `StorageIndexType type` - Index type (could be hash, set, tree, bitset, rtree)
 * [optional] `int id` - Index id
 * [optional] `bool unique` - If true then index should not contains duplicates
-* [optional] `bool ifNotExists` - If true then Tarantool will ignore index existence
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore index existence and update it
 * [optional] `List<StorageIndexPart> parts` - Index parts. Every part includes field number and field type
 
-### [async] `alterIndex()`
-* `String spaceName`
-* `String indexName` 
-* [optional] `List<StorageIndexPart> parts`
+### [async] `alterIndex()` - DDL operation for altering Tarantool index
+* `String spaceName` - Space name (owner of altering index)
+* `String indexName` - Index name
+* [optional] `List<StorageIndexPart> parts` - Index parts. Every part includes field number and field type
 
-### [async] `dropIndex()`
-* `String spaceName`
-* `String indexName`
+### [async] `dropIndex()` DDL operation for dropping Tarantool space
+* `String spaceName` - Space name (owner of dropping index)
+* `String indexName` - Index name
 
-### [async] `createUser()`
-* `String name`
-* `String password`
-* [optional] `bool ifNotExists`
+### [async] `createUser()` - DDL operation for creating Tarantool user
+* `String name` - User name
+* `String password` - User password
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore user existence and update it
 
-### [async] `dropUser()`
-* `String name`
+### [async] `dropUser()` - DDL operation for dropping Tarantool user
+* `String name` - User name
 
-### [async] `changePassword()`
-* `String name`
-* `String password`
+### [async] `changePassword()` - Changing Tarnatool user password
+* `String name` - User name
+* `String password` - New user password
 
+* [async] `userExists()` - Checking that Tarantool user exists
+* `String name` - User name
+* [return] `bool` - True if exists
 
-* [async] `userExists()`
-* `String name`
-* [return] `bool`
+### [async] `grantUser()` - DDL operation for granting Tarantool user permissions [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_schema/user_grant/)
+* `String name` - User name
+* `String privileges` - User privileges
+* [optional] `String objectType` - Permission object type
+* [optional]  `String objectName` - Permission object name
+* [optional] `String roleName` - User role
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore grant existence
 
-### [async] `grantUser()`
-* `String name`
-* `String privileges`
-* [optional] `String objectType`
-* [optional]  `String objectName`
-* [optional] `String roleName`
-* [optional] `bool ifNotExists`
-
-### [async] `revokeUser()`
-* `String name`
-* `String privileges`
-* [optional] `String objectType`
-* [optional] `String objectName`
-* [optional] `String roleName`
-* [optional] `bool universe`
-* [optional] `bool ifNotExists`
+### [async] `revokeUser()` - DDL operation for revoking Tarantool user permissions [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_schema/user_revoke/)
+* `String name` - User name
+* `String privileges` - User privileges
+* [optional] `String objectType` - Permission object type
+* [optional]  `String objectName` - Permission object name
+* [optional] `String roleName` - User role
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore grant existence
 
 ## Space - StorageSpace
 ### [async] `count()`

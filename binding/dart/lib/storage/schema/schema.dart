@@ -248,7 +248,6 @@ class StorageSchema {
     String? objectType,
     String? objectName,
     String? roleName,
-    bool? universe,
     bool? ifNotExists,
   }) {
     List<String> arguments = [name.quotted];
