@@ -477,36 +477,36 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * `List<dynamic> key, List<StorageUpdateOperation> operations`
 
 ## Lua - StorageLuaExecutor
-### [async] `startBackup()`
+### [async] `startBackup()` - Executing box.backup.start() [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_backup/start/)
 
-### [async] `stopBackup()`
+### [async] `stopBackup()` - Executing box.backup.stop() [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_backup/stop/)
 
-### [async] `promote()`
+### [async] `promote()` - Executing box.ctl.promote() [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_ctl/promote/)
 
-### [async] `configure()`
-* `StorageConfiguration configuration`
+### [async] `configure()` - Executing box.cfg{} [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_cfg/)
+* `StorageConfiguration configuration` - Tarantool Configuration
 
-### [async] `script()`
-* `String expression`
-* [optional] `List<dynamic> arguments`
-* [return] `List<dynamic>`
+### [async] `script()` - Evaluating Lua script
+* `String expression` - Script
+* [optional] `List<dynamic> arguments` - Script arguments
+* [return] `List<dynamic>` - Script result
 
-### [async] `file()`
-* `File file`
+### [async] `file()` - Evaluating Lua file
+* `File file` - Lua script file
 
-### [async] `require()`
-* `String module`
+### [async] `require()` - Calling Lua 'require' function
+* `String module` - Requiring module
 
-### [async] `call()`
-* `String function`
-* [optional] `List<dynamic> arguments`
-* [return] `List<dynamic>`
+### [async] `call()` - Calling Lua function
+* `String function` - Lua function
+* [optional] `List<dynamic> arguments` - Lua function arguments
+* [return] `List<dynamic>` - Lua function result
 
 ## Native - StorageNativeExecutor
-### [async] `call()`
-* `tarantool_function function`
-* [optional] `tarantool_function_argument argument`
-* [return] `Pointer<Void>`
+### [async] `call()` - Calling Native function
+* `tarantool_function function` - Pointer to Native function
+* [optional] `tarantool_function_argument argument` - Pointer or Native value as function argument
+* [return] `Pointer<Void>` - Pointer to function result
 
 # Configuration
 
