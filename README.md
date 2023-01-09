@@ -248,10 +248,10 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * `String from` - Current space name
 * `String to` - Space name after rename
  
-### `dropSpace()` - DDL operation for dropping Tarantool space
+### [async] `dropSpace()` - DDL operation for dropping Tarantool space
 * `String name` - Space name
 
-### `createIndex()` - DDL operation for creating Tarantool index
+### [async] `createIndex()` - DDL operation for creating Tarantool index
 * `String spaceName` - Space name (owner of created index)
 * `String indexName` - Index name
 * [optional] `IndexType type` - Index type (could be hash, set, tree, bitset, rtree)
