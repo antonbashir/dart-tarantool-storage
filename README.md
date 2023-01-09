@@ -1,7 +1,6 @@
 # Introduction
 
-<img src="dart-logo.png"  height="80" />
-<img src="tarantool-logo.png" height="80" />
+<img src="dart-logo.png"  height="80" />  <img src="tarantool-logo.png" height="80" />
 
 The main goal of this library is to provide fast and strong database to Dart developers.
 
