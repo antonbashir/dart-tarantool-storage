@@ -15,3 +15,5 @@ export "storage/script.dart" show StorageBootstrapScript;
 export "storage/configuration.dart" show StorageMessageLoopConfiguration, StorageConfiguration, StorageBootConfiguration, StorageReplicationConfiguration;
 export "storage/defaults.dart" show StorageDefaults;
 export "storage/exception.dart" show StorageExecutionException, StorageLimitException, StorageShutdownException;
+
+export "storage/constants.dart" show StorageIteratorType, StorageEngine, StorageIndexType, StorageFieldType, StorageIndexPartType;

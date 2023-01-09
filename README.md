@@ -254,7 +254,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 ### [async] `createIndex()` - DDL operation for creating Tarantool index
 * `String spaceName` - Space name (owner of created index)
 * `String indexName` - Index name
-* [optional] `IndexType type` - Index type (could be hash, set, tree, bitset, rtree)
+* [optional] `StorageIndexType type` - Index type (could be hash, set, tree, bitset, rtree)
 * [optional] `int id` - Index id
 * [optional] `bool unique` - If true then index should not contains duplicates
 * [optional] `bool ifNotExists` - If true then Tarantool will ignore index existence

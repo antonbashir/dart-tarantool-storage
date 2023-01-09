@@ -174,7 +174,7 @@ Future<void> testSchema() async {
     "test-index",
     id: 0,
     ifNotExists: true,
-    type: IndexType.hash,
+    type: StorageIndexType.hash,
     unique: true,
     parts: [
       StorageIndexPart.byName("field-1"),
@@ -186,7 +186,7 @@ Future<void> testSchema() async {
 
   await _executor.schema.createUser("test-user", "test-password", ifNotExists: true);
   expect(await _executor.schema.userExists("test-user"), isTrue);
-  await _executor.schema.grantUser("test-user",  "read", objectType: "space", objectName: "test", ifNotExists: true);
+  await _executor.schema.grantUser("test-user", "read", objectType: "space", objectName: "test", ifNotExists: true);
   try {
     await _executor.schema.grantUser("test-user", "write", objectType: "universe");
   } catch (error) {

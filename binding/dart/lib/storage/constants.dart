@@ -35,7 +35,7 @@ const pubspecYmlFile = 'pubspec.yml';
 const universeObjectType = "universe";
 const nil = "nil";
 
-enum UpdateOperationType {
+enum StorageUpdateOperationType {
   add,
   subtract,
   bitwiseAnd,
@@ -67,14 +67,14 @@ enum StorageEngine {
   vinly,
 }
 
-enum IndexType {
+enum StorageIndexType {
   hash,
   tree,
   bitset,
   rtree,
 }
 
-enum FieldType {
+enum StorageFieldType {
   any,
   unsigned,
   string,
@@ -91,7 +91,7 @@ enum FieldType {
   varbinary,
 }
 
-enum IndexPartType {
+enum StorageIndexPartType {
   unsigned,
   string,
   number,

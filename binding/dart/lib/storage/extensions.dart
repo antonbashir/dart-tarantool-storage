@@ -4,26 +4,26 @@ extension StringExtensions on String {
   get quotted => "'$this'";
 }
 
-extension UpdateOperationTypeExtension on UpdateOperationType {
+extension UpdateOperationTypeExtension on StorageUpdateOperationType {
   String operation() {
     switch (this) {
-      case UpdateOperationType.add:
+      case StorageUpdateOperationType.add:
         return "+";
-      case UpdateOperationType.subtract:
+      case StorageUpdateOperationType.subtract:
         return "-";
-      case UpdateOperationType.bitwiseAnd:
+      case StorageUpdateOperationType.bitwiseAnd:
         return "&";
-      case UpdateOperationType.bitwiseOr:
+      case StorageUpdateOperationType.bitwiseOr:
         return "|";
-      case UpdateOperationType.bitwiseXor:
+      case StorageUpdateOperationType.bitwiseXor:
         return "^";
-      case UpdateOperationType.stringSplice:
+      case StorageUpdateOperationType.stringSplice:
         return ":";
-      case UpdateOperationType.insert:
+      case StorageUpdateOperationType.insert:
         return "!";
-      case UpdateOperationType.delete:
+      case StorageUpdateOperationType.delete:
         return "#";
-      case UpdateOperationType.assign:
+      case StorageUpdateOperationType.assign:
         return "=";
     }
   }
