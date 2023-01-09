@@ -479,11 +479,11 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * `List<dynamic> key, List<StorageUpdateOperation> operations`
 
 ## Lua - StorageLuaExecutor
-### [async] `<startBackup()`
+### [async] `startBackup()`
 
-### [async] `<stopBackup()`
+### [async] `stopBackup()`
 
-### [async] `<promote()`
+### [async] `promote()`
 
 ### [async] `configure()`
 * `StorageConfiguration configuration`
