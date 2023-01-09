@@ -302,48 +302,48 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [optional] `bool ifNotExists` - If true then Tarantool will ignore grant existence
 
 ## Space - StorageSpace
-### [async] `count()`
-* [optional] `List<dynamic> key`
-* [optional] `StorageIteratorType iteratorType`
-* [return] `int`
+### [async] `count()` - Counting tuples in the space
+* [optional] `List<dynamic> key` - Include in count only matched tuples by key
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type
+* [return] `int` - Count of tuples
 
-### [async] `isEmpty()`
-* [return] `bool`
+### [async] `isEmpty()` - Checking that space is empty
+* [return] `bool` - True if empty
 
-### [async] `isNotEmpty()`
-* [return] `bool`
+### [async] `isNotEmpty()` - Checking that space is not empty
+* [return] `bool` - True if not empty
 
-### [async] `length()`
-* [return] `int`
+### [async] `length()` - Getting space length (faster than count)
+* [return] `int` - Space length
 
-### [async] `iterator()`
-* [optional] `List<dynamic> key`
-* [optional] `StorageIteratorType iteratorType`
-* [return] `StorageIterator`
+### [async] `iterator()` - Creating iterator for tuples ([see pairs](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_space/pairs/))
+* [optional] `List<dynamic> key` - Include only matched tuples by key
+* [optional] `StorageIteratorType iteratorType` - Tarantool iterator type
+* [return] `StorageIterator` - Created iterator instance
 
-### [async] `insert()`
-* `List<dynamic> data`
-* [return] `List<dynamic>`
+### [async] `insert()` - Inserting tuple into the space
+* `List<dynamic> data` - Tuple
+* [return] `List<dynamic>` - Inserted tuple
 
-### [async] `put()`
-* `List<dynamic> data`
-* [return] `List<dynamic>`
+### [async] `put()` - Putting tuple into the space (ignore existence)
+* `List<dynamic> data` - Tuple
+* [return] `List<dynamic>` - Putted tuple
 
-### [async] `get()`
-* `List<dynamic> key`
-* [return] `List<dynamic>`
+### [async] `get()` - Getting tuple from the space by key
+* `List<dynamic> key` - Key to find tuple
+* [return] `List<dynamic>` - Received tuple
 
-### [async] `delete()`
-* `List<dynamic> key`
-* [return] `List<dynamic>`
+### [async] `delete()` - Deleting tuple from the space
+* `List<dynamic> key` - Key to find tuple for deletion
+* [return] `List<dynamic>` - Deleted tuple
 
-### [async] `min()`
-* [optional] `List<dynamic> key`
-* [return] `List<dynamic>`
+### [async] `min()` - Getting minimal tuple from the space
+* [optional] `List<dynamic> key` - Key to find tuple
+* [return] `List<dynamic>` - Received tuple
 
-### [async] `max()`
-* [optional] `List<dynamic> key`
-* [return] `List<dynamic>`
+### [async] `max()` - Getting maximal tuple from the space
+* [optional] `List<dynamic> key` - Key to find tuple
+* [return] `List<dynamic>` - Received tuple
 
 ### [async] `truncate()`
 
