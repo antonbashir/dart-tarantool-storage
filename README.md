@@ -441,44 +441,44 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [return] `Stream<dynamic>`
 
 ## Batch
+## `StorageBatchSpaceBuilder`
 
-### StorageBatchSpaceBuilder
-### `insert()`
+#### `insert()`
 * `List<dynamic> data`
 
-### `put()`
+#### `put()`
 * `List<dynamic> data`
 
-### `put()`
+#### `put()`
 * `List<dynamic> data`
 
-### `delete()`
+#### `delete()`
 * `List<dynamic> data`
 
-### `update()`
+#### `update()`
 * `List<dynamic> key, List<StorageUpdateOperation> operations`
 
-### `upsert()`
+#### `upsert()`
 * `List<dynamic> tuple, List<StorageUpdateOperation> operations`
 
-### `insertMany()`
+#### `insertMany()`
 * `List<List<dynamic>> data`
 
-### `putMany()`
+#### `putMany()`
 * `List<List<dynamic>> data`
 
-### `putMany()`
+#### `putMany()`
 * `List<List<dynamic>> data`
 
-### `deleteMany()`
+#### `deleteMany()`
 * `List<List<dynamic>> data`
 
+### `StorageBatchIndexBuilder`
 
-### StorageBatchIndexBuilder
-### `update()`
+#### `update()`
 * `List<dynamic> key, List<StorageUpdateOperation> operations`
 
-## Lua - StorageLuaExecutor
+## Lua - `StorageLuaExecutor`
 ### [async] `<startBackup()`
 
 ### [async] `<stopBackup()`
@@ -504,7 +504,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [optional] `List<dynamic> arguments`
 * [return] `List<dynamic>`
 
-## Native - StorageNativeExecutor
+## Native - `StorageNativeExecutor`
 ### [async] `call()`
 * `tarantool_function function`
 * [optional] `tarantool_function_argument argument`
@@ -512,10 +512,40 @@ After this you can transfer archive to whatever place you want, unarchive it and
 
 # Configuration
 
-## StorageConfiguration
-## StorageMessageLoopConfiguration
-## StorageBootConfiguration
-## StorageReplicationConfiguration
+## `StorageConfiguration`
+This class fully identical to [Tarantool configuration](https://www.tarantool.io/en/doc/latest/reference/configuration/)
+
+## `StorageMessageLoopConfiguration`
+* `int boxOutputBufferCapacity` - 
+* `double messageLoopMaxSleepSeconds` - 
+* `int messageLoopRingSize` - 
+* `double messageLoopRegularSleepSeconds` - 
+* `int messageLoopMaxEmptyCycles` - 
+* `int messageLoopEmptyCyclesMultiplier` - 
+* `int messageLoopInitialEmptyCycles` - 
+* `int messageLoopRingRetryMaxCount` - 
+
+## `StorageBootConfiguration`
+* `String user` -
+* `String password` -
+* `Duration delay` -
+
+## `StorageReplicationConfiguration`
+
+### `addAddressReplica()`
+* `String host`
+* `String port`
+* [optional] `String user` 
+* [optional] `String password`
+
+### `addPortReplica()`
+* `int port`
+
+### `addReplica()`
+* `String uri`
+
+### `format()`
+* [return] `String`
 
 # Perfomance
 
