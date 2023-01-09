@@ -530,20 +530,20 @@ This class fully identical to [Tarantool configuration](https://www.tarantool.io
 
 ## StorageReplicationConfiguration
 
-### `addAddressReplica()`
-* `String host`
-* `String port`
-* [optional] `String user` 
-* [optional] `String password`
+### `addAddressReplica()` - Adding new replica with host and port to configuration
+* `String host` - Replica host
+* `String port` - Replica port
+* [optional] `String user` - Replication user (should exists on all replicas)
+* [optional] `String password` - Replication user password
 
-### `addPortReplica()`
-* `int port`
+### `addPortReplica()` - Adding new replica with localhost and port to configuration
+* `int port` - Replica port
 
-### `addReplica()`
-* `String uri`
+### `addReplica()` - Adding new replica with uri to configuration
+* `String uri` - Replica uri
 
-### `format()`
-* [return] `String`
+### `format()` - Creating final replica configuration in Lua table representation
+* [return] `String` - Lua table
 
 # Perfomance
 
