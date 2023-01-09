@@ -209,56 +209,56 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * `String indexName` - Input index name
 * [return] `StorageIndex` - Created instance
 
-### [async] `indexExists()`
-* `int spaceId`
-* `String indexName`
-* [return] `bool`
+### [async] `indexExists()` - Checking that index exists by space id and index name
+* `int spaceId` - Input space id
+* `String indexName` - Input index name
+* [return] `bool` - True if exists
 
-### [async] `indexById()`
-* `int spaceId`
-* `int indexId`
-* [return] `StorageIndex` 
+### [async] `indexById()` - Creating StorageIndex instance for space and index ids
+* `int spaceId` - Input space id
+* `int indexId` - Input index id
+* [return] `StorageIndex` - Created instance
 
-### [async] `indexId()`
-* `int spaceId`
-* `String index`
-* [return] `int`
+### [async] `indexId()` - Getting index id by its name and space id
+* `int spaceId` - Input space id
+* `String index` - Input index name
+* [return] `int` - Received index id
 
-### [async] `createSpace()`
-* `String name`
-* [optional] `StorageEngine engine`
-* [optional] `int fieldCount`
-* [optional] `List<StorageSpaceField> format`
-* [optional] `int id`
-* [optional] `bool ifNotExists`
-* [optional] `bool local`
-* [optional] `bool synchronous`
-* [optional] `bool temporary`
-* [optional] `String user`
+### [async] `createSpace()` - DDL operation for creating Tarantool space
+* `String name` - Space name
+* [optional] `StorageEngine engine` - Space engine (memtx or vinyl)
+* [optional] `int fieldCount` - Space tuple fields count
+* [optional] `List<StorageSpaceField> format` - Space tuple format
+* [optional] `int id` - Space id
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore space existence
+* [optional] `bool local` - If true then space will not participate in replication
+* [optional] `bool synchronous` - If true then space operations will require synchronous commit
+* [optional] `bool temporary` - If true then space will be empty on every server restart
+* [optional] `String user` - Space owner
 
-### [async] `alterSpace()`
-* `String name`
-* [optional] `int  fieldCount`
-* [optional] `List<StorageSpaceField> format`
-* [optional] `bool  synchronous`
-* [optional] `bool temporary`
-* [optional] `String  user`
+### [async] `alterSpace()` - DDL operation for altering Tarantool space
+* `String name` - Space name
+* [optional] `int  fieldCount` - Space tuple fields count
+* [optional] `List<StorageSpaceField> format` - Space tuple format
+* [optional] `bool  synchronous` - If true then space operations will require synchronous commit
+* [optional] `bool temporary` - If true then space will be empty on every server restart
+* [optional] `String  user` - Space owner
 
-### [async] `renameSpace()`
-* `String from`
-* `String to`
+### [async] `renameSpace()` - DDL operation for renaming Tarantool space
+* `String from` - Current space name
+* `String to` - Space name after rename
+ 
+### `dropSpace()` - DDL operation for dropping Tarantool space
+* `String name` - Space name
 
-### `dropSpace()`
-* `String name`
-
-### `createIndex()`
-* `String spaceName`
-* `String indexName`
-* [optional] `IndexType type`
-* [optional] `int id`
-* [optional] `bool unique`
-* [optional] `bool ifNotExists`
-* [optional] `List<StorageIndexPart> parts`
+### `createIndex()` - DDL operation for creating Tarantool index
+* `String spaceName` - Space name (owner of created index)
+* `String indexName` - Index name
+* [optional] `IndexType type` - Index type (could be hash, set, tree, bitset, rtree)
+* [optional] `int id` - Index id
+* [optional] `bool unique` - If true then index should not contains duplicates
+* [optional] `bool ifNotExists` - If true then Tarantool will ignore index existence
+* [optional] `List<StorageIndexPart> parts` - Index parts. Every part includes field number and field type
 
 ### [async] `alterIndex()`
 * `String spaceName`
