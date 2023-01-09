@@ -164,7 +164,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 
 ### `executor`
 
-## Executor - `StorageExecutor`
+## Executor - StorageExecutor
 
 ### [async] `next()`
 * `StorageIterator iterator`
@@ -186,7 +186,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 ### `hasTransaction`
 * [return] `bool`
 
-## Schema - `StorageSchema`
+## Schema - StorageSchema
 
 ### [async] `spaceById()` -
 * `int id` -
@@ -441,7 +441,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [return] `Stream<dynamic>`
 
 ## Batch
-### `StorageBatchSpaceBuilder`
+### StorageBatchSpaceBuilder
 
 #### `insert()`
 * `List<dynamic> data`
@@ -473,12 +473,12 @@ After this you can transfer archive to whatever place you want, unarchive it and
 #### `deleteMany()`
 * `List<List<dynamic>> data`
 
-### `StorageBatchIndexBuilder`
+### StorageBatchIndexBuilder
 
 #### `update()`
 * `List<dynamic> key, List<StorageUpdateOperation> operations`
 
-## Lua - `StorageLuaExecutor`
+## Lua - StorageLuaExecutor
 ### [async] `<startBackup()`
 
 ### [async] `<stopBackup()`
@@ -504,7 +504,7 @@ After this you can transfer archive to whatever place you want, unarchive it and
 * [optional] `List<dynamic> arguments`
 * [return] `List<dynamic>`
 
-## Native - `StorageNativeExecutor`
+## Native - StorageNativeExecutor
 ### [async] `call()`
 * `tarantool_function function`
 * [optional] `tarantool_function_argument argument`
@@ -512,10 +512,10 @@ After this you can transfer archive to whatever place you want, unarchive it and
 
 # Configuration
 
-## `StorageConfiguration`
+## StorageConfiguration
 This class fully identical to [Tarantool configuration](https://www.tarantool.io/en/doc/latest/reference/configuration/)
 
-## `StorageMessageLoopConfiguration`
+## StorageMessageLoopConfiguration
 * `int boxOutputBufferCapacity` - 
 * `double messageLoopMaxSleepSeconds` - 
 * `int messageLoopRingSize` - 
@@ -525,12 +525,12 @@ This class fully identical to [Tarantool configuration](https://www.tarantool.io
 * `int messageLoopInitialEmptyCycles` - 
 * `int messageLoopRingRetryMaxCount` - 
 
-## `StorageBootConfiguration`
+## StorageBootConfiguration
 * `String user` -
 * `String password` -
 * `Duration delay` -
 
-## `StorageReplicationConfiguration`
+## StorageReplicationConfiguration
 
 ### `addAddressReplica()`
 * `String host`
