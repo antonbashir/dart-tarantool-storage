@@ -441,40 +441,37 @@ After this you can transfer archive to whatever place you want, unarchive it and
 ## Batch
 ### StorageBatchSpaceBuilder
 
-#### `insert()`
-* `List<dynamic> data`
+#### `insert()` - Adding insert operation to batch
+* `List<dynamic> data` - Inserting tuple
 
-#### `put()`
-* `List<dynamic> data`
+#### `put()` - Adding put operation to batch
+* `List<dynamic> data` - Putting tupple
 
-#### `put()`
-* `List<dynamic> data`
+#### `delete()` - Adding delete operation to batch
+* `List<dynamic> data` - Deleting tuple
 
-#### `delete()`
-* `List<dynamic> data`
+#### `update()` - Adding update operation to batch
+* `List<dynamic> key` - Tuple key
+* `List<StorageUpdateOperation> operations` - Update oeprations. [See](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/update/)
 
-#### `update()`
-* `List<dynamic> key, List<StorageUpdateOperation> operations`
+#### `upsert()` - Adding update operation to batch
+* `List<dynamic> tuple` - Tuple to insert or update
+* `List<StorageUpdateOperation> operations` - Update oeprations. [See](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/update/)
 
-#### `upsert()`
-* `List<dynamic> tuple, List<StorageUpdateOperation> operations`
+#### `insertMany()` - Adding insert operations to batch
+* `List<List<dynamic>> data` - Inserted tuples
 
-#### `insertMany()`
-* `List<List<dynamic>> data`
+#### `putMany()` - Adding put operations to batch
+* `List<List<dynamic>> data` - Putted tuples
 
-#### `putMany()`
-* `List<List<dynamic>> data`
-
-#### `putMany()`
-* `List<List<dynamic>> data`
-
-#### `deleteMany()`
-* `List<List<dynamic>> data`
+#### `deleteMany()` - Adding delete operations to batch
+* `List<List<dynamic>> data` - Deleted tuples
 
 ### StorageBatchIndexBuilder
 
-#### `update()`
-* `List<dynamic> key, List<StorageUpdateOperation> operations`
+#### `update()` - Adding update operation to batch
+* `List<dynamic> key` - Tuple key
+* `List<StorageUpdateOperation> operations` - Update oeprations. [See](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_index/update/)
 
 ## Lua - StorageLuaExecutor
 ### [async] `startBackup()` - Executing box.backup.start() [see](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_backup/start/)
