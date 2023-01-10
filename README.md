@@ -11,7 +11,6 @@ Currently, there are a lot of local database solutions for Dart (Isaar, Hive, Ob
 But also there is a need of predictable and controllable data storage solution with ability of data processing logic customization. 
 
 Dart Tarantool storage should satisfy these needs by combining Tarantool features and Dart language features.
-
 - [Introduction](#introduction)
   - [About Tarantool](#about-tarantool)
     - [Features](#features)
