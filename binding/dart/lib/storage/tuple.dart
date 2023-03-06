@@ -7,11 +7,6 @@ import 'package:msgpack_dart/msgpack_dart.dart' as messagePack;
 import 'bindings.dart';
 
 class TarantoolTupleDescriptor {
-  // ignore: unused_field
-  final TarantoolBindings _bindings;
-
-  const TarantoolTupleDescriptor(this._bindings);
-
   Pointer<tarantool_tuple_t> write(dynamic data) {
     if (data == null) return nullptr.cast();
     final tuple = calloc<tarantool_tuple_t>();

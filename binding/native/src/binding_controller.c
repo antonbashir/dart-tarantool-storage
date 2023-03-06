@@ -30,7 +30,7 @@ struct tarantool_storage
   tarantool_configuration_t configuration;
 };
 
-struct initialization_args
+struct tarantool_initialization_args
 {
   char *binary_path;
   char *script;
@@ -72,7 +72,7 @@ void tarantool_initialize(char *binary_path, char *script, tarantool_configurati
     return;
   }
   storage.configuration = *configuration;
-  struct initialization_args *args = malloc(sizeof(struct initialization_args));
+  struct tarantool_initialization_args *args = malloc(sizeof(struct tarantool_initialization_args));
   args->binary_path = binary_path;
   args->script = script;
   tt_pthread_create(&storage.main_thread_id, NULL, tarantool_process_initialization, args);
@@ -86,7 +86,7 @@ void tarantool_initialize(char *binary_path, char *script, tarantool_configurati
 
 void *tarantool_process_initialization(void *input)
 {
-  struct initialization_args *args = (struct initialization_args *)input;
+  struct tarantool_initialization_args *args = (struct tarantool_initialization_args *)input;
 
   tarantool_initialize_library(args->binary_path);
 

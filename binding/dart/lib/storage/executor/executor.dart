@@ -26,7 +26,7 @@ class StorageExecutor {
     _receiverPort = RawReceivePort(_receive);
     _nativePort = _receiverPort.sendPort.nativePort;
     _native = StorageNativeExecutor(this);
-    _descriptor = TarantoolTupleDescriptor(_bindings);
+    _descriptor = TarantoolTupleDescriptor();
     _lua = StorageLuaExecutor(_bindings, this, _descriptor);
     _schema = StorageSchema(_bindings, this, _descriptor);
   }

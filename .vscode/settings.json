@@ -106,7 +106,11 @@
       "ck_spinlock.h": "c",
       "extension.h": "c",
       "ck_array.h": "c",
-      "obuf.h": "c"
+      "obuf.h": "c",
+      "iosfwd": "cpp",
+      "iostream": "cpp",
+      "forward_list": "c",
+      "iomanip": "cpp"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",
