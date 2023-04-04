@@ -110,7 +110,8 @@
       "iosfwd": "cpp",
       "iostream": "cpp",
       "forward_list": "c",
-      "iomanip": "cpp"
+      "iomanip": "cpp",
+      "assoc.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "Disabled",

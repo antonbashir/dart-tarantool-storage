@@ -10,6 +10,8 @@
 #include "ck_backoff.h"
 #include "dart/dart_api_dl.h"
 #include "box/txn.h"
+#include "sys/eventfd.h"
+#include "coio.h"
 
 #define MESSAGE_BUFFER_ERROR "Failed to allocate message ring buffer"
 #define MESSAGE_SEND_ERROR "Failed to resend message into the ring during transaction"
@@ -125,57 +127,50 @@ void tarantool_message_loop_initialize(tarantool_message_loop_configuration_t *c
 
 void tarantool_message_loop_start(tarantool_message_loop_configuration_t *configuration)
 {
-  int initial_empty_cycles = configuration->message_loop_initial_empty_cycles;
-  int max_empty_cycles = configuration->message_loop_max_empty_cycles;
-  int cycles_multiplier = configuration->message_loop_empty_cycles_multiplier;
-  double regular_sleep_seconds = configuration->message_loop_regular_sleep_seconds;
-  double max_sleep_seconds = configuration->message_loop_max_sleep_seconds;
-  int current_empty_cycles = 0;
-  int curent_empty_cycles_limit = initial_empty_cycles;
+  struct ev_io io;
+  io.data = fiber();
+  ev_init(&io, (ev_io_cb)fiber_schedule_cb);
+  io.fd = eventfd(0, 0); // ring_fd
+
+  ev_tstamp start, delay;
+  evio_timeout_init(loop(), &start, &delay, TIMEOUT_INFINITY);
+
+  ev_io_set(&io, io.fd, EV_SIGNAL);
+  ev_io_start(loop(), &io);
 
   while (likely(active))
   {
-    tarantool_message_t *message;
-    if (ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message))
+    bool uring_has_cqes = false;
+    if (uring_has_cqes)
     {
-      current_empty_cycles = 0;
-      curent_empty_cycles_limit = initial_empty_cycles;
-
-      if (likely(message->type != TARANTOOL_MESSAGE_STOP))
+      tarantool_message_t *message;
+      if (unlikely(message->type == TARANTOOL_MESSAGE_STOP))
       {
-        tarantool_message_handle(message);
-        continue;
+        active = false;
+        free(message);
+        if (uring_has_cqes)
+        {
+          tarantool_message_handle(message);
+        }
+        free(tarantool_message_buffer);
+        break;
       }
-
-      active = false;
-      free(message);
-      while (ck_ring_dequeue_mpsc(&tarantool_message_ring, tarantool_message_buffer, &message))
-      {
-        tarantool_message_handle(message);
-      }
-      free(tarantool_message_buffer);
-      break;
+      tarantool_message_handle(message);
     }
 
-    if (in_txn())
+    while (in_txn())
     {
-      continue;
+      // handle and wait cqes
     }
 
-    current_empty_cycles++;
-    if (current_empty_cycles >= max_empty_cycles)
-    {
-      fiber_sleep(max_sleep_seconds);
-      continue;
-    }
-
-    if (current_empty_cycles >= curent_empty_cycles_limit)
-    {
-      curent_empty_cycles_limit *= cycles_multiplier;
-      fiber_sleep(regular_sleep_seconds);
-      continue;
-    }
+    io.data = fiber();
+    fiber_yield_timeout(delay);
+    io.data = NULL;
+    fiber_testcancel();
+    evio_timeout_update(loop(), &start, &delay)
   }
+
+  ev_io_stop(loop(), &io);
 }
 
 bool tarantool_send_message(tarantool_message_t *message, Dart_Handle callback)
