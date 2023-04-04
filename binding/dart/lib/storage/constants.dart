@@ -114,6 +114,13 @@ class Directories {
   static const dotDartTool = ".dart_tool";
 }
 
+class Arguments {
+  const Arguments._();
+
+  static const native = "--native";
+  static const lua = "--lua";
+}
+
 class Messages {
   const Messages._();
 

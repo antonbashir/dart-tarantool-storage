@@ -6,17 +6,19 @@ import '../lib/storage/lookup.dart';
 
 import 'compile.dart';
 
-Future<void> main(List<String> args) async {
-  if (args.isEmpty) {
+Future<void> main(List<String> arguments) async {
+  if (arguments.isEmpty) {
     print(Messages.specifyDartEntryPoint);
     exit(1);
   }
   final root = Directory.current.uri;
-  final entryPoint = File(args[0]);
+  final entryPoint = File(arguments[0]);
   if (!entryPoint.existsSync()) {
     print(Messages.specifyDartEntryPoint);
     exit(1);
   }
+  bool native = (arguments.length > 1 && arguments[1] == Arguments.native) || (arguments.length > 2 && arguments[2] == Arguments.native);
+  bool lua = (arguments.length > 1 && arguments[1] == Arguments.lua) || (arguments.length > 2 && arguments[2] == Arguments.lua);
   final dotDartTool = findDotDartTool();
   if (dotDartTool == null) {
     print(Messages.runPubGet);
@@ -29,17 +31,21 @@ Future<void> main(List<String> args) async {
   }
   final projectName = basename(projectRoot);
   final packageRoot = findPackageRoot(dotDartTool);
-  final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
   final resultPackageRoot = Directory(root.toFilePath() + Directories.package);
   if (resultPackageRoot.existsSync()) resultPackageRoot.deleteSync(recursive: true);
-  final nativeRoot = Directory(root.toFilePath() + Directories.native);
-  final luaRoot = Directory(root.toFilePath() + Directories.lua);
-  if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
-  if (luaRoot.existsSync()) copyLua(luaRoot, resultPackageRoot);
+  if (native) {
+    final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
+    final nativeRoot = Directory(root.toFilePath() + Directories.native);
+    if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
+    copyLibrary(packageNativeRoot, resultPackageRoot);
+    compileNative(nativeRoot, packageNativeRoot, projectName);
+    if (nativeRoot.existsSync()) copyNative(nativeRoot, projectName, resultPackageRoot);
+  }
+  if (lua) {
+    final luaRoot = Directory(root.toFilePath() + Directories.lua);
+    if (luaRoot.existsSync()) copyLua(luaRoot, resultPackageRoot);
+  }
   compileDart(resultPackageRoot, entryPoint);
-  copyLibrary(packageNativeRoot, resultPackageRoot);
-  compileNative(nativeRoot, packageNativeRoot, projectName);
-  if (nativeRoot.existsSync()) copyNative(nativeRoot, projectName, resultPackageRoot);
   archive(resultPackageRoot, projectName);
   resultPackageRoot.deleteSync(recursive: true);
 }
