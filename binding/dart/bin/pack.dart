@@ -33,13 +33,15 @@ Future<void> main(List<String> arguments) async {
   final packageRoot = findPackageRoot(dotDartTool);
   final resultPackageRoot = Directory(root.toFilePath() + Directories.package);
   if (resultPackageRoot.existsSync()) resultPackageRoot.deleteSync(recursive: true);
+  if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
   if (native) {
     final packageNativeRoot = Directory(packageRoot.toFilePath() + Directories.native);
     final nativeRoot = Directory(root.toFilePath() + Directories.native);
-    if (!resultPackageRoot.existsSync()) resultPackageRoot.createSync();
-    copyLibrary(packageNativeRoot, resultPackageRoot);
-    compileNative(nativeRoot, packageNativeRoot, projectName);
-    if (nativeRoot.existsSync()) copyNative(nativeRoot, projectName, resultPackageRoot);
+    if (nativeRoot.existsSync()) {
+      copyLibrary(packageNativeRoot, resultPackageRoot);
+      compileNative(nativeRoot, packageNativeRoot, projectName);
+      copyNative(nativeRoot, projectName, resultPackageRoot);
+    }
   }
   if (lua) {
     final luaRoot = Directory(root.toFilePath() + Directories.lua);
