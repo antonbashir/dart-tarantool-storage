@@ -17,7 +17,7 @@ jobs:
         run: cd static-build && cmake -DCMAKE_TARANTOOL_ARGS="-DCMAKE_BUILD_TYPE=RelWithDebInfo;-DENABLE_WERROR=ON" .
 
       - name: Native build
-        run: cd static-build && make -j 
+        run: cd static-build && make
 
       - name: Dart dependencies
         run: cd binding/dart && dart pub get
