@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../executor/executor.dart';
 
 class StorageIterator {
@@ -49,6 +51,7 @@ class StorageIterator {
     int count = 1,
   }) async* {
     var index = 0;
+    if (limit != null) count = min(count, limit);
     if (filter == null) {
       List<List<dynamic>>? tuples;
       while ((tuples = await _executor.next(this, count)) != null) {
