@@ -72,6 +72,8 @@ class Storage {
 
   Future<void> awaitInitialized() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !initialized()));
 
+  Future<void> awaitShutdown() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => initialized()));
+
   Future<void> awaitImmutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !immutable()));
 
   Future<void> awaitMutable() => Future.doWhile(() => Future.delayed(awaitStateDuration).then((value) => !mutable()));
