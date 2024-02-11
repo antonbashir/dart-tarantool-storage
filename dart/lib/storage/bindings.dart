@@ -1622,23 +1622,6 @@ final class tarantool_configuration extends ffi.Struct {
 
   external ffi.Pointer<ffi.Char> initial_script;
 
-  external ffi.Pointer<interactor_native_configuration>
-      interactor_configuration;
-
-  @ffi.Uint64()
-  external int initialization_timeout_seconds;
-
-  @ffi.Uint64()
-  external int shutdown_timeout_seconds;
-
-  @ffi.Size()
-  external int box_output_buffer_capacity;
-
-  @ffi.Size()
-  external int executor_ring_size;
-}
-
-final class interactor_native_configuration extends ffi.Struct {
   @ffi.Uint64()
   external int cqe_wait_timeout_millis;
 
@@ -1668,85 +1651,28 @@ final class interactor_native_configuration extends ffi.Struct {
 
   @ffi.Uint32()
   external int cqe_peek_count;
-}
-
-final class mh_native_callbacks_t extends ffi.Opaque {}
-
-final class io_uring extends ffi.Opaque {}
-
-final class io_uring_cqe extends ffi.Opaque {}
-
-final class interactor_messages_pool extends ffi.Opaque {}
-
-final class interactor_static_buffers extends ffi.Opaque {}
-
-final class interactor_io_buffers extends ffi.Opaque {}
-
-final class interactor_small_data extends ffi.Opaque {}
-
-final class interactor_native extends ffi.Struct {
-  external ffi.Pointer<interactor_native_messages_pool> messages_pool;
-
-  external ffi.Pointer<interactor_native_static_buffers> static_buffers;
-
-  external ffi.Pointer<interactor_native_io_buffers> io_buffers;
-
-  external ffi.Pointer<interactor_native_small_data> small_data;
-
-  external ffi.Pointer<interactor_native_memory> memory;
-
-  external ffi.Pointer<interactor_native_io_uring> ring;
 
   @ffi.Uint64()
-  external int cqe_wait_timeout_millis;
+  external int initialization_timeout_seconds;
+
+  @ffi.Uint64()
+  external int shutdown_timeout_seconds;
 
   @ffi.Size()
-  external int ring_size;
+  external int box_output_buffer_capacity;
 
-  external ffi.Pointer<ffi.Pointer<interactor_native_completion_event>>
-      completions;
-
-  external ffi.Pointer<interactor_native_callbacks_t> callbacks;
-
-  @ffi.Int32()
-  external int descriptor;
-
-  @ffi.Int32()
-  external int ring_flags;
-
-  @ffi.Uint32()
-  external int cqe_wait_count;
-
-  @ffi.Uint32()
-  external int cqe_peek_count;
-
-  @ffi.Uint8()
-  external int id;
+  @ffi.Size()
+  external int executor_ring_size;
 }
-
-typedef interactor_native_messages_pool = interactor_messages_pool;
-typedef interactor_native_static_buffers = interactor_static_buffers;
-typedef interactor_native_io_buffers = interactor_io_buffers;
-typedef interactor_native_small_data = interactor_small_data;
-typedef interactor_native_memory = linux_interactor_bindings.interactor_memory;
-typedef interactor_native_io_uring = io_uring;
-typedef interactor_native_completion_event = io_uring_cqe;
-typedef interactor_native_callbacks_t = mh_native_callbacks_t;
-
-final class interactor_input_buffer extends ffi.Opaque {}
-
-final class interactor_output_buffer extends ffi.Opaque {}
-
-final class interactor_payload_pool extends ffi.Opaque {}
 
 final class tarantool_executor_configuration extends ffi.Struct {
   @ffi.Size()
   external int executor_ring_size;
 
-  external interactor_native_configuration interactor_configuration;
-
   @ffi.Uint32()
   external int interactor_id;
+
+  external ffi.Pointer<tarantool_configuration> configuration;
 }
 
 final class tuple extends ffi.Opaque {}

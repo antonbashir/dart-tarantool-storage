@@ -238,7 +238,6 @@ class StorageExecutorConfiguration {
     configuration.ref.library_path = libraryPath.toNativeUtf8().cast();
     configuration.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
     configuration.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
-    configuration.ref.interactor_configuration = allocator<interactor_native_configuration>();
     configuration.ref.initial_script = script.toNativeUtf8().cast();
     return configuration;
   }

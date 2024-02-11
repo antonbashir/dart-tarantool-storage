@@ -6,7 +6,7 @@
 #include "small.h"
 #include "tarantool_box.h"
 
-int tarantool_factory_initialize(struct tarantool_factory* factory, struct interactor_memory* memory)
+int tarantool_factory_initialize(struct tarantool_factory* factory, tarantool_factory_interactor_memory* memory)
 {
     float actual_alloc_factor;
     factory->tarantool_datas = malloc(sizeof(struct small_alloc));

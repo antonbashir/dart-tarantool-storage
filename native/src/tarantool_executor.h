@@ -2,7 +2,7 @@
 #define TARANTOOL_EXECUTOR_H_INCLUDED
 
 #include <stdbool.h>
-#include "interactor_native.h"
+#include "tarantool.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -11,8 +11,8 @@ extern "C"
     struct tarantool_executor_configuration
     {
         size_t executor_ring_size;
-        struct interactor_native_configuration interactor_configuration;
         uint32_t interactor_id;
+        struct tarantool_configuration* configuration;
     };
 
     int tarantool_executor_initialize(struct tarantool_executor_configuration* configuration);

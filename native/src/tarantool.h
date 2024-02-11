@@ -14,7 +14,16 @@ extern "C"
         const char* library_path;
         const char* binary_path;
         const char* initial_script;
-        struct interactor_native_configuration* interactor_configuration;
+        uint64_t cqe_wait_timeout_millis;
+        size_t quota_size;
+        size_t preallocation_size;
+        size_t slab_size;
+        size_t static_buffers_capacity;
+        size_t static_buffer_size;
+        size_t ring_size;
+        int32_t ring_flags;
+        uint32_t cqe_wait_count;
+        uint32_t cqe_peek_count;
         uint64_t initialization_timeout_seconds;
         uint64_t shutdown_timeout_seconds;
         size_t box_output_buffer_capacity;

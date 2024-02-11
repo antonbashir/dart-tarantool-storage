@@ -135,7 +135,8 @@
       "tarantool_factory.h": "c",
       "port.h": "c",
       "*.inc": "cpp",
-      "valarray": "c"
+      "valarray": "c",
+      "interactor_message.h": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "git.autoRepositoryDetection": false,
