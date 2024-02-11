@@ -11,8 +11,8 @@ extern "C"
     struct tarantool_executor_configuration
     {
         size_t executor_ring_size;
-        uint32_t interactor_id;
         struct tarantool_configuration* configuration;
+        uint32_t interactor_id;
     };
 
     int tarantool_executor_initialize(struct tarantool_executor_configuration* configuration);

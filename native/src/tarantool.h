@@ -11,9 +11,6 @@ extern "C"
 #endif
     struct tarantool_configuration
     {
-        const char* library_path;
-        const char* binary_path;
-        const char* initial_script;
         uint64_t cqe_wait_timeout_millis;
         size_t quota_size;
         size_t preallocation_size;
@@ -21,13 +18,16 @@ extern "C"
         size_t static_buffers_capacity;
         size_t static_buffer_size;
         size_t ring_size;
-        int32_t ring_flags;
-        uint32_t cqe_wait_count;
-        uint32_t cqe_peek_count;
         uint64_t initialization_timeout_seconds;
         uint64_t shutdown_timeout_seconds;
         size_t box_output_buffer_capacity;
         size_t executor_ring_size;
+        const char* library_path;
+        const char* binary_path;
+        const char* initial_script;
+        int32_t ring_flags;
+        uint32_t cqe_wait_count;
+        uint32_t cqe_peek_count;
     };
 
     bool tarantool_initialize(struct tarantool_configuration* configuration, struct tarantool_box* box);
