@@ -1388,36 +1388,36 @@ final class tarantool_box extends ffi.Struct {
 }
 
 final class tarantool_space_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
+  @ffi.Size()
+  external int tuple_size;
 
   external ffi.Pointer<ffi.Char> tuple;
 
-  @ffi.Size()
-  external int tuple_size;
+  @ffi.Uint32()
+  external int space_id;
 }
 
 final class tarantool_space_count_request extends ffi.Struct {
+  @ffi.Size()
+  external int key_size;
+
+  external ffi.Pointer<ffi.Char> key;
+
   @ffi.Uint32()
   external int space_id;
 
   @ffi.Int()
   external int iterator_type;
-
-  external ffi.Pointer<ffi.Char> key;
-
-  @ffi.Size()
-  external int key_size;
 }
 
 final class tarantool_space_select_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
+  @ffi.Size()
+  external int key_size;
 
   external ffi.Pointer<ffi.Char> key;
 
-  @ffi.Size()
-  external int key_size;
+  @ffi.Uint32()
+  external int space_id;
 
   @ffi.Uint32()
   external int offset;
@@ -1430,94 +1430,88 @@ final class tarantool_space_select_request extends ffi.Struct {
 }
 
 final class tarantool_space_update_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
-
-  external ffi.Pointer<ffi.Char> key;
-
   @ffi.Size()
   external int key_size;
 
-  external ffi.Pointer<ffi.Char> operations;
-
   @ffi.Size()
   external int operations_size;
+
+  external ffi.Pointer<ffi.Char> key;
+
+  external ffi.Pointer<ffi.Char> operations;
+
+  @ffi.Uint32()
+  external int space_id;
 }
 
 final class tarantool_space_upsert_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
-
-  external ffi.Pointer<ffi.Char> tuple;
-
   @ffi.Size()
   external int tuple_size;
+
+  external ffi.Pointer<ffi.Char> tuple;
 
   external ffi.Pointer<ffi.Char> operations;
 
   @ffi.Size()
   external int operations_size;
+
+  @ffi.Uint32()
+  external int space_id;
 }
 
 final class tarantool_space_iterator_request extends ffi.Struct {
+  @ffi.Size()
+  external int key_size;
+
+  external ffi.Pointer<ffi.Char> key;
+
   @ffi.Uint32()
   external int space_id;
 
   @ffi.Int()
   external int type;
-
-  external ffi.Pointer<ffi.Char> key;
-
-  @ffi.Size()
-  external int key_size;
 }
 
 final class tarantool_index_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
-
-  @ffi.Uint32()
-  external int index_id;
+  @ffi.Size()
+  external int tuple_size;
 
   external ffi.Pointer<ffi.Char> tuple;
 
-  @ffi.Size()
-  external int tuple_size;
-}
-
-final class tarantool_index_count_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
   @ffi.Uint32()
   external int index_id;
+}
+
+final class tarantool_index_count_request extends ffi.Struct {
+  @ffi.Size()
+  external int key_size;
 
   external ffi.Pointer<ffi.Char> key;
 
-  @ffi.Size()
-  external int key_size;
+  @ffi.Uint32()
+  external int space_id;
+
+  @ffi.Uint32()
+  external int index_id;
 
   @ffi.Int()
   external int iterator_type;
 }
 
 final class tarantool_index_id_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
-
   external ffi.Pointer<ffi.Char> name;
 
   @ffi.Size()
   external int name_length;
+
+  @ffi.Uint32()
+  external int space_id;
 }
 
 final class tarantool_index_update_request extends ffi.Struct {
-  @ffi.Uint32()
-  external int space_id;
-
-  @ffi.Uint32()
-  external int index_id;
-
   external ffi.Pointer<ffi.Char> key;
 
   @ffi.Size()
@@ -1527,33 +1521,44 @@ final class tarantool_index_update_request extends ffi.Struct {
 
   @ffi.Size()
   external int operations_size;
+
+  @ffi.Uint32()
+  external int space_id;
+
+  @ffi.Uint32()
+  external int index_id;
 }
 
 final class tarantool_call_request extends ffi.Struct {
   external ffi.Pointer<ffi.Char> function;
 
-  @ffi.Uint32()
-  external int function_length;
-
   external ffi.Pointer<ffi.Char> input;
 
   @ffi.Size()
   external int input_size;
+
+  @ffi.Uint32()
+  external int function_length;
 }
 
 final class tarantool_evaluate_request extends ffi.Struct {
   external ffi.Pointer<ffi.Char> expression;
 
-  @ffi.Uint32()
-  external int expression_length;
-
   external ffi.Pointer<ffi.Char> input;
 
   @ffi.Size()
   external int input_size;
+
+  @ffi.Uint32()
+  external int expression_length;
 }
 
 final class tarantool_index_iterator_request extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> key;
+
+  @ffi.Size()
+  external int key_size;
+
   @ffi.Uint32()
   external int space_id;
 
@@ -1562,24 +1567,19 @@ final class tarantool_index_iterator_request extends ffi.Struct {
 
   @ffi.Int()
   external int type;
+}
 
+final class tarantool_index_select_request extends ffi.Struct {
   external ffi.Pointer<ffi.Char> key;
 
   @ffi.Size()
   external int key_size;
-}
 
-final class tarantool_index_select_request extends ffi.Struct {
   @ffi.Uint32()
   external int space_id;
 
   @ffi.Uint32()
   external int index_id;
-
-  external ffi.Pointer<ffi.Char> key;
-
-  @ffi.Size()
-  external int key_size;
 
   @ffi.Uint32()
   external int offset;
@@ -1616,12 +1616,6 @@ final class tarantool_native_function_request extends ffi.Struct {
 }
 
 final class tarantool_configuration extends ffi.Struct {
-  external ffi.Pointer<ffi.Char> library_path;
-
-  external ffi.Pointer<ffi.Char> binary_path;
-
-  external ffi.Pointer<ffi.Char> initial_script;
-
   @ffi.Uint64()
   external int cqe_wait_timeout_millis;
 
@@ -1643,15 +1637,6 @@ final class tarantool_configuration extends ffi.Struct {
   @ffi.Size()
   external int ring_size;
 
-  @ffi.Int32()
-  external int ring_flags;
-
-  @ffi.Uint32()
-  external int cqe_wait_count;
-
-  @ffi.Uint32()
-  external int cqe_peek_count;
-
   @ffi.Uint64()
   external int initialization_timeout_seconds;
 
@@ -1663,16 +1648,31 @@ final class tarantool_configuration extends ffi.Struct {
 
   @ffi.Size()
   external int executor_ring_size;
+
+  external ffi.Pointer<ffi.Char> library_path;
+
+  external ffi.Pointer<ffi.Char> binary_path;
+
+  external ffi.Pointer<ffi.Char> initial_script;
+
+  @ffi.Int32()
+  external int ring_flags;
+
+  @ffi.Uint32()
+  external int cqe_wait_count;
+
+  @ffi.Uint32()
+  external int cqe_peek_count;
 }
 
 final class tarantool_executor_configuration extends ffi.Struct {
   @ffi.Size()
   external int executor_ring_size;
 
+  external ffi.Pointer<tarantool_configuration> configuration;
+
   @ffi.Uint32()
   external int interactor_id;
-
-  external ffi.Pointer<tarantool_configuration> configuration;
 }
 
 final class tuple extends ffi.Opaque {}
