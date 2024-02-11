@@ -134,12 +134,13 @@
       "tarantool_tuple.h": "c",
       "tarantool_factory.h": "c",
       "port.h": "c",
-      "*.inc": "cpp"
+      "*.inc": "cpp",
+      "valarray": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}",
     "git.autoRepositoryDetection": false,
     "dotnet.defaultSolution": "disable",
     "mesonbuild.configureOnOpen": false,
-    "dart.sdkPath": "/home/anton/development/dart-binary/dart-sdk",
+    "dart.sdkPath": "~/development/dart-sources/sdk/out/ReleaseX64/dart-sdk",
     "C_Cpp.errorSquiggles": "disabled"
 }
