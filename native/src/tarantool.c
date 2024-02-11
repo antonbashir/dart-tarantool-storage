@@ -55,6 +55,7 @@ static int tarantool_fiber(va_list args)
     (void)args;
     struct tarantool_executor_configuration executor_configuration = {
         .executor_ring_size = storage.configuration.executor_ring_size,
+        .interactor_id = 0,
     };
     int error;
     if (error = tarantool_executor_initialize(&executor_configuration))
@@ -109,7 +110,6 @@ static void* tarantool_process_initialization(void* input)
     start_loop = start_loop && ev_activecnt(loop()) > events;
 
     region_free(&fiber()->gc);
-    free(input);
 
     if (box_on_shutdown(NULL, tarantool_shutdown_trigger, NULL) != 0)
     {
@@ -142,6 +142,8 @@ static void* tarantool_process_initialization(void* input)
             return NULL;
         }
     }
+
+    free(input);
     return NULL;
 }
 
@@ -152,17 +154,11 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
         return true;
     }
 
-    if (dlopen(configuration->library_path, RTLD_NOW | RTLD_GLOBAL) == NULL)
-    {
-        storage.initialization_error = dlerror();
-        return false;
-    }
-
     storage.configuration = *configuration;
     storage.initialization_error = "";
     storage.box = box;
 
-    struct tarantool_initialization_args* args = malloc(sizeof(struct tarantool_initialization_args));
+    struct tarantool_initialization_args* args = calloc(sizeof(struct tarantool_initialization_args), 1);
     if (args == NULL)
     {
         storage.initialization_error = strerror(ENOMEM);

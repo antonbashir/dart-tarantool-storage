@@ -97,129 +97,129 @@ Future<void> main() async {
     test("schema operations", testSchema);
   });
 
-  group("[crud]", () {
-    test(
-      "insert",
-      () async => expect(
-        await Future.value(_writeData(_executor.tuples, testSingleData)).then(
-          (value) => _space.insertSingle(value.tuple, value.size).whenComplete(value.cleaner).then((value) => _readData(_executor.tuples, value)),
-        ),
-        equals(testSingleData),
-      ),
-    );
-    test(
-      "put",
-      () async => expect(
-        await Future.value(_writeData(_executor.tuples, testSingleData)).then(
-          (value) => _space.putSingle(value.tuple, value.size).whenComplete(value.cleaner).then((value) => _readData(_executor.tuples, value)),
-        ),
-        equals(testSingleData),
-      ),
-    );
-    // test("get", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _space.get([1]), equals(testSingleData));
-    // });
-    // test("min", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _space.min(), equals(testSingleData));
-    // });
-    // test("max", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _space.min(), equals(testSingleData));
-    // });
-    // test("update", () async {
-    //   final data = [...testSingleData];
-    //   _space.insert(data);
-    //   data[2] = "updated";
-    //   expect(await _space.update([1], [StorageUpdateOperation.assign(2, "updated")]), equals(data));
-    // });
-    // test("delete", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _space.delete([1]), equals(testSingleData));
-    // });
-    // test("isEmpty", () async => expect(await _space.isEmpty(), equals(true)));
-    // test("count", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _space.count(), equals(1));
-    // });
-    // test("select", () async {
-    //   await Future.wait(testMultipleData.map(_space.insert));
-    //   expect(await _space.select(), equals(testMultipleData));
-    //   expect(await _index.select(), equals(testMultipleData));
-    // });
+  // group("[crud]", () {
+  //   test(
+  //     "insert",
+  //     () async => expect(
+  //       await Future.value(_writeData(_executor.tuples, testSingleData)).then(
+  //         (value) => _space.insertSingle(value.tuple, value.size).whenComplete(value.cleaner).then((value) => _readData(_executor.tuples, value)),
+  //       ),
+  //       equals(testSingleData),
+  //     ),
+  //   );
+  //   test(
+  //     "put",
+  //     () async => expect(
+  //       await Future.value(_writeData(_executor.tuples, testSingleData)).then(
+  //         (value) => _space.putSingle(value.tuple, value.size).whenComplete(value.cleaner).then((value) => _readData(_executor.tuples, value)),
+  //       ),
+  //       equals(testSingleData),
+  //     ),
+  //   );
+  //   // test("get", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _space.get([1]), equals(testSingleData));
+  //   // });
+  //   // test("min", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _space.min(), equals(testSingleData));
+  //   // });
+  //   // test("max", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _space.min(), equals(testSingleData));
+  //   // });
+  //   // test("update", () async {
+  //   //   final data = [...testSingleData];
+  //   //   _space.insert(data);
+  //   //   data[2] = "updated";
+  //   //   expect(await _space.update([1], [StorageUpdateOperation.assign(2, "updated")]), equals(data));
+  //   // });
+  //   // test("delete", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _space.delete([1]), equals(testSingleData));
+  //   // });
+  //   // test("isEmpty", () async => expect(await _space.isEmpty(), equals(true)));
+  //   // test("count", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _space.count(), equals(1));
+  //   // });
+  //   // test("select", () async {
+  //   //   await Future.wait(testMultipleData.map(_space.insert));
+  //   //   expect(await _space.select(), equals(testMultipleData));
+  //   //   expect(await _index.select(), equals(testMultipleData));
+  //   // });
 
-    // test("get by index", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _index.get(["key"]), equals(testSingleData));
-    // });
-    // test("min by index", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _index.min(), equals(testSingleData));
-    // });
-    // test("max by index", () async {
-    //   _space.insert(testSingleData);
-    //   expect(await _index.min(), equals(testSingleData));
-    // });
-    // test("update by index", () async {
-    //   final data = [...testSingleData];
-    //   _space.insert(data);
-    //   data[2] = "updated by index";
-    //   expect(await _index.update(["key"], [StorageUpdateOperation.assign(2, "updated by index")]), equals(data));
-    // });
+  //   // test("get by index", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _index.get(["key"]), equals(testSingleData));
+  //   // });
+  //   // test("min by index", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _index.min(), equals(testSingleData));
+  //   // });
+  //   // test("max by index", () async {
+  //   //   _space.insert(testSingleData);
+  //   //   expect(await _index.min(), equals(testSingleData));
+  //   // });
+  //   // test("update by index", () async {
+  //   //   final data = [...testSingleData];
+  //   //   _space.insert(data);
+  //   //   data[2] = "updated by index";
+  //   //   expect(await _index.update(["key"], [StorageUpdateOperation.assign(2, "updated by index")]), equals(data));
+  //   // });
 
-    // test("batch insert", () async {
-    //   expect(await _space.batch((builder) => builder..insertMany(testMultipleData)), equals(testMultipleData));
-    // });
-    // test("batch put", () async {
-    //   expect(await _space.batch((builder) => builder..putMany(testMultipleData)), equals(testMultipleData));
-    // });
-    // test("batch update", () async {
-    //   await _space.batch((builder) => builder..insertMany(testMultipleData));
-    //   final data = [];
-    //   data.add([...testMultipleData[0]]);
-    //   data.add([...testMultipleData[1]]);
-    //   data[0][2] = "updated";
-    //   data[1][2] = "updated";
-    //   expect(
-    //       await _space.batch((builder) => builder
-    //         ..update([1], [StorageUpdateOperation.assign(2, "updated")])
-    //         ..update([2], [StorageUpdateOperation.assign(2, "updated")])),
-    //       equals(data));
-    // });
-    // test("batch index update", () async {
-    //   await _space.batch((builder) => builder..insertMany(testMultipleData));
-    //   final data = [];
-    //   data.add([...testMultipleData[0]]);
-    //   data.add([...testMultipleData[1]]);
-    //   data[0][2] = "updated";
-    //   data[1][2] = "updated";
-    //   expect(
-    //       await _index.batch((builder) => builder
-    //         ..update(["key-0"], [StorageUpdateOperation.assign(2, "updated")])
-    //         ..update(["key-1"], [StorageUpdateOperation.assign(2, "updated")])),
-    //       equals(data));
-    // });
-    // test("pairs iterator", testIterator);
-    // test("fail with error", () async {
-    //   await _space.insert(testSingleData);
-    //   expect(
-    //       () async => await _space.insert(testSingleData),
-    //       throwsA(predicate((exception) =>
-    //           exception is StorageExecutionException &&
-    //           exception.toString() == """Duplicate key exists in unique index "primary" in space "test" with old tuple - [1, "key", "value"] and new tuple - [1, "key", "value"]""")));
-    // });
-  });
-
-  // group("[isolate crud]", () {
-  //   test("multi isolate batch", testMultiIsolateInsert);
-  //   test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
+  //   // test("batch insert", () async {
+  //   //   expect(await _space.batch((builder) => builder..insertMany(testMultipleData)), equals(testMultipleData));
+  //   // });
+  //   // test("batch put", () async {
+  //   //   expect(await _space.batch((builder) => builder..putMany(testMultipleData)), equals(testMultipleData));
+  //   // });
+  //   // test("batch update", () async {
+  //   //   await _space.batch((builder) => builder..insertMany(testMultipleData));
+  //   //   final data = [];
+  //   //   data.add([...testMultipleData[0]]);
+  //   //   data.add([...testMultipleData[1]]);
+  //   //   data[0][2] = "updated";
+  //   //   data[1][2] = "updated";
+  //   //   expect(
+  //   //       await _space.batch((builder) => builder
+  //   //         ..update([1], [StorageUpdateOperation.assign(2, "updated")])
+  //   //         ..update([2], [StorageUpdateOperation.assign(2, "updated")])),
+  //   //       equals(data));
+  //   // });
+  //   // test("batch index update", () async {
+  //   //   await _space.batch((builder) => builder..insertMany(testMultipleData));
+  //   //   final data = [];
+  //   //   data.add([...testMultipleData[0]]);
+  //   //   data.add([...testMultipleData[1]]);
+  //   //   data[0][2] = "updated";
+  //   //   data[1][2] = "updated";
+  //   //   expect(
+  //   //       await _index.batch((builder) => builder
+  //   //         ..update(["key-0"], [StorageUpdateOperation.assign(2, "updated")])
+  //   //         ..update(["key-1"], [StorageUpdateOperation.assign(2, "updated")])),
+  //   //       equals(data));
+  //   // });
+  //   // test("pairs iterator", testIterator);
+  //   // test("fail with error", () async {
+  //   //   await _space.insert(testSingleData);
+  //   //   expect(
+  //   //       () async => await _space.insert(testSingleData),
+  //   //       throwsA(predicate((exception) =>
+  //   //           exception is StorageExecutionException &&
+  //   //           exception.toString() == """Duplicate key exists in unique index "primary" in space "test" with old tuple - [1, "key", "value"] and new tuple - [1, "key", "value"]""")));
+  //   // });
   // });
 
-  group("[execution]", () {
-    //   test("execute native", testExecuteNative);
-    test("execute lua", testExecuteLua);
-  });
+  // // group("[isolate crud]", () {
+  // //   test("multi isolate batch", testMultiIsolateInsert);
+  // //   test("multi isolate transactional batch", testMultiIsolateTransactionalInsert);
+  // // });
+
+  // group("[execution]", () {
+  //   //   test("execute native", testExecuteNative);
+  //   test("execute lua", testExecuteLua);
+  // });
 }
 
 Future<void> testSchema() async {

@@ -16,6 +16,7 @@ class Storage {
   final Map<String, InteractorNativeModule> _loadedModulesByName = {};
   final Map<String, InteractorNativeModule> _loadedModulesByPath = {};
   final StorageLibrary _library;
+  late final _box = ffi.calloc<tarantool_box>(sizeOf<tarantool_box>());
 
   late StorageExecutor _executor;
   late bool _hasStorageLuaModule;
@@ -28,15 +29,14 @@ class Storage {
 
   Future<void> boot(StorageBootstrapScript script, StorageExecutorConfiguration executorConfiguration, {StorageBootConfiguration? bootConfiguration, activateReloader = false}) async {
     if (initialized()) return;
-    final box = ffi.calloc<tarantool_box>(sizeOf<tarantool_box>());
     _hasStorageLuaModule = script.hasStorageLuaModule;
-    if (!ffi.using((ffi.Arena allocator) => tarantool_initialize(executorConfiguration.native(_library.path, script.write(), allocator), box))) {
+    if (!ffi.using((ffi.Arena allocator) => tarantool_initialize(executorConfiguration.native(_library.path, script.write(), allocator), _box))) {
       throw StorageLauncherException(tarantool_initialization_error().cast<ffi.Utf8>().toDartString());
     }
     if (!initialized()) {
       throw StorageLauncherException(tarantool_initialization_error().cast<ffi.Utf8>().toDartString());
     }
-    _executor = StorageExecutor(box);
+    _executor = StorageExecutor(_box);
     await _executor.initialize();
     if (_hasStorageLuaModule && bootConfiguration != null) {
       await executor.boot(bootConfiguration);
@@ -65,6 +65,7 @@ class Storage {
       throw StorageLauncherException(tarantool_shutdown_error().cast<ffi.Utf8>().toDartString());
     }
     _executor.destroy();
+    ffi.calloc.free(_box.cast());
   }
 
   InteractorNativeModule loadModuleByPath(String libraryPath) {

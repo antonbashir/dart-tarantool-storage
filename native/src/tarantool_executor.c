@@ -13,7 +13,7 @@ static bool active;
 int tarantool_executor_initialize(struct tarantool_executor_configuration* configuration)
 {
     tarantool_eventfd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-    tarantool_interactor = malloc(sizeof(struct interactor_native));
+    tarantool_interactor = calloc(sizeof(struct interactor_native), 1);
     int descriptor;
     if ((descriptor = interactor_native_initialize_default(tarantool_interactor, configuration->interactor_id)) < 0)
     {

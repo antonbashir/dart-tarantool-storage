@@ -18,6 +18,8 @@ void main() {
     print(result.stderr);
     throw Exception(command);
   }
+    print(result.stdout);
+    print(result.stderr);
   final file = File("lib/storage/bindings.dart");
   var content = file.readAsStringSync();
   content = content.replaceAll(
