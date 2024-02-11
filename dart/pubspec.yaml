@@ -49,9 +49,6 @@ ffigen:
     leaf:
       include:
         - "tarantool_(.*)"
-    exclude:
-      - "_(.*)"
-      - "interactor_native_(.*)"
   structs:
     exclude:
       - "_(.*)"

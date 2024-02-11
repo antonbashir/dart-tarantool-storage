@@ -143,5 +143,7 @@
     "dotnet.defaultSolution": "disable",
     "mesonbuild.configureOnOpen": false,
     "dart.sdkPath": "~/development/dart-sources/sdk/out/ReleaseX64/dart-sdk",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.autocomplete": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
 }
