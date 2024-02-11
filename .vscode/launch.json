@@ -1,0 +1,56 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "storage-dart-test",
+      "type": "dart",
+      "request": "launch",
+      "program": "dart/test/test.dart"
+    },
+    {
+      "name": "storage-dart-test-native",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/dart",
+      "args": [
+        "-DDEBUG=true",
+        "${cwd}/dart/test/test.dart"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dart",
+      "environment": [
+        {
+          "name": "PATH",
+          "value": "${env:PATH}"
+        },
+      ],
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "storage-native-build"
+    },
+    {
+      "name": "storage-dart-benchmark",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/dart/test/benchmark.exe",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dart",
+      "preLaunchTask": "dart-benchmark-build"
+    },
+    {
+      "name": "storage-test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/native/bin/test/storage_test",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "storage-test-native-build"
+    },
+  ]
+}

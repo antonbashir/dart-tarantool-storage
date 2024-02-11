@@ -1,0 +1,1 @@
+#include "tarantool_common.h"

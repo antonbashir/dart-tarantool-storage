@@ -1,0 +1,26 @@
+name: Dart Tarantool Storage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+#      - name: Native configure
+#        run:  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo .
+#
+#      - name: Native build
+#        run:  make -j 
+#
+#      - name: Dart dependencies
+#        run: cd dart && dart pub get
+#
+#      - name: Run tests
+#        run: cd dart && dart compile exe test/test.dart && ./test/test.exe && ./test/test-replication.sh

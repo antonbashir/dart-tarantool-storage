@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cmake",
+      "label": "storage-native-build",
+      "command": "cleanRebuild" ,
+      "targets": [
+        "native"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+    },
+    {
+      "type": "cmake",
+      "label": "storage-test-native-build",
+      "command": "cleanRebuild" ,
+      "targets": [
+        "storage_test"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+    },
+    {
+      "type": "shell",
+      "label": "dart-benchmark-build",
+      "command": "/usr/bin/dart",
+      "args": [
+        "compile",
+        "exe",
+        "benchmark.dart"
+      ],
+      "options": {
+        "cwd": "${cwd}/binding/dart/test"
+      },
+      "group": "build",
+      "problemMatcher": [],
+    }
+  ]
+}

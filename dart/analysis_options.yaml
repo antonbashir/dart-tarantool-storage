@@ -1,0 +1,7 @@
+linter:
+  rules:
+    - prefer_relative_imports
+analyzer:
+  exclude:
+    - ../dependencies
+    - ../native

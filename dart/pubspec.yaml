@@ -1,0 +1,70 @@
+name: tarantool_storage
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dev_dependencies:
+  ffigen: ^11.0.0
+  test: ^1.22.0
+
+dependencies:
+  ffi: ^2.1.0
+  msgpack_dart: ^1.0.0
+  path: ^1.8.3
+  linux_interactor:
+    git:
+      url: https://github.com/antonbashir/dart-linux-interactor
+      path: dart
+dependency_overrides:
+  linux_interactor:
+    path: ../../dart-linux-interactor/dart
+
+ffigen:
+  name: "TarantoolBindings"
+  ffi-native:
+    assetId: "tarantool-bindings"
+  description: "Bindings for Tarantool"
+  output: "lib/storage/bindings.dart"
+  compiler-opts:
+    - "-I../native/src"
+  headers:
+    entry-points:
+      - "../native/src/tarantool.h"
+      - "../native/src/tarantool_executor.h"
+      - "../native/src/tarantool_box.h"
+      - "../native/src/tarantool_factory.h"
+      - "../native/src/tarantool_tuple.h"
+  globals:
+    exclude:
+      - "(.*)"
+  macros:
+    exclude:
+      - "(.*)"
+  typedefs:
+    exclude:
+      - "_(.*)"
+  functions:
+    leaf:
+      include:
+        - "tarantool_(.*)"
+    exclude:
+      - "_(.*)"
+      - "interactor_native_(.*)"
+  structs:
+    exclude:
+      - "_(.*)"
+      - "max_align_t"
+  type-map:
+    "structs":
+      "interactor_message":
+        "lib": "linux_interactor_bindings"
+        "c-type": "interactor_message"
+        "dart-type": "interactor_message"
+      "interactor_memory":
+        "lib": "linux_interactor_bindings"
+        "c-type": "interactor_memory"
+        "dart-type": "interactor_memory"
+  library-imports:
+    linux_interactor_bindings: "package:linux_interactor/interactor/bindings.dart"
