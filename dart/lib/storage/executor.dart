@@ -116,9 +116,7 @@ class StorageExecutor {
 
   Future<void> initialize() async {
     final worker = InteractorWorker(interactor.worker(InteractorDefaults.worker()));
-    print("final worker = InteractorWorker(interactor.worker(InteractorDefaults.worker()));");
     await worker.initialize();
-    print("await worker.initialize();");
     _descriptor = tarantool_executor_descriptor();
     _factory = ffi.calloc<tarantool_factory>(sizeOf<tarantool_factory>());
     tarantool_factory_initialize(_factory, worker.memory);

@@ -158,7 +158,7 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     storage.initialization_error = "";
     storage.box = box;
 
-    struct tarantool_initialization_args* args = calloc(sizeof(struct tarantool_initialization_args), 1);
+    struct tarantool_initialization_args* args = calloc(1, sizeof(struct tarantool_initialization_args));
     if (args == NULL)
     {
         storage.initialization_error = strerror(ENOMEM);

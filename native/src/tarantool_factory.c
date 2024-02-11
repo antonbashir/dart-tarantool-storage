@@ -9,103 +9,103 @@
 int tarantool_factory_initialize(struct tarantool_factory* factory, tarantool_factory_interactor_memory* memory)
 {
     float actual_alloc_factor;
-    factory->tarantool_datas = calloc(sizeof(struct small_alloc), 1);
+    factory->tarantool_datas = calloc(1, sizeof(struct small_alloc));
     if (!factory->tarantool_datas)
     {
         return -ENOMEM;
     }
     small_alloc_create(factory->tarantool_datas, &memory->cache, 3 * sizeof(int), sizeof(intptr_t), 1.05, &actual_alloc_factor);
-    factory->tarantool_messages = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_messages = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_messages)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_messages, &memory->cache, sizeof(struct interactor_message));
-    factory->tarantool_call_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_call_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_call_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_call_requests, &memory->cache, sizeof(struct tarantool_call_request));
-    factory->tarantool_evaluate_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_evaluate_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_evaluate_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_evaluate_requests, &memory->cache, sizeof(struct tarantool_evaluate_request));
-    factory->tarantool_space_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_space_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_space_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_space_requests, &memory->cache, sizeof(struct tarantool_space_request));
-    factory->tarantool_space_count_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_space_count_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_space_count_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_space_count_requests, &memory->cache, sizeof(struct tarantool_space_count_request));
-    factory->tarantool_space_select_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_space_select_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_space_select_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_space_select_requests, &memory->cache, sizeof(struct tarantool_space_select_request));
-    factory->tarantool_space_update_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_space_update_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_space_update_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_space_update_requests, &memory->cache, sizeof(struct tarantool_space_update_request));
-    factory->tarantool_space_upsert_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_space_upsert_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_space_upsert_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_space_upsert_requests, &memory->cache, sizeof(struct tarantool_space_upsert_request));
-    factory->tarantool_space_iterator_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_space_iterator_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_space_iterator_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_space_iterator_requests, &memory->cache, sizeof(struct tarantool_space_iterator_request));
-    factory->tarantool_index_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_index_requests, &memory->cache, sizeof(struct tarantool_index_request));
-    factory->tarantool_index_count_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_count_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_count_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_index_count_requests, &memory->cache, sizeof(struct tarantool_index_count_request));
-    factory->tarantool_index_id_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_id_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_id_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_index_id_requests, &memory->cache, sizeof(struct tarantool_index_id_request));
-    factory->tarantool_index_update_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_update_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_update_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_index_update_requests, &memory->cache, sizeof(struct tarantool_index_update_request));
-    factory->tarantool_index_iterator_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_iterator_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_iterator_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_index_iterator_requests, &memory->cache, sizeof(struct tarantool_index_iterator_request));
-    factory->tarantool_index_select_requests = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_select_requests = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_select_requests)
     {
         return -ENOMEM;
     }
     mempool_create(factory->tarantool_index_select_requests, &memory->cache, sizeof(struct tarantool_index_select_request));
-    factory->tarantool_index_index_ids = calloc(sizeof(struct mempool), 1);
+    factory->tarantool_index_index_ids = calloc(1, sizeof(struct mempool));
     if (!factory->tarantool_index_index_ids)
     {
         return -ENOMEM;
