@@ -237,10 +237,10 @@ class StorageExecutorConfiguration {
     Pointer<tarantool_configuration> configuration = allocator<tarantool_configuration>();
     configuration.ref.box_output_buffer_capacity = boxOutputBufferCapacity;
     configuration.ref.binary_path = Platform.executable.toNativeUtf8().cast();
-    configuration.ref.library_path = libraryPath.toNativeUtf8().cast();
+    configuration.ref.library_path = libraryPath.toNativeUtf8(allocator: allocator).cast();
     configuration.ref.initialization_timeout_seconds = initializationTimeout.inSeconds;
     configuration.ref.shutdown_timeout_seconds = shutdownTimeout.inSeconds;
-    configuration.ref.initial_script = script.toNativeUtf8().cast();
+    configuration.ref.initial_script = script.toNativeUtf8(allocator: allocator).cast();
     return configuration;
   }
 }

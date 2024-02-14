@@ -192,8 +192,8 @@ class StorageExecutor {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
-    tarantool_evaluate_request_free(_factory, message);
-    return (result, () => _producer.freeOutputBuffer(_descriptor, tarantool_free_output_buffer_prepare(_factory, buffer, bufferSize)).then(_freeOutputBuffer));
+    //tarantool_evaluate_request_free(_factory, message);
+    return (result, () {});
   }
 
   @pragma(preferInlinePragma)
@@ -201,7 +201,7 @@ class StorageExecutor {
     final buffer = message.outputPointer;
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
-    tarantool_call_request_free(_factory, message);
-    return (result, () => _producer.freeOutputBuffer(_descriptor, tarantool_free_output_buffer_prepare(_factory, buffer, bufferSize)).then(_freeOutputBuffer));
+    //tarantool_call_request_free(_factory, message);
+    return (result, () {});
   }
 }
