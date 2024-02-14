@@ -1,6 +1,7 @@
-import 'dart:convert';
 import 'dart:ffi';
 import 'dart:typed_data';
+
+import 'package:linux_interactor/interactor/extensions.dart';
 
 import 'bindings.dart';
 import 'constants.dart';
@@ -12,7 +13,8 @@ class StorageSerialization {
 
   @pragma(preferInlinePragma)
   (Pointer<Char>, int) createString(String source) {
-    final units = utf8.encode(source);
+    final units = Uint8List(source.length);
+    fastEncodeString(source, units, 0);
     final length = source.length;
     final Pointer<Uint8> result = tarantool_create_string(_factory, length).cast();
     final unitsLength = units.length;
