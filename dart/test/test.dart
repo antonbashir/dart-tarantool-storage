@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:linux_interactor/interactor/bindings.dart';
+import 'package:linux_interactor/interactor/buffers.dart';
 import 'package:linux_interactor/linux_interactor.dart';
 import 'package:tarantool_storage/storage/bindings.dart';
 import 'package:tarantool_storage/storage/lua.dart';
@@ -50,13 +51,13 @@ final testKey = ["key"];
 final testSingleData = TestData(10, "test", true);
 final testMultipleData = Iterable.generate(10, (index) => [index + 1, "key-${index}", "value"]).toList();
 
-({Pointer<Uint8> tuple, int size, void Function() cleaner}) _writeData(InteractorTuples tuples, TestData tuple) {
-  final inputBuffer = tuples.allocateInputBuffer(tuple.tupleSize);
+({Pointer<Uint8> tuple, int size, void Function() cleaner}) _writeData(InteractorInputOutputBuffers buffers, TestData tuple) {
+  final inputBuffer = buffers.allocateInputBuffer(tuple.tupleSize);
   final reserved = interactor_dart_input_buffer_reserve(inputBuffer, tuple.tupleSize);
   final buffer = reserved.cast<Uint8>().asTypedList(tuple.tupleSize);
   final data = ByteData.view(buffer.buffer, buffer.offsetInBytes);
   interactor_dart_input_buffer_allocate(inputBuffer, tuple.serialize(buffer, data, 0));
-  return (tuple: interactor_dart_input_buffer_read_position(inputBuffer), size: tuple.tupleSize, cleaner: () => tuples.freeInputBuffer(inputBuffer));
+  return (tuple: interactor_dart_input_buffer_read_position(inputBuffer), size: tuple.tupleSize, cleaner: () => buffers.freeInputBuffer(inputBuffer));
 }
 
 TestData _readData(InteractorTuples tuples, Pointer<tarantool_tuple_t> tuple) {
