@@ -65,8 +65,8 @@ class Storage {
     if (!tarantool_shutdown()) {
       throw StorageLauncherException(tarantool_shutdown_error().cast<ffi.Utf8>().toDartString());
     }
-    _executor.destroy();
-    ffi.calloc.free(_box.cast());
+    await _executor.destroy();
+    //ffi.calloc.free(_box.cast());
   }
 
   InteractorNativeModule loadModuleByPath(String libraryPath) {

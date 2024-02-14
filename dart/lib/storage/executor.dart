@@ -102,6 +102,7 @@ class StorageExecutor {
   final Pointer<tarantool_box> _box;
 
   late final StorageSchema _schema;
+  late final InteractorWorker _worker;
   late final int _descriptor;
   late final InteractorTuples _tuples;
   late final StorageProducer _producer;
@@ -115,24 +116,25 @@ class StorageExecutor {
   InteractorTuples get tuples => _tuples;
 
   Future<void> initialize() async {
-    final worker = InteractorWorker(interactor.worker(InteractorDefaults.worker()));
-    await worker.initialize();
+    _worker = InteractorWorker(interactor.worker(InteractorDefaults.worker()));
+    await _worker.initialize();
     _descriptor = tarantool_executor_descriptor();
     _factory = ffi.calloc<tarantool_factory>(sizeOf<tarantool_factory>());
-    tarantool_factory_initialize(_factory, worker.memory);
-    worker.consumer(StorageConsumer());
-    _producer = worker.producer(StorageProducer(_box));
-    _tuples = worker.tuples;
+    tarantool_factory_initialize(_factory, _worker.memory);
+    _worker.consumer(StorageConsumer());
+    _producer = _worker.producer(StorageProducer(_box));
+    _tuples = _worker.tuples;
     _serialization = StorageSerialization(_factory);
     _schema = StorageSchema(_descriptor, _factory, this, _tuples, _serialization, _producer);
-    worker.activate();
+    _worker.activate();
   }
 
-  Future<void> stop() => interactor.shutdown();
+  Future<void> stop() => _worker.deactivate();
 
-  void destroy() {
+  Future<void> destroy() async {
     tarantool_factory_destroy(_factory);
     ffi.calloc.free(_factory.cast());
+    await interactor.shutdown();
   }
 
   @pragma(preferInlinePragma)
@@ -159,7 +161,7 @@ class StorageExecutor {
       final message = tarantool_evaluate_request_prepare(_factory, expressionString, expressionLength, input.cast(), size);
       return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _serialization.freeString(expressionString, expressionLength));
     }
-    (input, size) = InteractorTuples.emptyList;
+    (input, size) = _tuples.emptyList;
     final message = tarantool_evaluate_request_prepare(_factory, expressionString, expressionLength, input.cast(), size);
     return _producer.evaluate(_descriptor, message).then(_parseLuaEvaluate).whenComplete(() => _serialization.freeString(expressionString, expressionLength));
   }
@@ -171,7 +173,7 @@ class StorageExecutor {
       final message = tarantool_call_request_prepare(_factory, functionString, functionLength, input.cast(), size);
       return _producer.call(_descriptor, message).then(_parseLuaCall).whenComplete(() => _serialization.freeString(functionString, functionLength));
     }
-    (input, size) = InteractorTuples.emptyList;
+    (input, size) = _tuples.emptyList;
     final message = tarantool_call_request_prepare(_factory, functionString, functionLength, input.cast(), size);
     return _producer.call(_descriptor, message).then(_parseLuaCall).whenComplete(() => _serialization.freeString(functionString, functionLength));
   }
@@ -183,7 +185,7 @@ class StorageExecutor {
   Future<void> require(String module) => evaluate(LuaExpressions.require(module));
 
   @pragma(preferInlinePragma)
-  void _freeLuaBuffer(Pointer<interactor_message> freeMessage) => tarantool_free_output_buffer_free(_factory, freeMessage);
+  void _freeOutputBuffer(Pointer<interactor_message> freeMessage) => tarantool_free_output_buffer_free(_factory, freeMessage);
 
   @pragma(preferInlinePragma)
   (Uint8List, void Function()) _parseLuaEvaluate(Pointer<interactor_message> message) {
@@ -191,7 +193,7 @@ class StorageExecutor {
     final bufferSize = message.outputSize;
     final result = buffer.cast<Uint8>().asTypedList(message.outputSize);
     tarantool_evaluate_request_free(_factory, message);
-    return (result, () => _producer.freeOutputBuffer(_descriptor, tarantool_free_output_buffer_prepare(_factory, buffer, bufferSize)).then(_freeLuaBuffer));
+    return (result, () => _producer.freeOutputBuffer(_descriptor, tarantool_free_output_buffer_prepare(_factory, buffer, bufferSize)).then(_freeOutputBuffer));
   }
 
   @pragma(preferInlinePragma)
@@ -200,6 +202,6 @@ class StorageExecutor {
     final bufferSize = message.outputSize;
     final result = message.outputPointer.cast<Uint8>().asTypedList(message.outputSize);
     tarantool_call_request_free(_factory, message);
-    return (result, () => _producer.freeOutputBuffer(_descriptor, tarantool_free_output_buffer_prepare(_factory, buffer, bufferSize)).then(_freeLuaBuffer));
+    return (result, () => _producer.freeOutputBuffer(_descriptor, tarantool_free_output_buffer_prepare(_factory, buffer, bufferSize)).then(_freeOutputBuffer));
   }
 }

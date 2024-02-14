@@ -330,11 +330,13 @@ void tarantool_index_update_request_free(struct tarantool_factory* factory, stru
 struct interactor_message* tarantool_call_request_prepare(struct tarantool_factory* factory, const char* function, size_t function_length, const char* input, size_t input_size)
 {
     struct tarantool_call_request* request = mempool_alloc(factory->tarantool_call_requests);
+    memset(request, 0, sizeof(struct tarantool_call_request));
     request->function = function;
     request->function_length = function_length;
     request->input = input;
     request->input_size = input_size;
     struct interactor_message* message = mempool_alloc(factory->tarantool_messages);
+    memset(message, 0, sizeof(struct interactor_message));
     message->input = request;
     return message;
 }
@@ -348,11 +350,13 @@ void tarantool_call_request_free(struct tarantool_factory* factory, struct inter
 struct interactor_message* tarantool_evaluate_request_prepare(struct tarantool_factory* factory, const char* script, size_t script_length, const char* input, size_t input_size)
 {
     struct tarantool_evaluate_request* request = mempool_alloc(factory->tarantool_evaluate_requests);
+    memset(request, 0, sizeof(struct tarantool_evaluate_request));
     request->expression = script;
     request->expression_length = script_length;
     request->input = input;
     request->input_size = input_size;
     struct interactor_message* message = mempool_alloc(factory->tarantool_messages);
+    memset(message, 0, sizeof(struct interactor_message));
     message->input = request;
     return message;
 }

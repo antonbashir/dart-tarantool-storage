@@ -11,6 +11,7 @@
 #include "mempool.h"
 #include "msgpuck.h"
 #include "port.h"
+#include "say.h"
 #include "small.h"
 #include "small/obuf.h"
 
@@ -63,6 +64,7 @@ void tarantool_initialize_box(struct tarantool_box* box)
 void tarantool_evaluate(struct interactor_message* message)
 {
     struct tarantool_evaluate_request* request = (struct tarantool_evaluate_request*)message->input;
+    say_info("evaluate: %s\n", request->expression);
     struct port out_port, in_port;
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
@@ -88,6 +90,7 @@ void tarantool_evaluate(struct interactor_message* message)
 void tarantool_call(struct interactor_message* message)
 {
     struct tarantool_call_request* request = (struct tarantool_call_request*)message->input;
+    say_info("call: %s\n", request->function);
     struct port out_port, in_port;
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);

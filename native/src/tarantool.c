@@ -86,6 +86,7 @@ static int tarantool_fiber(va_list args)
     tarantool_initialize_box(storage.box);
     tarantool_executor_start(&executor);
     tarantool_destroy_box(storage.box);
+    tarantool_executor_destroy();
     ev_break(loop(), EVBREAK_ALL);
     return 0;
 }
