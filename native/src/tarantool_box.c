@@ -11,7 +11,6 @@
 #include "mempool.h"
 #include "msgpuck.h"
 #include "port.h"
-#include "say.h"
 #include "small.h"
 #include "small/obuf.h"
 
@@ -93,9 +92,7 @@ void tarantool_call(struct interactor_message* message)
     struct obuf out_buffer;
     obuf_create(&out_buffer, cord_slab_cache(), 1);
     port_msgpack_create(&in_port, request->input, request->input_size);
-    say_info("port_msgpack_create(&in_port, request->input, request->input_size);");
     box_lua_call(request->function, request->function_length, &in_port, &out_port);
-    say_info("box_lua_call(request->function, request->function_length, &in_port, &out_port);");
     port_destroy(&in_port);
     size_t return_count = ((struct port_lua*)&out_port)->size;
     port_dump_msgpack(&out_port, &out_buffer);

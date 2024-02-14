@@ -22,18 +22,20 @@
 
 #define TARANTOOL_LUA_ERROR "Failed to execute initial Lua script"
 
+static struct tarantool_executor_configuration executor;
+
 static struct tarantool_storage
 {
+    struct tarantool_configuration configuration;
+    char* initialization_error;
+    char* shutdown_error;
+    struct tarantool_box* box;
     pthread_t main_thread_id;
     pthread_mutex_t initialization_mutex;
     pthread_cond_t initialization_condition;
     pthread_mutex_t shutdown_mutex;
     pthread_cond_t shutdown_condition;
     bool initialized;
-    char* initialization_error;
-    char* shutdown_error;
-    struct tarantool_configuration configuration;
-    struct tarantool_box* box;
 } storage;
 
 struct tarantool_initialization_args
@@ -53,12 +55,8 @@ static int tarantool_shutdown_trigger(void* ignore)
 static int tarantool_fiber(va_list args)
 {
     (void)args;
-    struct tarantool_executor_configuration executor_configuration = {
-        .executor_ring_size = storage.configuration.executor_ring_size,
-        .interactor_id = 0,
-    };
     int error;
-    if (error = tarantool_executor_initialize(&executor_configuration))
+    if (error = tarantool_executor_initialize(&executor))
     {
         tarantool_executor_destroy();
         storage.initialization_error = strerror(error);
@@ -86,7 +84,7 @@ static int tarantool_fiber(va_list args)
         return 0;
     }
     tarantool_initialize_box(storage.box);
-    tarantool_executor_start(&executor_configuration);
+    tarantool_executor_start(&executor);
     tarantool_destroy_box(storage.box);
     ev_break(loop(), EVBREAK_ALL);
     return 0;
@@ -157,6 +155,10 @@ bool tarantool_initialize(struct tarantool_configuration* configuration, struct 
     storage.configuration = *configuration;
     storage.initialization_error = "";
     storage.box = box;
+    
+    executor.configuration = &storage.configuration;
+    executor.executor_ring_size = configuration->executor_ring_size;
+    executor.interactor_id = 0;
 
     struct tarantool_initialization_args* args = calloc(1, sizeof(struct tarantool_initialization_args));
     if (args == NULL)

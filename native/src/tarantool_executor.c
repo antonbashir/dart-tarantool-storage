@@ -23,7 +23,7 @@ int tarantool_executor_initialize(struct tarantool_executor_configuration* confi
     active = true;
     return 0;
 }
-
+  
 void tarantool_executor_start(struct tarantool_executor_configuration* configuration)
 {
     eventfd_t count;

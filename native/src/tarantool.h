@@ -11,6 +11,9 @@ extern "C"
 #endif
     struct tarantool_configuration
     {
+        const char* initial_script;
+        const char* library_path;
+        const char* binary_path;
         uint64_t cqe_wait_timeout_millis;
         size_t quota_size;
         size_t preallocation_size;
@@ -22,9 +25,6 @@ extern "C"
         uint64_t shutdown_timeout_seconds;
         size_t box_output_buffer_capacity;
         size_t executor_ring_size;
-        const char* library_path;
-        const char* binary_path;
-        const char* initial_script;
         int32_t ring_flags;
         uint32_t cqe_wait_count;
         uint32_t cqe_peek_count;
