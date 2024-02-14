@@ -16,6 +16,7 @@ class Storage {
   final Map<String, InteractorNativeModule> _loadedModulesByName = {};
   final Map<String, InteractorNativeModule> _loadedModulesByPath = {};
   final StorageLibrary _library;
+
   late final _box = ffi.calloc<tarantool_box>(sizeOf<tarantool_box>());
 
   late StorageExecutor _executor;

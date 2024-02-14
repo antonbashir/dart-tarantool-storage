@@ -1173,20 +1173,6 @@ external void tarantool_factory_destroy(
   ffi.Pointer<tarantool_factory> factory1,
 );
 
-final class interactor_completion_event extends ffi.Struct {
-  @ffi.UnsignedLongLong()
-  external int user_data;
-
-  @ffi.Int()
-  external int res;
-
-  @ffi.UnsignedInt()
-  external int flags;
-
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.UnsignedLongLong> big_cqe;
-}
-
 final class tarantool_box extends ffi.Struct {
   external ffi.Pointer<
           ffi.NativeFunction<
@@ -1616,6 +1602,12 @@ final class tarantool_native_function_request extends ffi.Struct {
 }
 
 final class tarantool_configuration extends ffi.Struct {
+  external ffi.Pointer<ffi.Char> initial_script;
+
+  external ffi.Pointer<ffi.Char> library_path;
+
+  external ffi.Pointer<ffi.Char> binary_path;
+
   @ffi.Uint64()
   external int cqe_wait_timeout_millis;
 
@@ -1648,12 +1640,6 @@ final class tarantool_configuration extends ffi.Struct {
 
   @ffi.Size()
   external int executor_ring_size;
-
-  external ffi.Pointer<ffi.Char> library_path;
-
-  external ffi.Pointer<ffi.Char> binary_path;
-
-  external ffi.Pointer<ffi.Char> initial_script;
 
   @ffi.Int32()
   external int ring_flags;

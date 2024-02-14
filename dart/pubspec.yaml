@@ -59,6 +59,10 @@ ffigen:
         "lib": "linux_interactor_bindings"
         "c-type": "interactor_message"
         "dart-type": "interactor_message"
+      "interactor_completion_event":
+        "lib": "linux_interactor_bindings"
+        "c-type": "interactor_completion_event"
+        "dart-type": "interactor_completion_event"
       "interactor_memory":
         "lib": "linux_interactor_bindings"
         "c-type": "interactor_memory"

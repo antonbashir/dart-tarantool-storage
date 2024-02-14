@@ -1,7 +1,9 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+import 'package:linux_interactor/linux_interactor.dart';
 import 'bindings.dart';
 import 'constants.dart';
 import 'extensions.dart';
@@ -243,16 +245,31 @@ class StorageExecutorConfiguration {
   }
 }
 
-class StorageBootConfiguration {
+class StorageBootConfiguration implements InteractorTuple {
   final String user;
   final String password;
 
   StorageBootConfiguration(this.user, this.password);
 
-  StorageBootConfiguration copyWith({String? user, String? password, Duration? delay}) => StorageBootConfiguration(
+  StorageBootConfiguration copyWith({
+    String? user,
+    String? password,
+    Duration? delay,
+  }) =>
+      StorageBootConfiguration(
         user ?? this.user,
         password ?? this.password,
       );
+
+  @override
+  int serialize(Uint8List buffer, ByteData data, int offset) {
+    offset = tupleWriteList(data, 2, offset);
+    offset = tupleWriteString(buffer, data, user, offset);
+    return tupleWriteString(buffer, data, password, offset);
+  }
+
+  @override
+  int get tupleSize => tupleSizeOfList(2) + tupleSizeOfString(user.length) + tupleSizeOfString(password.length);
 }
 
 class StorageReplicationConfiguration {
